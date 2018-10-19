@@ -1,0 +1,41 @@
+{
+  "name": "artprima/prometheus-metrics-bundle",
+  "description": "Symfony 4 Prometheus Metrics Bundle",
+  "keywords": [ "symfony", "symfony-bundle", "prometheus", "metrics" ],
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Denis Voytyuk",
+      "email": "ask@artprima.cz"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "ext-json": "*",
+    "symfony/http-kernel": "^4.1",
+    "symfony/dependency-injection": "^4.1",
+    "symfony/config": "^4.1",
+    "jimdo/prometheus_client_php": "dev-master"
+  },
+  "require-dev": {
+    "ext-apcu": "*",
+    "symfony/stopwatch": "^4.1",
+    "phpunit/phpunit": "^7.0"
+  },
+  "suggest": {
+    "ext-apcu": "Required if using APCu as prometheus metrics backend",
+    "ext-redis": "Required if using Redis as prometheus metrics backend",
+    "symfony/stopwatch": "Required if you want to measure request duration"
+  },
+  "autoload": {
+    "psr-4": {
+      "Artprima\\PrometheusMetricsBundle\\": "./"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Artprima\\PrometheusMetricsBundle\\": "Tests/"
+    }
+  }
+}

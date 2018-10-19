@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<parameters>
+    <parameter key="prometheus_metrics_bundle.collector_registry.class">Prometheus\CollectorRegistry</parameter>
+</parameters>
+<services>
+    <service id="prometheus_metrics_bundle.adapter" class="Prometheus\Storage\Adapter" abstract="true" public="false" autowire="false" autoconfigure="false" />
+
+    <service id="prometheus_metrics_bundle.collector_registry" class="%prometheus_metrics_bundle.collector_registry.class%" public="false" autowire="false" autoconfigure="false">
+        <argument type="service" id="prometheus_metrics_bundle.adapter" />
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" class="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" public="true" autowire="false" autoconfigure="false">
+        <tag name="kernel.event_listener" event="kernel.request"/>
+        <tag name="kernel.event_listener" event="kernel.terminate"/>
+        <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics"/>
+        <argument type="service" id="monolog.logger"/>
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" class="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" public="true" autowire="false" autoconfigure="false">
+        <argument>%prometheus_metrics_bundle.namespace%</argument>
+        <argument type="service" id="prometheus_metrics_bundle.collector_registry"/>
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="true" autowire="false" autoconfigure="false">
+        <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics"/>
+    </service>
+</services>
+</container>
