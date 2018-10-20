@@ -1,5 +1,5 @@
 Symfony 4 Prometheus Metrics Bundle
-============
+===================================
 
 Installation
 ============
@@ -54,3 +54,41 @@ class AppKernel extends Kernel
     // ...
 }
 ```
+
+Configuration
+=============
+
+```yaml
+artprima_prometheus_metrics:
+    # namespace is used to prefix the prometheus metrics
+    namespace: myapp
+
+    # metrics backend type
+    type: in_memory # possible values: in_memory, apcu, redis
+
+    # ignoring some routes in metrics
+    ignored_routes: [some_route_name, another_route_name]
+
+    # used in case of type = "redis"
+    redis:
+        host: 127.0.0.1
+        port: 6379
+        timeout: 0.1
+        read_timeout: 10
+        persistent_connections: false
+        password: ~
+```
+
+Custom Metrics Generator
+========================
+
+If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface`.
+Then declare it this way:
+
+```yaml
+    App\Metrics\MyMetricsGenerator:
+        tags:
+            - { name: prometheus_metrics_bundle.metrics_generator }
+```
+
+NB: do NOT add a call to `init()` as it will be done automatically by the relevant compiler pass.

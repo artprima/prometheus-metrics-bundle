@@ -50,6 +50,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('ignored_routes')
                     ->prototype('scalar')->end()
+                    ->defaultValue(['prometheus_bundle_prometheus'])
                 ->end()
             ->end();
 

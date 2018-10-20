@@ -4,61 +4,34 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\EventListener;
 
-use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 /**
  * Class RequestCounterListener.
  */
-class RequestCounterListener
+class RequestCounterListener implements LoggerAwareInterface
 {
-    private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
+    use LoggerAwareTrait;
 
     /**
-     * @var \Symfony\Component\Stopwatch\Stopwatch
+     * @var MetricsGeneratorRegistry
      */
-    private $stopwatch;
-
-    /**
-     * @var AppMetrics
-     */
-    private $metrics;
+    private $metricsGenerators;
 
     /**
      * @var array
      */
     private $ignoredRoutes;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(AppMetrics $metrics, ?LoggerInterface $logger = null, array $ignoredRoutes = ['metrics_prometheus'])
+    //public function __construct(MetricsGeneratorRegistry $metricsGenerators, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
+    public function __construct(MetricsGeneratorRegistry $metricsGenerators, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
-        if (class_exists(self::STOPWATCH_CLASS)) {
-            $className = self::STOPWATCH_CLASS;
-            $this->stopwatch = new $className();
-        }
-        $this->metrics = $metrics;
-        $this->logger = $logger ?? new NullLogger();
+        $this->metricsGenerators = $metricsGenerators;
         $this->ignoredRoutes = $ignoredRoutes;
-    }
-
-    private function shouldRegister(string $requestMethod, ?string $requestRoute): bool
-    {
-        if ('OPTIONS' === $requestMethod) {
-            return false;
-        }
-
-        if (in_array($requestRoute, $this->ignoredRoutes, true)) {
-            return false;
-        }
-
-        return true;
     }
 
     public function onKernelRequest(GetResponseEvent $event): void
@@ -67,53 +40,43 @@ class RequestCounterListener
             return;
         }
 
-        if (null !== $this->stopwatch) {
-            $this->stopwatch->start('execution_time');
-        }
-
-        $requestMethod = $event->getRequest()->getMethod();
         $requestRoute = $event->getRequest()->attributes->get('_route');
-
-        if (!$this->shouldRegister($requestMethod, $requestRoute)) {
+        if (in_array($requestRoute, $this->ignoredRoutes, true)) {
             return;
         }
 
-        $this->metrics->setInstance($event->getRequest()->server->get('HOSTNAME') ?? 'dev');
-
-        try {
-            $this->metrics->incRequestsTotal($requestMethod, $requestRoute);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['from' => 'request_counter']);
+        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+            try {
+                $generator->collectRequest($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'request_collector', 'class' => get_class($generator)]
+                    );
+                }
+            }
         }
     }
 
     public function onKernelTerminate(PostResponseEvent $event): void
     {
-        $evt = $this->stopwatch ? $this->stopwatch->stop('execution_time') : null;
-
-        $response = $event->getResponse();
-
-        $requestMethod = $event->getRequest()->getMethod();
         $requestRoute = $event->getRequest()->attributes->get('_route');
-
-        if (!$this->shouldRegister($requestMethod, $requestRoute)) {
+        if (in_array($requestRoute, $this->ignoredRoutes, true)) {
             return;
         }
 
-        try {
-            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                $this->metrics->inc2xxResponsesTotal($requestMethod, $requestRoute);
-            } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-                $this->metrics->inc4xxResponsesTotal($requestMethod, $requestRoute);
-            } elseif ($response->getStatusCode() >= 500) {
-                $this->metrics->inc5xxResponsesTotal($requestMethod, $requestRoute);
+        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+            try {
+                $generator->collectResponse($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'response_collector', 'class' => get_class($generator)]
+                    );
+                }
             }
-
-            if (null !== $evt) {
-                $this->metrics->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
-            }
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['from' => 'request_counter']);
         }
     }
 }

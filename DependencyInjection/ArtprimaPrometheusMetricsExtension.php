@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
-use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
-use Prometheus\Storage\APC;
-use Prometheus\Storage\InMemory;
-use Prometheus\Storage\Redis;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -27,12 +23,6 @@ class ArtprimaPrometheusMetricsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-
-        $adapterClasses = [
-            'in_memory' => InMemory::class,
-            'apcu' => APC::class,
-            'redis' => Redis::class,
-        ];
 
         $container->setParameter('prometheus_metrics_bundle.namespace', $config['namespace']);
         $container->setParameter('prometheus_metrics_bundle.type', $config['type']);

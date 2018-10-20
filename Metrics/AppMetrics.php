@@ -6,14 +6,21 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
-use Prometheus\RenderTextFormat;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 /**
  * Class AppMetrics.
  */
-class AppMetrics
+class AppMetrics implements MetricsGeneratorInterface
 {
+    private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
+
+    /**
+     * @var \Symfony\Component\Stopwatch\Stopwatch
+     */
+    private $stopwatch;
+
     /**
      * @var string
      */
@@ -24,13 +31,18 @@ class AppMetrics
      */
     private $collectionRegistry;
 
-    public function __construct(string $namespace, CollectorRegistry $collectionRegistry)
+    public function init(string $namespace, CollectorRegistry $collectionRegistry)
     {
+        if (class_exists(self::STOPWATCH_CLASS)) {
+            $className = self::STOPWATCH_CLASS;
+            $this->stopwatch = new $className();
+            $this->stopwatch->start('execution_time');
+        }
         $this->namespace = $namespace;
         $this->collectionRegistry = $collectionRegistry;
     }
 
-    public function setInstance(string $value): void
+    private function setInstance(string $value): void
     {
         $name = 'instance_name';
         try {
@@ -48,7 +60,7 @@ class AppMetrics
         }
     }
 
-    public function incRequestsTotal(?string $method = null, ?string $route = null): void
+    private function incRequestsTotal(?string $method = null, ?string $route = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -64,7 +76,7 @@ class AppMetrics
         }
     }
 
-    public function inc2xxResponsesTotal(?string $method = null, ?string $route = null): void
+    private function inc2xxResponsesTotal(?string $method = null, ?string $route = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -79,7 +91,7 @@ class AppMetrics
         }
     }
 
-    public function inc4xxResponsesTotal(?string $method = null, ?string $route = null): void
+    private function inc4xxResponsesTotal(?string $method = null, ?string $route = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -94,7 +106,7 @@ class AppMetrics
         }
     }
 
-    public function inc5xxResponsesTotal(?string $method = null, ?string $route = null): void
+    private function inc5xxResponsesTotal(?string $method = null, ?string $route = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -109,7 +121,7 @@ class AppMetrics
         }
     }
 
-    public function setRequestDuration(float $duration, ?string $method = null, ?string $route = null): void
+    private function setRequestDuration(float $duration, ?string $method = null, ?string $route = null): void
     {
         $histogram = $this->collectionRegistry->getOrRegisterHistogram(
             $this->namespace,
@@ -124,13 +136,40 @@ class AppMetrics
         }
     }
 
-    public function render(): string
+    public function collectRequest(GetResponseEvent $event)
     {
-        return (new RenderTextFormat())->render($this->collectionRegistry->getMetricFamilySamples());
+        $request = $event->getRequest();
+        $requestMethod = $request->getMethod();
+        $requestRoute = $request->attributes->get('_route');
+
+        // do not track "OPTIONS" requests
+        if ('OPTIONS' === $requestMethod) {
+            return;
+        }
+
+        $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
+        $this->incRequestsTotal($requestMethod, $requestRoute);
     }
 
-    public function renderResponse(): Response
+    public function collectResponse(PostResponseEvent $event)
     {
-        return new Response($this->render(), 200, ['Content-type' => RenderTextFormat::MIME_TYPE]);
+        $evt = $this->stopwatch ? $this->stopwatch->stop('execution_time') : null;
+        $response = $event->getResponse();
+        $request = $event->getRequest();
+
+        $requestMethod = $request->getMethod();
+        $requestRoute = $request->attributes->get('_route');
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $this->inc2xxResponsesTotal($requestMethod, $requestRoute);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            $this->inc4xxResponsesTotal($requestMethod, $requestRoute);
+        } elseif ($response->getStatusCode() >= 500) {
+            $this->inc5xxResponsesTotal($requestMethod, $requestRoute);
+        }
+
+        if (null !== $evt) {
+            $this->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
+        }
     }
 }
