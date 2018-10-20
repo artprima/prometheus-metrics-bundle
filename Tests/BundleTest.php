@@ -13,7 +13,7 @@ class BundleTest extends WebTestCase
     {
         require_once __DIR__.'/Fixtures/App/AppKernel.php';
 
-        return 'Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\AppKernel';
+        return 'Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel';
     }
 
     protected static function createKernel(array $options = array())

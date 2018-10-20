@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Metrics;
+namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
@@ -108,45 +108,13 @@ class AppMetricsTest extends TestCase
         $evt->expects(self::any())->method('getResponse')->willReturn($response);
 
         $metrics->collectResponse($evt);
-
-        $expected = <<<'EOD'
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.005"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.01"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.025"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.05"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.075"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.1"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.25"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="0.75"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="1"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="2.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="7.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="10"} 1
-dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le="+Inf"} 1
-dummy_request_durations_histogram_seconds_count{action="GET-test_route"} 1
-dummy_request_durations_histogram_seconds_sum{action="GET-test_route"} 0
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.005"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.01"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.025"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.05"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.075"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.1"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.25"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="0.75"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="1"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="2.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="7.5"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="10"} 1
-dummy_request_durations_histogram_seconds_bucket{action="all",le="+Inf"} 1
-dummy_request_durations_histogram_seconds_count{action="all"} 1
-dummy_request_durations_histogram_seconds_sum{action="all"} 0
-EOD;
-
         $response = $this->renderer->renderResponse();
-        $this->assertContains($expected, $response->getContent());
+        $content = $response->getContent();
+        $this->assertContains('dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le=', $content);
+        $this->assertContains('dummy_request_durations_histogram_seconds_count{action="GET-test_route"}', $content);
+        $this->assertContains('dummy_request_durations_histogram_seconds_sum{action="GET-test_route"}', $content);
+        $this->assertContains('dummy_request_durations_histogram_seconds_bucket{action="all",le=', $content);
+        $this->assertContains('dummy_request_durations_histogram_seconds_count{action="all"}', $content);
+        $this->assertContains('dummy_request_durations_histogram_seconds_sum{action="all"}', $content);
     }
 }

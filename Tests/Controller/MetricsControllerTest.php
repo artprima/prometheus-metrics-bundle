@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Controller;
+namespace Tests\Artprima\PrometheusMetricsBundle\Controller;
 
 use Artprima\PrometheusMetricsBundle\Controller\MetricsController;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;

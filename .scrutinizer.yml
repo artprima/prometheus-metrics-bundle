@@ -1,0 +1,52 @@
+build:
+    nodes:
+        analysis71:
+            environment:
+                php:
+                    version: 7.1
+            cache:
+                disabled: false
+                directories:
+                    - ~/.composer/cache
+
+            project_setup:
+                override: true
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    -
+                        command: 'vendor/bin/phpunit'
+        analysis72:
+            environment:
+                php:
+                    version: 7.2
+            cache:
+                disabled: false
+                directories:
+                    - ~/.composer/cache
+
+            project_setup:
+                override: true
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage.clover'
+                        coverage:
+                            file: 'coverage.clover'
+                            format: 'clover'
+before_commands:
+    - "composer install --no-dev --prefer-source"
+
+tools:
+    external_code_coverage: false
+
+filter:
+    excluded_paths:
+        - Tests
+
+build_failure_conditions:
+    - 'elements.rating(<= C).new.exists'                        # No new classes/methods with a rating of C or worse allowed
+    - 'issues.severity(>= MAJOR).new.exists'                    # New issues of major or higher severity
+    - 'project.metric_change("scrutinizer.test_coverage", < 0)' # Code Coverage decreased from previous inspection
+    - 'patches.label("Unused Use Statements").new.exists'       # No new unused imports patches allowed

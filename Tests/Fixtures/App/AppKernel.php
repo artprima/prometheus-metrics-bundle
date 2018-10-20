@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Fixtures\App;
+namespace Tests\Artprima\PrometheusMetricsBundle\Fixtures\App;
 
 use Psr\Log\NullLogger;
 use Symfony\Component\Config\Loader\LoaderInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests\EventListener;
+namespace Tests\Artprima\PrometheusMetricsBundle\EventListener;
 
 use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;

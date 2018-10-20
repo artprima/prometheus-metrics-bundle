@@ -1,3 +1,9 @@
+| [Master][Master] |
+|:----------------:|
+| [![Build Status][Master image]][Master] |
+| [![Coverage Status][Master coverage image]][Master coverage] |
+| [![Quality Status][Master quality image]][Master quality] |
+
 Symfony 4 Prometheus Metrics Bundle
 ===================================
 
@@ -58,6 +64,8 @@ class AppKernel extends Kernel
 Configuration
 =============
 
+`config.yaml`
+
 ```yaml
 artprima_prometheus_metrics:
     # namespace is used to prefix the prometheus metrics
@@ -79,6 +87,24 @@ artprima_prometheus_metrics:
         password: ~
 ```
 
+`routes.yaml`
+
+```yaml
+# expose /metrics/prometheus in your application
+app_metrics:
+    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml'
+```
+
+You can alternatively define your own path and rules:
+
+```yaml
+app_metrics:
+    path: /mypath/mymetrics
+    controller: Artprima\PrometheusMetricsBundle\Controller\MetricsController::prometheus
+```
+
+Now your metrics are available to Prometheus using http://<yourapp_url>/metrics/prometheus.
+
 Custom Metrics Generator
 ========================
 
@@ -92,3 +118,15 @@ Then declare it this way:
 ```
 
 NB: do NOT add a call to `init()` as it will be done automatically by the relevant compiler pass.
+
+Code license
+============
+
+You are free to use the code in this repository under the terms of the MIT license. LICENSE contains a copy of this license.
+
+  [Master image]: https://travis-ci.org/artprima/prometheus-metrics-bundle.svg?branch=master
+  [Master]: https://travis-ci.org/artprima/prometheus-metrics-bundle
+  [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/artprima/prometheus-metrics-bundle/master.svg?style=flat-square
+  [Master coverage]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=master
+  [Master quality image]: https://img.shields.io/scrutinizer/g/artprima/prometheus-metrics-bundle/master.svg
+  [Master quality]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=master

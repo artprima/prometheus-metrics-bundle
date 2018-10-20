@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\Controller;
 
-use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 
 /**
@@ -13,17 +12,17 @@ use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 class MetricsController
 {
     /**
-     * @var AppMetrics
+     * @var Renderer
      */
-    private $metrics;
+    private $renderer;
 
     public function __construct(Renderer $metricsRenderer)
     {
-        $this->metrics = $metricsRenderer;
+        $this->renderer = $metricsRenderer;
     }
 
     public function prometheus()
     {
-        return $this->metrics->renderResponse();
+        return $this->renderer->renderResponse();
     }
 }

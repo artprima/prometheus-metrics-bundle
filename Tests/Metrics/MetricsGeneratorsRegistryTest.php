@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Metrics;
+namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;

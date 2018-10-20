@@ -27,7 +27,6 @@ class RequestCounterListener implements LoggerAwareInterface
      */
     private $ignoredRoutes;
 
-    //public function __construct(MetricsGeneratorRegistry $metricsGenerators, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     public function __construct(MetricsGeneratorRegistry $metricsGenerators, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
         $this->metricsGenerators = $metricsGenerators;
