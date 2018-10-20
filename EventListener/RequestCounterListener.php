@@ -9,7 +9,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Class RequestCounterListener.
@@ -68,7 +67,7 @@ class RequestCounterListener
             return;
         }
 
-        if ($this->stopwatch !== null) {
+        if (null !== $this->stopwatch) {
             $this->stopwatch->start('execution_time');
         }
 
@@ -110,7 +109,7 @@ class RequestCounterListener
                 $this->metrics->inc5xxResponsesTotal($requestMethod, $requestRoute);
             }
 
-            if ($evt !== null) {
+            if (null !== $evt) {
                 $this->metrics->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
             }
         } catch (\Exception $e) {

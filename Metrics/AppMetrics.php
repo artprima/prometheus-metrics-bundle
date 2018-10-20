@@ -38,7 +38,12 @@ class AppMetrics
             $this->collectionRegistry->getGauge($this->namespace, $name);
         } catch (MetricNotFoundException $e) {
             /** @noinspection PhpUnhandledExceptionInspection */
-            $gauge = $this->collectionRegistry->registerGauge($this->namespace, $name, 'app instance name', ['instance']);
+            $gauge = $this->collectionRegistry->registerGauge(
+                $this->namespace,
+                $name,
+                'app instance name',
+                ['instance']
+            );
             $gauge->set(1, [$value]);
         }
     }

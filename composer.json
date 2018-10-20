@@ -19,7 +19,6 @@
     "jimdo/prometheus_client_php": "dev-master"
   },
   "require-dev": {
-    "ext-apcu": "*",
     "symfony/stopwatch": "^4.1",
     "phpunit/phpunit": "^7.0"
   },
