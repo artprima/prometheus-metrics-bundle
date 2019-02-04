@@ -46,6 +46,7 @@ class Configuration implements ConfigurationInterface
                         ->floatNode('read_timeout')->end()
                         ->booleanNode('persistent_connections')->end()
                         ->scalarNode('password')->end()
+                        ->integerNode('database')->end()
                     ->end()
                 ->end()
                 ->arrayNode('ignored_routes')
