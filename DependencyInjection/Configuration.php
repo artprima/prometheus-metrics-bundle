@@ -19,8 +19,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('artprima_prometheus_metrics');
+        $treeBuilder = new TreeBuilder('artprima_prometheus_metrics');
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // BC for symfony/config < 4.2
+            $rootNode = $treeBuilder->root('artprima_prometheus_metrics');
+        }
 
         $supportedTypes = ['in_memory', 'apcu', 'redis'];
 
