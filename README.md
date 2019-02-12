@@ -108,16 +108,111 @@ Now your metrics are available to Prometheus using http://<yourapp_url>/metrics/
 Custom Metrics Generator
 ========================
 
-If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface`.
+If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface`. Something like this:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Metrics;
+
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
+use Prometheus\CollectorRegistry;
+use Prometheus\Exception\MetricNotFoundException;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+
+/**
+ * Class MyMetricsGenerator.
+ */
+class MyMetricsGenerator implements MetricsGeneratorInterface
+{
+    /**
+     * @var string
+     */
+    private $namespace;
+
+    /**
+     * @var CollectorRegistry
+     */
+    private $collectionRegistry;
+
+    public function init(string $namespace, CollectorRegistry $collectionRegistry): void
+    {
+        $this->namespace = $namespace;
+        $this->collectionRegistry = $collectionRegistry;
+    }
+
+    private function incRequestsTotal(?string $method = null, ?string $route = null): void
+    {
+        $counter = $this->collectionRegistry->getOrRegisterCounter(
+            $this->namespace,
+            'http_requests_total',
+            'total request count',
+            ['action']
+        );
+
+        $counter->inc(['all']);
+
+        if (null !== $method && null !== $route) {
+            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        }
+    }
+
+    private function incResponsesTotal(?string $method = null, ?string $route = null): void
+    {
+        $counter = $this->collectionRegistry->getOrRegisterCounter(
+            $this->namespace,
+            'http_responses_total',
+            'total response count',
+            ['action']
+        );
+        $counter->inc(['all']);
+
+        if (null !== $method && null !== $route) {
+            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        }
+    }
+
+    // called on the `kernel.request` event
+    public function collectRequest(GetResponseEvent $event): void
+    {
+        $request = $event->getRequest();
+        $requestMethod = $request->getMethod();
+        $requestRoute = $request->attributes->get('_route');
+
+        // do not track "OPTIONS" requests
+        if ('OPTIONS' === $requestMethod) {
+            return;
+        }
+
+        $this->incRequestsTotal($requestMethod, $requestRoute);
+    }
+
+    // called on the `kernel.terminate` event
+    public function collectResponse(PostResponseEvent $event): void
+    {
+        $response = $event->getResponse();
+        $request = $event->getRequest();
+
+        $requestMethod = $request->getMethod();
+        $requestRoute = $request->attributes->get('_route');
+
+        $this->incResponsesTotal($requestMethod, $requestRoute);
+    }
+}
+```
+
 Then declare it this way:
 
 ```yaml
     App\Metrics\MyMetricsGenerator:
+        # NB: do NOT add a call to `init()` as it will be done automatically by the relevant compiler pass.
         tags:
             - { name: prometheus_metrics_bundle.metrics_generator }
 ```
 
-NB: do NOT add a call to `init()` as it will be done automatically by the relevant compiler pass.
 
 Code license
 ============
