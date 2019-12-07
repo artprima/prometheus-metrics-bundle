@@ -4,8 +4,8 @@
 | [![Coverage Status][Master coverage image]][Master coverage] |
 | [![Quality Status][Master quality image]][Master quality] |
 
-Symfony 4 Prometheus Metrics Bundle
-===================================
+Symfony 4/5 Prometheus Metrics Bundle
+=====================================
 
 Installation
 ============
