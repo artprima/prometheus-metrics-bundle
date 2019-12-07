@@ -2,7 +2,7 @@
 
 namespace Artprima\PrometheusMetricsBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Tests\Functional\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * @group functional
@@ -25,12 +25,17 @@ class BundleTest extends WebTestCase
         }
 
         return new $class(
-            static::getVarDir(),
+            self::getVarDir(),
             $options['test_case'],
             isset($options['root_config']) ? $options['root_config'] : 'config.yml',
             isset($options['environment']) ? $options['environment'] : strtolower(static::getVarDir().$options['test_case']),
             isset($options['debug']) ? $options['debug'] : true
         );
+    }
+
+    private static function getVarDir()
+    {
+        return 'FB'.substr(strrchr(\get_called_class(), '\\'), 1);
     }
 
     public function testBundle()
