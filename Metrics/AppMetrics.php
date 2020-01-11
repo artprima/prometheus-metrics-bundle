@@ -6,8 +6,8 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Class AppMetrics.
@@ -136,7 +136,7 @@ class AppMetrics implements MetricsGeneratorInterface
         }
     }
 
-    public function collectRequest(GetResponseEvent $event)
+    public function collectRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
         $requestMethod = $request->getMethod();
@@ -151,7 +151,7 @@ class AppMetrics implements MetricsGeneratorInterface
         $this->incRequestsTotal($requestMethod, $requestRoute);
     }
 
-    public function collectResponse(PostResponseEvent $event)
+    public function collectResponse(TerminateEvent $event)
     {
         $evt = $this->stopwatch ? $this->stopwatch->stop('execution_time') : null;
         $response = $event->getResponse();

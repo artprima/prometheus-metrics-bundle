@@ -8,15 +8,15 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class RequestCounterListenerTest extends TestCase
 {
     public function testOnKernelRequest()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(GetResponseEvent::class);
+        $evt = $this->createMock(RequestEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt->expects(self::any())->method('isMasterRequest')->willReturn(true);
 
@@ -36,7 +36,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelRequestIgnoredRoute()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(GetResponseEvent::class);
+        $evt = $this->createMock(RequestEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt->expects(self::any())->method('isMasterRequest')->willReturn(true);
 
@@ -56,7 +56,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelRequestNonMasterRequest()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(GetResponseEvent::class);
+        $evt = $this->createMock(RequestEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt->expects(self::any())->method('isMasterRequest')->willReturn(false);
 
@@ -76,7 +76,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelRequestExceptionHandlingWithLog()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(GetResponseEvent::class);
+        $evt = $this->createMock(RequestEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt->expects(self::any())->method('isMasterRequest')->willReturn(true);
 
@@ -99,7 +99,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelRequestExceptionHandlingWithoutLog()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(GetResponseEvent::class);
+        $evt = $this->createMock(RequestEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt->expects(self::any())->method('isMasterRequest')->willReturn(true);
 
@@ -116,7 +116,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminate()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(PostResponseEvent::class);
+        $evt = $this->createMock(TerminateEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
@@ -135,7 +135,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithLog()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(PostResponseEvent::class);
+        $evt = $this->createMock(TerminateEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
@@ -157,7 +157,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithoutLog()
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(PostResponseEvent::class);
+        $evt = $this->createMock(TerminateEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
