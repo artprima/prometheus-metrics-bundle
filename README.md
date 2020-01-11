@@ -120,8 +120,8 @@ namespace App\Metrics;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Class MyMetricsGenerator.
@@ -176,7 +176,7 @@ class MyMetricsGenerator implements MetricsGeneratorInterface
     }
 
     // called on the `kernel.request` event
-    public function collectRequest(GetResponseEvent $event): void
+    public function collectRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         $requestMethod = $request->getMethod();
@@ -191,7 +191,7 @@ class MyMetricsGenerator implements MetricsGeneratorInterface
     }
 
     // called on the `kernel.terminate` event
-    public function collectResponse(PostResponseEvent $event): void
+    public function collectResponse(TerminateEvent $event): void
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
