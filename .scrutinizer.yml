@@ -1,9 +1,9 @@
 build:
     nodes:
-        analysis71:
+        analysis72:
             environment:
                 php:
-                    version: 7.1
+                    version: 7.2
             cache:
                 disabled: false
                 directories:
@@ -15,11 +15,33 @@ build:
                 override:
                     - php-scrutinizer-run
                     -
-                        command: 'vendor/bin/phpunit'
-        analysis72:
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage.clover'
+                        coverage:
+                            file: 'coverage.clover'
+                            format: 'clover'
+        analysis73:
             environment:
                 php:
-                    version: 7.2
+                    version: 7.3
+            cache:
+                disabled: false
+                directories:
+                    - ~/.composer/cache
+
+            project_setup:
+                override: true
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage.clover'
+                        coverage:
+                            file: 'coverage.clover'
+                            format: 'clover'
+        analysis74:
+            environment:
+                php:
+                    version: 7.4
             cache:
                 disabled: false
                 directories:

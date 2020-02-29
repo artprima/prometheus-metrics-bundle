@@ -1,8 +1,9 @@
-| [Master][Master] |
-|:----------------:|
-| [![Build Status][Master image]][Master] |
-| [![Coverage Status][Master coverage image]][Master coverage] |
-| [![Quality Status][Master quality image]][Master quality] |
+| [Master][Master] | [Develop][Develop] |
+|:----------------:|:----------------:|
+| [![Build Status][Master image]][Master] | [![Build Status][Develop image]][Develop] |
+| [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][Develop coverage image]][Develop coverage] |
+| [![Quality Status][Master quality image]][Master quality] | [![Quality Status][Develop quality image]][Develop quality] |
+
 
 Symfony 4/5 Prometheus Metrics Bundle
 =====================================
@@ -120,8 +121,8 @@ namespace App\Metrics;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Class MyMetricsGenerator.
@@ -176,7 +177,7 @@ class MyMetricsGenerator implements MetricsGeneratorInterface
     }
 
     // called on the `kernel.request` event
-    public function collectRequest(GetResponseEvent $event): void
+    public function collectRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         $requestMethod = $request->getMethod();
@@ -191,7 +192,7 @@ class MyMetricsGenerator implements MetricsGeneratorInterface
     }
 
     // called on the `kernel.terminate` event
-    public function collectResponse(PostResponseEvent $event): void
+    public function collectResponse(TerminateEvent $event): void
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
@@ -225,3 +226,10 @@ You are free to use the code in this repository under the terms of the MIT licen
   [Master coverage]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=master
   [Master quality image]: https://img.shields.io/scrutinizer/g/artprima/prometheus-metrics-bundle/master.svg
   [Master quality]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=master
+
+  [Develop image]: https://travis-ci.org/artprima/prometheus-metrics-bundle.svg?branch=develop
+  [Develop]: https://travis-ci.org/artprima/prometheus-metrics-bundle
+  [Develop coverage image]: https://img.shields.io/scrutinizer/coverage/g/artprima/prometheus-metrics-bundle/develop.svg?style=flat-square
+  [Develop coverage]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=develop
+  [Develop quality image]: https://img.shields.io/scrutinizer/g/artprima/prometheus-metrics-bundle/develop.svg
+  [Develop quality]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=develop

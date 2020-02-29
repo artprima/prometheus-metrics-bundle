@@ -7,8 +7,8 @@ namespace Artprima\PrometheusMetricsBundle\EventListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Class RequestCounterListener.
@@ -33,7 +33,7 @@ class RequestCounterListener implements LoggerAwareInterface
         $this->ignoredRoutes = $ignoredRoutes;
     }
 
-    public function onKernelRequest(GetResponseEvent $event): void
+    public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMasterRequest()) {
             return;
@@ -58,7 +58,7 @@ class RequestCounterListener implements LoggerAwareInterface
         }
     }
 
-    public function onKernelTerminate(PostResponseEvent $event): void
+    public function onKernelTerminate(TerminateEvent $event): void
     {
         $requestRoute = $event->getRequest()->attributes->get('_route');
         if (in_array($requestRoute, $this->ignoredRoutes, true)) {
