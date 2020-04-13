@@ -12,8 +12,14 @@ cache:
     - $HOME/.composer/cache/files
 
 before_install:
+  - echo 'extension = "redis.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer self-update
 
-install: composer install --prefer-source $COMPOSER_FLAGS
+install:
+  - composer install --prefer-source $COMPOSER_FLAGS
 
-script: ./vendor/bin/phpunit --coverage-text
+services:
+  - redis
+
+script:
+  - ./vendor/bin/phpunit --coverage-text

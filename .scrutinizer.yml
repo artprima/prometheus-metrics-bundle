@@ -1,9 +1,13 @@
 build:
     nodes:
         analysis72:
+            services:
+                redis: 4
             environment:
                 php:
                     version: 7.2
+                    pecl_extensions:
+                      - redis
             cache:
                 disabled: false
                 directories:
@@ -20,9 +24,13 @@ build:
                             file: 'coverage.clover'
                             format: 'clover'
         analysis73:
+            services:
+                redis: 4
             environment:
                 php:
                     version: 7.3
+                    pecl_extensions:
+                      - redis
             cache:
                 disabled: false
                 directories:
@@ -39,9 +47,13 @@ build:
                             file: 'coverage.clover'
                             format: 'clover'
         analysis74:
+            services:
+                redis: 4
             environment:
                 php:
                     version: 7.4
+                    pecl_extensions:
+                      - redis
             cache:
                 disabled: false
                 directories:
