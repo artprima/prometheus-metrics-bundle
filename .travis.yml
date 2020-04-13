@@ -18,8 +18,8 @@ before_install:
 install:
   - composer install --prefer-source $COMPOSER_FLAGS
 
-services:
-  - redis-server
+#services:
+#  - redis-server
 
 script:
   - ./vendor/bin/phpunit --coverage-text
