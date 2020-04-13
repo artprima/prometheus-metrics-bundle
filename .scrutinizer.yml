@@ -6,6 +6,10 @@ build:
         php:
             version: '7.2'
     nodes:
+        tests:
+            services:
+                redis: 4
+
         analysis72:
             services:
                 redis: 4
