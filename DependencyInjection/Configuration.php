@@ -43,7 +43,14 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('host')->end()
                         ->integerNode('port')->end()
                         ->floatNode('timeout')->end()
-                        ->floatNode('read_timeout')->end()
+                        ->floatNode('read_timeout')
+                            ->validate()
+                                ->always()
+                                // here we force casting `float` to `string` to avoid TypeError when working with Redis
+                                // see for more details: https://github.com/phpredis/phpredis/issues/1538
+                                ->then(function ($v) { return (string) $v; } )
+                            ->end()
+                        ->end()
                         ->booleanNode('persistent_connections')->end()
                         ->scalarNode('password')->end()
                         ->integerNode('database')->end()
