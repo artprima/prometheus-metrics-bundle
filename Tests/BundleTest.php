@@ -40,7 +40,11 @@ class BundleTest extends WebTestCase
 
     public function testBundle()
     {
-        $client = $this->createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config.yml'));
+        $client = $this->createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml'));
+        $client->request('GET', '/metrics/prometheus');
+        $this->assertContains('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
+
+        $client = $this->createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_redis.yml'));
         $client->request('GET', '/metrics/prometheus');
         $this->assertContains('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
