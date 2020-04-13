@@ -1,3 +1,6 @@
+checks:
+    php: true
+
 build:
     environment:
         php:
