@@ -11,6 +11,9 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
+#before_script:
+#    - redis-server --daemonize yes --pidfile ./redis-server.pid --unixsocket /tmp/aioredis.sock
+
 before_install:
   - echo 'extension = "redis.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer self-update
