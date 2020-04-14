@@ -14,7 +14,12 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'in_memory',
-                ]
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'in_memory',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                ],
             ],
             [
                 'redis (no password)',
@@ -23,13 +28,26 @@ class ConfigurationTest extends TestCase
                     'type' => 'redis',
                     'redis' => [
                         'host' => '127.0.0.1',
-                        'port' => 1234,
+                        'port' => 6379,
                         'timeout' => 0.1,
                         'read_timeout' => 10,
                         'persistent_connections' => false,
                         'password' => null,
                     ],
-                ]
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'redis',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'redis' => [
+                        'host' => '127.0.0.1',
+                        'port' => 6379,
+                        'timeout' => 0.1,
+                        'read_timeout' => 10,
+                        'persistent_connections' => false,
+                        'password' => null,
+                    ],
+                ],
             ],
             [
                 'redis unix-socket (no password)',
@@ -43,19 +61,33 @@ class ConfigurationTest extends TestCase
                         'persistent_connections' => false,
                         'password' => null,
                     ],
-                ]
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'redis',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'redis' => [
+                        'host' => '/var/run/redis/redis.sock',
+                        'port' => 6379,
+                        'timeout' => 0.1,
+                        'read_timeout' => '10',
+                        'persistent_connections' => false,
+                        'password' => null,
+                    ],
+                ],
             ],
         ];
     }
 
     /**
      * @dataProvider configDataProvider
-     * @doesNotPerformAssertions
+     * @ doesNotPerformAssertions
      */
-    public function testGetConfigTreeBuilder(string $description, array $config) {
+    public function testGetConfigTreeBuilder(string $description, array $config, array $expected) {
         $cfg = new Configuration();
         $treeBuilder = $cfg->getConfigTreeBuilder();
         $tree = $treeBuilder->buildTree();
-        $tree->finalize($config);
+        $result = $tree->finalize($config);
+        $this->assertEquals($expected, $result, $description);
     }
 }
