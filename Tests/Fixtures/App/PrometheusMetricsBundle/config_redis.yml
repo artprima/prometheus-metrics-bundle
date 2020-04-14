@@ -16,8 +16,10 @@ artprima_prometheus_metrics:
     ignored_routes: []
 
     redis:
-        host: 127.0.0.1
-        port: 6379
+        #host: 127.0.0.1
+        host: '/tmp/aioredis.sock'
+        #port: 6379
+        port: ~
         timeout: 0.1
         read_timeout: 10
         persistent_connections: false
