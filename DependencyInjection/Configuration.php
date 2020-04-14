@@ -6,6 +6,7 @@ namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -41,7 +42,27 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('redis')
                     ->children()
                         ->scalarNode('host')->end()
-                        ->integerNode('port')->end()
+                        ->scalarNode('port')
+                            ->validate()
+                                ->always()
+                                // here we force casting `float` to `string` to avoid TypeError when working with Redis
+                                // see for more details: https://github.com/phpredis/phpredis/issues/1538
+                                ->then(function ($v) {
+                                    if ($v == null) {
+                                        return null;
+                                    }
+
+                                    if (!is_int($v)) {
+                                        $path = 'artprima_prometheus_metrics.redis.port';
+                                        $ex = new InvalidTypeException(sprintf('Invalid type for path "%s". Expected int, but got %s.', $path, gettype($v)));
+                                        $ex->setPath($path);
+                                        throw $ex;
+                                    }
+
+                                    return $v;
+                                })
+                            ->end()
+                        ->end()
                         ->floatNode('timeout')->end()
                         ->floatNode('read_timeout')
                             ->validate()
