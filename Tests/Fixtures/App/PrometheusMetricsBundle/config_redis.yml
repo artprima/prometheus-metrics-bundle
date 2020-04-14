@@ -19,7 +19,7 @@ artprima_prometheus_metrics:
         #host: 127.0.0.1
         host: '/tmp/aioredis.sock'
         #port: 6379
-        port: ~
+        #port: ~
         timeout: 0.1
         read_timeout: 10
         persistent_connections: false

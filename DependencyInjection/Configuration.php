@@ -42,26 +42,8 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('redis')
                     ->children()
                         ->scalarNode('host')->end()
-                        ->scalarNode('port')
-                            ->validate()
-                                ->always()
-                                // here we force casting `float` to `string` to avoid TypeError when working with Redis
-                                // see for more details: https://github.com/phpredis/phpredis/issues/1538
-                                ->then(function ($v) {
-                                    if ($v == null) {
-                                        return null;
-                                    }
-
-                                    if (!is_int($v)) {
-                                        $path = 'artprima_prometheus_metrics.redis.port';
-                                        $ex = new InvalidTypeException(sprintf('Invalid type for path "%s". Expected int, but got %s.', $path, gettype($v)));
-                                        $ex->setPath($path);
-                                        throw $ex;
-                                    }
-
-                                    return $v;
-                                })
-                            ->end()
+                        ->integerNode('port')
+                            ->defaultValue(6379)
                         ->end()
                         ->floatNode('timeout')->end()
                         ->floatNode('read_timeout')
@@ -69,7 +51,7 @@ class Configuration implements ConfigurationInterface
                                 ->always()
                                 // here we force casting `float` to `string` to avoid TypeError when working with Redis
                                 // see for more details: https://github.com/phpredis/phpredis/issues/1538
-                                ->then(function ($v) { return (string) $v; } )
+                                ->then(function ($v) { return (string) $v; })
                             ->end()
                         ->end()
                         ->booleanNode('persistent_connections')->end()

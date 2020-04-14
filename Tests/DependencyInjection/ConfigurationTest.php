@@ -38,7 +38,6 @@ class ConfigurationTest extends TestCase
                     'type' => 'redis',
                     'redis' => [
                         'host' => '/var/run/redis/redis.sock',
-                        'port' => null,
                         'timeout' => 0.1,
                         'read_timeout' => 10,
                         'persistent_connections' => false,
