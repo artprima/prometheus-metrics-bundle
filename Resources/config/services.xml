@@ -13,7 +13,8 @@
     </service>
 
     <service id="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" class="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" public="true" autowire="false" autoconfigure="false">
-        <tag name="kernel.event_listener" event="kernel.request" priority="1024"/>
+        <tag name="kernel.event_listener" event="kernel.request"/>
+        <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestPre" priority="1024"/>
         <tag name="kernel.event_listener" event="kernel.terminate"/>
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry"/>
         <call method="setLogger">
