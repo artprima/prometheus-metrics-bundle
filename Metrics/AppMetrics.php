@@ -33,11 +33,6 @@ class AppMetrics implements MetricsGeneratorInterface
 
     public function init(string $namespace, CollectorRegistry $collectionRegistry)
     {
-        if (class_exists(self::STOPWATCH_CLASS)) {
-            $className = self::STOPWATCH_CLASS;
-            $this->stopwatch = new $className();
-            $this->stopwatch->start('execution_time');
-        }
         $this->namespace = $namespace;
         $this->collectionRegistry = $collectionRegistry;
     }
@@ -145,6 +140,12 @@ class AppMetrics implements MetricsGeneratorInterface
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
             return;
+        }
+
+        if (class_exists(self::STOPWATCH_CLASS)) {
+            $className = self::STOPWATCH_CLASS;
+            $this->stopwatch = new $className();
+            $this->stopwatch->start('execution_time');
         }
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
