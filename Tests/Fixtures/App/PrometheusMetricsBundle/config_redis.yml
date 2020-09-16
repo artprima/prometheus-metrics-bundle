@@ -1,0 +1,26 @@
+framework:
+    secret:        test
+    router:        { resource: "%kernel.root_dir%/%kernel.test_case%/routing.yml" }
+    test: true
+    default_locale: en
+    session:
+        storage_id:     session.storage.mock_file
+
+services:
+    logger: { class: Psr\Log\NullLogger }
+
+artprima_prometheus_metrics:
+    namespace: myapp
+    type: redis
+    # this will remove "prometheus_bundle_prometheus" from the ignored routes
+    ignored_routes: []
+
+    redis:
+        host: 127.0.0.1
+        #host: '/tmp/aioredis.sock'
+        port: 6379
+        #port: ~
+        timeout: 0.1
+        read_timeout: 10
+        persistent_connections: false
+        password: ~

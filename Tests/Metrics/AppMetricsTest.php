@@ -102,11 +102,15 @@ class AppMetricsTest extends TestCase
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $reqEvt = $this->createMock(RequestEvent::class);
+        $reqEvt->expects(self::any())->method('getRequest')->willReturn($request);
         $evt = $this->createMock(TerminateEvent::class);
         $evt->expects(self::any())->method('getRequest')->willReturn($request);
         $response = new Response('', 200);
         $evt->expects(self::any())->method('getResponse')->willReturn($response);
 
+        $metrics->collectStart($reqEvt);
+        $metrics->collectRequest($reqEvt);
         $metrics->collectResponse($evt);
         $response = $this->renderer->renderResponse();
         $content = $response->getContent();

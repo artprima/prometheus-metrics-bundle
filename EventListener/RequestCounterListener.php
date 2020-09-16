@@ -33,6 +33,26 @@ class RequestCounterListener implements LoggerAwareInterface
         $this->ignoredRoutes = $ignoredRoutes;
     }
 
+    public function onKernelRequestPre(RequestEvent $event): void
+    {
+        if (!$event->isMasterRequest()) {
+            return;
+        }
+
+        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+            try {
+                $generator->collectStart($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'request_collector', 'class' => get_class($generator)]
+                    );
+                }
+            }
+        }
+    }
+
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMasterRequest()) {
