@@ -1,6 +1,6 @@
 {
   "name": "artprima/prometheus-metrics-bundle",
-  "description": "Symfony 4 Prometheus Metrics Bundle",
+  "description": "Symfony 4/5 Prometheus Metrics Bundle",
   "keywords": [ "symfony", "symfony-bundle", "prometheus", "metrics" ],
   "type": "symfony-bundle",
   "license": "MIT",
