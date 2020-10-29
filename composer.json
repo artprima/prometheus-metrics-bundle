@@ -13,10 +13,10 @@
   "require": {
     "php": "^7.1",
     "ext-json": "*",
+    "promphp/prometheus_client_php": "^2.1",
     "symfony/http-kernel": "^4.3|^5.0",
     "symfony/dependency-injection": "^4.3|^5.0",
-    "symfony/config": "^4.3|^5.0",
-    "endclothing/prometheus_client_php": "dev-master#b0931c73f9204c8e75259f13184d4350f3e0868a"
+    "symfony/config": "^4.3|^5.0"
   },
   "require-dev": {
     "symfony/stopwatch": "^3.4|^4.0",
