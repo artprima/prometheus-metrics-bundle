@@ -120,7 +120,6 @@ namespace App\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Prometheus\CollectorRegistry;
-use Prometheus\Exception\MetricNotFoundException;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 

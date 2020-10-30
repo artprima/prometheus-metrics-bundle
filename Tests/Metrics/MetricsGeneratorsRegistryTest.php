@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class MetricsGeneratorsRegistryTest extends TestCase
 {
-    public function testRegisterAndGetMetricsGenerators()
+    public function testRegisterAndGetMetricsGenerators(): void
     {
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator2 = $this->createMock(MetricsGeneratorInterface::class);
@@ -17,6 +17,6 @@ class MetricsGeneratorsRegistryTest extends TestCase
         $registry->registerMetricsGenerator($generator1);
         $registry->registerMetricsGenerator($generator2);
 
-        $this->assertEquals([$generator1, $generator2], $registry->getMetricsGenerators());
+        self::assertEquals([$generator1, $generator2], $registry->getMetricsGenerators());
     }
 }

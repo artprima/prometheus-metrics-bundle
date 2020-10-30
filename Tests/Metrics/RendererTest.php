@@ -12,7 +12,7 @@ use Prometheus\MetricFamilySamples;
 
 class RendererTest extends TestCase
 {
-    public function testRender()
+    public function testRender(): void
     {
         $collectionRegistry = $this->createMock(CollectorRegistry::class);
         $collectionRegistry->expects(self::once())->method('getMetricFamilySamples')->willReturn([new MetricFamilySamples([
@@ -26,10 +26,10 @@ class RendererTest extends TestCase
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->render();
-        $this->assertEquals("# HELP name help\n# TYPE name type\n", $response);
+        self::assertEquals("# HELP name help\n# TYPE name type\n", $response);
     }
 
-    public function testRenderResponse()
+    public function testRenderResponse(): void
     {
         $collectionRegistry = $this->createMock(CollectorRegistry::class);
         $collectionRegistry->expects(self::once())->method('getMetricFamilySamples')->willReturn([new MetricFamilySamples([
@@ -43,6 +43,6 @@ class RendererTest extends TestCase
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->renderResponse();
-        $this->assertContains("# HELP name help\n# TYPE name type\n", $response->getContent());
+        self::assertContains("# HELP name help\n# TYPE name type\n", $response->getContent());
     }
 }
