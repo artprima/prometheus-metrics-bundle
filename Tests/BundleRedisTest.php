@@ -8,7 +8,7 @@ use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 /**
  * @group functional
  */
-class BundleInMemoryTest extends WebTestCase
+class BundleRedisTest extends WebTestCase
 {
     protected static function getKernelClass(): string
     {
@@ -41,7 +41,7 @@ class BundleInMemoryTest extends WebTestCase
 
     public function testBundle(): void
     {
-        $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml'));
+        $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_redis.yml'));
         $client->request('GET', '/metrics/prometheus');
         self::assertContains('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }

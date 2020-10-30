@@ -88,6 +88,6 @@ class ConfigurationTest extends TestCase
         $treeBuilder = $cfg->getConfigTreeBuilder();
         $tree = $treeBuilder->buildTree();
         $result = $tree->finalize($config);
-        $this->assertEquals($expected, $result, $description);
+        self::assertEquals($expected, $result, $description);
     }
 }
