@@ -47,4 +47,4 @@ jobs:
       run: |
         composer install --no-progress --prefer-dist --optimize-autoloader
     - name: Run Tests
-      run: php bin/phpunit --coverage-text
+      run: php vendor/bin/phpunit --coverage-text
