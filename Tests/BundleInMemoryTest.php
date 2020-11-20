@@ -43,6 +43,6 @@ class BundleInMemoryTest extends WebTestCase
     {
         $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml'));
         $client->request('GET', '/metrics/prometheus');
-        self::assertContains('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
+        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
 }

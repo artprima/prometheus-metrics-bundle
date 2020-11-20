@@ -1,6 +1,6 @@
 {
   "name": "artprima/prometheus-metrics-bundle",
-  "description": "Symfony 4 Prometheus Metrics Bundle",
+  "description": "Symfony 4/5 Prometheus Metrics Bundle",
   "keywords": [ "symfony", "symfony-bundle", "prometheus", "metrics" ],
   "type": "symfony-bundle",
   "license": "MIT",
@@ -11,19 +11,19 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.2",
     "ext-json": "*",
     "promphp/prometheus_client_php": "^2.1",
-    "symfony/http-kernel": "^4.3|^5.0",
-    "symfony/dependency-injection": "^4.3|^5.0",
-    "symfony/config": "^4.3|^5.0"
+    "symfony/http-kernel": "^4.4|^5.1.5",
+    "symfony/dependency-injection": "^4.4|^5.1.5",
+    "symfony/config": "^4.4|^5.1.5"
   },
   "require-dev": {
-    "symfony/stopwatch": "^3.4|^4.0",
-    "phpunit/phpunit": "^7.0",
-    "symfony/yaml": "^3.4|^4.0",
-    "symfony/browser-kit": "^3.4|^4.0",
-    "symfony/framework-bundle": "^3.4|^4.0"
+    "symfony/stopwatch": "^4.4|^5.0",
+    "phpunit/phpunit": "^8.0|^9.0",
+    "symfony/yaml": "^4.4|^5.0",
+    "symfony/browser-kit": "^4.4|^5.0",
+    "symfony/framework-bundle": "^4.4|^5.0"
   },
   "suggest": {
     "ext-apcu": "Required if using APCu as prometheus metrics backend",

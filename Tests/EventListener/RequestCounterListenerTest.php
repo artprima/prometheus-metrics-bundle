@@ -6,10 +6,12 @@ use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Debug\BufferingLogger;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class RequestCounterListenerTest extends TestCase
 {
@@ -116,8 +118,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminate(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 500);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->with($evt);
@@ -135,8 +138,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $response = new Response('', 400);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
@@ -157,8 +161,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithoutLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $response = new Response('', 400);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));

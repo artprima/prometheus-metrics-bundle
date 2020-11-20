@@ -43,6 +43,6 @@ class RendererTest extends TestCase
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->renderResponse();
-        self::assertContains("# HELP name help\n# TYPE name type\n", $response->getContent());
+        self::assertStringContainsString("# HELP name help\n# TYPE name type\n", $response->getContent());
     }
 }
