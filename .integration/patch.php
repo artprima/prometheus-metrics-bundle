@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-function patch_composer_json(string $branchname): void
+function patch_composer_json(): void
 {
     if (!file_exists('symfony/composer.json')) {
         echo 'symfony/composer.json not found!'.PHP_EOL;
@@ -16,10 +16,10 @@ function patch_composer_json(string $branchname): void
 
     $json = json_decode($contents, true);
     $json['repositories'] = [[
-        'type' => 'vcs',
+        'type' => 'path',
         'url' => '../',
     ]];
-    $json['require']['artprima/prometheus-metrics-bundle'] = 'dev-'.$branchname;
+    $json['require']['artprima/prometheus-metrics-bundle'] = '*';
     $json['require-dev'] = (object)$json['require-dev'];
     $data = json_encode($json, JSON_PRETTY_PRINT);
     if ($data === false) {
@@ -32,15 +32,4 @@ function patch_composer_json(string $branchname): void
     }
 }
 
-// https://stackoverflow.com/questions/7447472/how-could-i-display-the-current-git-branch-name-at-the-top-of-the-page-of-my-de
-function get_branch_name(): string
-{
-    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-    $firstLine = $stringfromfile[0]; //get the string from the array
-    $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
-    $branchname = $explodedstring[2]; //get the one that is always the branch name
-
-    return $branchname;
-}
-
-patch_composer_json(get_branch_name());
+patch_composer_json();
