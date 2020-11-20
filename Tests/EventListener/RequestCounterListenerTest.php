@@ -138,8 +138,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $response = new Response('', 400);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
@@ -160,8 +161,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminateExceptionHandlingWithoutLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $response = new Response('', 400);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
