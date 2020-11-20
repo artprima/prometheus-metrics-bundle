@@ -10,6 +10,7 @@ use Prometheus\Storage\InMemory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class AppMetricsTest extends TestCase
 {
