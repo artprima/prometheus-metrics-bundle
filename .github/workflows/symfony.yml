@@ -42,16 +42,12 @@ jobs:
         /home/runner/.symfony/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
     - name: Configure Symfony to run integration tests
       run: |
-        ls -lia .git/
         php .integration/patch.php
         cd symfony
         composer require phpunit -n --no-progress --optimize-autoloader
         composer upgrade -n --no-progress --optimize-autoloader
     - name: Run Integration tests
       run: |
-        cp -rf .integration/symfony/* ./
+        cp -rf .integration/symfony/* symfony/
         cd symfony
         php bin/phpunit
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
