@@ -6,7 +6,7 @@ use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Debug\BufferingLogger;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
