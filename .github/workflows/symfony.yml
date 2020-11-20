@@ -1,0 +1,58 @@
+name: Symfony
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    services:
+      redis:
+        image: redis
+        ports:
+        - 6379:6379
+        options: --entrypoint redis-server
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        symfony-versions: ['4.4', '5.1']
+        php-versions: ['7.2', '7.3', '7.4']
+    name: PHP ${{ matrix.php-versions }} / Symfony ${{ matrix.symfony-versions }} Test on ${{ matrix.operating-system }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: mbstring, intl
+        ini-values: post_max_size=256M
+        coverage: xdebug        
+        tools: php-cs-fixer, phpunit
+    - name: Download Symfony Binary
+      run:  wget https://get.symfony.com/cli/installer -O - | bash
+    - name: Install Symfony
+      run: |
+        git config --global user.email "${{ github.actor }}"
+        git config --global user.name ""github-action-${{ github.actor }}@users.noreply.github.com""
+        /home/runner/.symfony/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
+    - name: Configure Symfony to run integration tests
+      run: |
+        pwd
+        ls -lia
+        ls -lia .github
+        ls -lia .github/fixtures
+        php .github/fixtures/patch.php
+        cd symfony
+        composer upgrade -n
+        composer require phpunit -n
+        cp -rf ../.github/fixtures/bundle-test-config/* ./
+    - name: Run Integration tests
+      run: php bin/phpunit
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
