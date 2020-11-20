@@ -42,6 +42,7 @@ jobs:
         /home/runner/.symfony/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
     - name: Configure Symfony to run integration tests
       run: |
+        ls -lia .git/
         php .integration/patch.php
         cd symfony
         composer upgrade -n
