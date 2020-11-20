@@ -1,4 +1,4 @@
-| [Master][Master] | [Develop][Develop] |
+| [Master][Master Link] | [Develop][Develop Link] |
 |:----------------:|:----------------:|
 | [![Build Status][Master image]][Master] | [![Build Status][Develop image]][Develop] |
 | [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][Develop coverage image]][Develop coverage] |
@@ -219,6 +219,7 @@ Code license
 
 You are free to use the code in this repository under the terms of the MIT license. LICENSE contains a copy of this license.
 
+  [Master Link]: https://github.com/artprima/prometheus-metrics-bundle/tree/master
   [Master image]: https://github.com/artprima/prometheus-metrics-bundle/workflows/PHP/badge.svg?branch=master
   [Master]: https://github.com/artprima/prometheus-metrics-bundle/actions?query=workflow%3APHP+branch%3Amaster
   [Master coverage image]: https://img.shields.io/codecov/c/github/artprima/prometheus-metrics-bundle/master.svg
@@ -226,6 +227,7 @@ You are free to use the code in this repository under the terms of the MIT licen
   [Master quality image]: https://img.shields.io/scrutinizer/g/artprima/prometheus-metrics-bundle/master.svg
   [Master quality]: https://scrutinizer-ci.com/g/artprima/prometheus-metrics-bundle/?branch=master
 
+  [Develop Link]: https://github.com/artprima/prometheus-metrics-bundle/tree/develop
   [Develop image]: https://github.com/artprima/prometheus-metrics-bundle/workflows/PHP/badge.svg?branch=develop
   [Develop]: https://github.com/artprima/prometheus-metrics-bundle/actions?query=workflow%3APHP+branch%3Adevelop
   [Develop coverage image]: https://img.shields.io/codecov/c/github/artprima/prometheus-metrics-bundle/develop.svg
