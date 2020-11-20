@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppMetricsTest extends TestCase
 {
@@ -88,7 +89,8 @@ class AppMetricsTest extends TestCase
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', $code);
-        $evt = new TerminateEvent(null, $request, $response);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
         $metrics->collectResponse($evt);
 
         $response = $this->renderer->renderResponse();

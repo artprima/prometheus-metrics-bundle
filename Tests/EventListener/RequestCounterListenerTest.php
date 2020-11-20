@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class RequestCounterListenerTest extends TestCase
 {
@@ -117,7 +118,9 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminate(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = new TerminateEvent(null, $request, null);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 500);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->with($evt);
