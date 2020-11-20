@@ -108,10 +108,10 @@ class AppMetricsTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $reqEvt = $this->createMock(RequestEvent::class);
         $reqEvt->method('getRequest')->willReturn($request);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+
         $response = new Response('', 200);
-        $evt->method('getResponse')->willReturn($response);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
 
         $metrics->collectStart($reqEvt);
         $metrics->collectRequest($reqEvt);
