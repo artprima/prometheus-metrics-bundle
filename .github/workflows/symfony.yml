@@ -45,11 +45,13 @@ jobs:
         ls -lia .git/
         php .integration/patch.php
         cd symfony
-        composer upgrade -n
         composer require phpunit -n
+        composer upgrade -n --no-progress --optimize-autoloader
         cp -rf ../.integration/symfony/* ./
     - name: Run Integration tests
-      run: php bin/phpunit
+      run: |
+        cd symfony
+        php bin/phpunit
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
