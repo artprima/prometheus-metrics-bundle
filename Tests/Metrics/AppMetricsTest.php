@@ -10,7 +10,6 @@ use Prometheus\Storage\InMemory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class AppMetricsTest extends TestCase
 {
@@ -87,11 +86,8 @@ class AppMetricsTest extends TestCase
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
         $response = new Response('', $code);
-        $evt->method('getResponse')->willReturn($response);
-
+        $evt = new TerminateEvent(null, $request, $response);
         $metrics->collectResponse($evt);
 
         $response = $this->renderer->renderResponse();

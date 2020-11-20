@@ -8,6 +8,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
@@ -116,8 +117,7 @@ class RequestCounterListenerTest extends TestCase
     public function testOnKernelTerminate(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
-        $evt = $this->createMock(TerminateEvent::class);
-        $evt->method('getRequest')->willReturn($request);
+        $evt = new TerminateEvent(null, $request, null);
 
         $generator1 = $this->createMock(MetricsGeneratorInterface::class);
         $generator1->expects(self::once())->method('collectResponse')->with($evt);
