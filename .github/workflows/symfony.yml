@@ -42,15 +42,11 @@ jobs:
         /home/runner/.symfony/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
     - name: Configure Symfony to run integration tests
       run: |
-        pwd
-        ls -lia
-        ls -lia .github
-        ls -lia .github/fixtures
-        php .github/fixtures/patch.php
+        php .integration/patch.php
         cd symfony
         composer upgrade -n
         composer require phpunit -n
-        cp -rf ../.github/fixtures/bundle-test-config/* ./
+        cp -rf ../.integration/symfony/* ./
     - name: Run Integration tests
       run: php bin/phpunit
 
