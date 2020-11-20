@@ -43,6 +43,6 @@ class BundleRedisTest extends WebTestCase
     {
         $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_redis.yml'));
         $client->request('GET', '/metrics/prometheus');
-        self::assertContains('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
+        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
 }

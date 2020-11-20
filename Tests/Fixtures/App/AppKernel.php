@@ -81,6 +81,11 @@ class AppKernel extends Kernel
         $this->__construct($a[0], $a[1], $a[2], $a[3], $a[4]);
     }
 
+    public function getProjectDir()
+    {
+        return __DIR__;
+    }
+
     protected function getKernelParameters()
     {
         $parameters = parent::getKernelParameters();

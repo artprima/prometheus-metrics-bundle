@@ -43,9 +43,9 @@ class AppMetricsTest extends TestCase
         $response = $this->renderer->renderResponse();
         $responseContent = $response->getContent();
 
-        self::assertContains('dummy_instance_name{instance="dev"} 1', $responseContent);
-        self::assertContains("dummy_http_requests_total{action=\"all\"} 1\n", $responseContent);
-        self::assertContains("dummy_http_requests_total{action=\"GET-test_route\"} 1\n", $responseContent);
+        self::assertStringContainsString('dummy_instance_name{instance="dev"} 1', $responseContent);
+        self::assertStringContainsString("dummy_http_requests_total{action=\"all\"} 1\n", $responseContent);
+        self::assertStringContainsString("dummy_http_requests_total{action=\"GET-test_route\"} 1\n", $responseContent);
     }
 
     public function testCollectRequestOptionsMethod(): void
@@ -64,7 +64,7 @@ class AppMetricsTest extends TestCase
 
         $expected = "# HELP php_info Information about the PHP environment.\n# TYPE php_info gauge\nphp_info{version=\"%s\"} 1";
 
-        self::assertContains(
+        self::assertStringContainsString(
             sprintf($expected, PHP_VERSION),
             trim($responseContent)
         );
@@ -96,8 +96,8 @@ class AppMetricsTest extends TestCase
         $response = $this->renderer->renderResponse();
         $responseContent = $response->getContent();
 
-        self::assertContains("dummy_{$metricsName}{action=\"all\"} 1\n", $responseContent);
-        self::assertContains("dummy_{$metricsName}{action=\"GET-test_route\"} 1\n", $responseContent);
+        self::assertStringContainsString("dummy_{$metricsName}{action=\"all\"} 1\n", $responseContent);
+        self::assertStringContainsString("dummy_{$metricsName}{action=\"GET-test_route\"} 1\n", $responseContent);
     }
 
     public function testSetRequestDuration(): void
@@ -118,11 +118,11 @@ class AppMetricsTest extends TestCase
         $metrics->collectResponse($evt);
         $response = $this->renderer->renderResponse();
         $content = $response->getContent();
-        self::assertContains('dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le=', $content);
-        self::assertContains('dummy_request_durations_histogram_seconds_count{action="GET-test_route"}', $content);
-        self::assertContains('dummy_request_durations_histogram_seconds_sum{action="GET-test_route"}', $content);
-        self::assertContains('dummy_request_durations_histogram_seconds_bucket{action="all",le=', $content);
-        self::assertContains('dummy_request_durations_histogram_seconds_count{action="all"}', $content);
-        self::assertContains('dummy_request_durations_histogram_seconds_sum{action="all"}', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le=', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET-test_route"}', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="GET-test_route"}', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le=', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="all"}', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="all"}', $content);
     }
 }
