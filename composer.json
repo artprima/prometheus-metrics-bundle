@@ -19,6 +19,7 @@
     "symfony/config": "^4.4|^5.1.5"
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.17",
     "symfony/stopwatch": "^4.4|^5.0",
     "phpunit/phpunit": "^8.0|^9.0",
     "symfony/yaml": "^4.4|^5.0",
@@ -39,5 +40,10 @@
     "psr-4": {
       "Tests\\Artprima\\PrometheusMetricsBundle\\": "Tests/"
     }
+  },
+  "scripts": {
+    "phpcs": [
+      "vendor/bin/php-cs-fixer fix --verbose --diff --dry-run"
+    ]
   }
 }
