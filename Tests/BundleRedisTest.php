@@ -1,6 +1,6 @@
 <?php
 
-namespace Artprima\PrometheusMetricsBundle\Tests;
+namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
