@@ -33,7 +33,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('type')
                     ->validate()
                         ->ifNotInArray($supportedTypes)
-                        ->thenInvalid('The type %s is not supported. Please choose one of ' . json_encode($supportedTypes))
+                        ->thenInvalid('The type %s is not supported. Please choose one of '.json_encode($supportedTypes))
                     ->end()
                     ->defaultValue('in_memory')
                     ->cannotBeEmpty()

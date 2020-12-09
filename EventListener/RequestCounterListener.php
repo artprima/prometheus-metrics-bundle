@@ -35,7 +35,7 @@ class RequestCounterListener implements LoggerAwareInterface
 
     public function onKernelRequestPre(RequestEvent $event): void
     {
-        if (! $event->isMasterRequest()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
@@ -55,7 +55,7 @@ class RequestCounterListener implements LoggerAwareInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (! $event->isMasterRequest()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 

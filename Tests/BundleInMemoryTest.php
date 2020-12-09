@@ -12,7 +12,7 @@ class BundleInMemoryTest extends WebTestCase
 {
     protected static function getKernelClass(): string
     {
-        require_once __DIR__ . '/Fixtures/App/AppKernel.php';
+        require_once __DIR__.'/Fixtures/App/AppKernel.php';
 
         return AppKernel::class;
     }
@@ -21,7 +21,7 @@ class BundleInMemoryTest extends WebTestCase
     {
         $class = self::getKernelClass();
 
-        if (! isset($options['test_case'])) {
+        if (!isset($options['test_case'])) {
             throw new \InvalidArgumentException('The option "test_case" must be set.');
         }
 
@@ -29,14 +29,14 @@ class BundleInMemoryTest extends WebTestCase
             self::getVarDir(),
             $options['test_case'],
             $options['root_config'] ?? 'config.yml',
-            $options['environment'] ?? strtolower(static::getVarDir() . $options['test_case']),
+            $options['environment'] ?? strtolower(static::getVarDir().$options['test_case']),
             $options['debug'] ?? true
         );
     }
 
     private static function getVarDir(): string
     {
-        return 'FB' . substr(strrchr(static::class, '\\'), 1);
+        return 'FB'.substr(strrchr(static::class, '\\'), 1);
     }
 
     public function testBundle(): void

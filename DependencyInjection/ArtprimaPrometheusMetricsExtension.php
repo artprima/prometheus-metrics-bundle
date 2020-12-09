@@ -31,7 +31,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         }
         $container->setParameter('prometheus_metrics_bundle.ignored_routes', $config['ignored_routes']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
     }
 }

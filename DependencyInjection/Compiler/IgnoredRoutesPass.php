@@ -12,7 +12,7 @@ class IgnoredRoutesPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (! $container->hasDefinition(RequestCounterListener::class)) {
+        if (!$container->hasDefinition(RequestCounterListener::class)) {
             return;
         }
 
