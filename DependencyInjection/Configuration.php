@@ -33,7 +33,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('type')
                     ->validate()
                         ->ifNotInArray($supportedTypes)
-                        ->thenInvalid('The type %s is not supported. Please choose one of '.json_encode($supportedTypes))
+                        ->thenInvalid('The type %s is not supported. Please choose one of ' . json_encode($supportedTypes))
                     ->end()
                     ->defaultValue('in_memory')
                     ->cannotBeEmpty()
@@ -50,7 +50,9 @@ class Configuration implements ConfigurationInterface
                                 ->always()
                                 // here we force casting `float` to `string` to avoid TypeError when working with Redis
                                 // see for more details: https://github.com/phpredis/phpredis/issues/1538
-                                ->then(function ($v) { return (string) $v; })
+                                ->then(function ($v) {
+                                    return (string) $v;
+                                })
                             ->end()
                         ->end()
                         ->booleanNode('persistent_connections')->end()

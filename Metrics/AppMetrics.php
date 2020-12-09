@@ -34,15 +34,15 @@ class AppMetrics implements MetricsGeneratorInterface
 
     public function init(string $namespace, CollectorRegistry $collectionRegistry)
     {
-        $this->namespace          = $namespace;
+        $this->namespace = $namespace;
         $this->collectionRegistry = $collectionRegistry;
     }
 
     public function collectRequest(RequestEvent $event)
     {
-        $request       = $event->getRequest();
+        $request = $event->getRequest();
         $requestMethod = $request->getMethod();
-        $requestRoute  = $request->attributes->get('_route');
+        $requestRoute = $request->attributes->get('_route');
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
@@ -90,10 +90,10 @@ class AppMetrics implements MetricsGeneratorInterface
     public function collectResponse(TerminateEvent $event)
     {
         $response = $event->getResponse();
-        $request  = $event->getRequest();
+        $request = $event->getRequest();
 
         $requestMethod = $request->getMethod();
-        $requestRoute  = $request->attributes->get('_route');
+        $requestRoute = $request->attributes->get('_route');
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $this->inc2xxResponsesTotal($requestMethod, $requestRoute);
@@ -103,7 +103,7 @@ class AppMetrics implements MetricsGeneratorInterface
             $this->inc5xxResponsesTotal($requestMethod, $requestRoute);
         }
 
-        if($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
+        if ($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
             $evt = $this->stopwatch->stop('execution_time');
             if (null !== $evt) {
                 $this->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
@@ -179,7 +179,7 @@ class AppMetrics implements MetricsGeneratorInterface
         }
 
         if (class_exists(self::STOPWATCH_CLASS)) {
-            $className       = self::STOPWATCH_CLASS;
+            $className = self::STOPWATCH_CLASS;
             $this->stopwatch = new $className();
             $this->stopwatch->start('execution_time');
         }

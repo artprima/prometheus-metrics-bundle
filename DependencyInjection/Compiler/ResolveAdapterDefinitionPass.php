@@ -14,7 +14,7 @@ class ResolveAdapterDefinitionPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('prometheus_metrics_bundle.adapter')) {
+        if (! $container->hasDefinition('prometheus_metrics_bundle.adapter')) {
             return;
         }
 

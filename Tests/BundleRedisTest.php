@@ -12,16 +12,16 @@ class BundleRedisTest extends WebTestCase
 {
     protected static function getKernelClass(): string
     {
-        require_once __DIR__.'/Fixtures/App/AppKernel.php';
+        require_once __DIR__ . '/Fixtures/App/AppKernel.php';
 
         return AppKernel::class;
     }
 
-    protected static function createKernel(array $options = array())
+    protected static function createKernel(array $options = [])
     {
         $class = self::getKernelClass();
 
-        if (!isset($options['test_case'])) {
+        if (! isset($options['test_case'])) {
             throw new \InvalidArgumentException('The option "test_case" must be set.');
         }
 
@@ -36,12 +36,12 @@ class BundleRedisTest extends WebTestCase
 
     private static function getVarDir(): string
     {
-        return 'FB'.substr(strrchr(static::class, '\\'), 1);
+        return 'FB' . substr(strrchr(static::class, '\\'), 1);
     }
 
     public function testBundle(): void
     {
-        $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_redis.yml'));
+        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_redis.yml']);
         $client->request('GET', '/metrics/prometheus');
         self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
