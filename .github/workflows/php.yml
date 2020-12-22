@@ -46,8 +46,10 @@ jobs:
     - name: Install Composer dependencies
       run: |
         composer install --no-progress --prefer-dist --optimize-autoloader
-    - name: Run Tests
+    - name: Run PHPUnit Tests
       run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
+    - name: Check code style issues
+      run: composer run-script php-cs-fixer-check
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
