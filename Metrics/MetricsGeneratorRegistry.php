@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
-class MetricsGeneratorRegistry
+/**
+ * MetricsGeneratorRegistry holds all registered metric handlers.
+ */
+final class MetricsGeneratorRegistry
 {
     /**
      * @var MetricsGeneratorInterface[]

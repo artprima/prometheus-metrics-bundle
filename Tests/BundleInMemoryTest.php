@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -10,6 +12,13 @@ use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
  */
 class BundleInMemoryTest extends WebTestCase
 {
+    public function testBundle(): void
+    {
+        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml']);
+        $client->request('GET', '/metrics/prometheus');
+        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
+    }
+
     protected static function getKernelClass(): string
     {
         require_once __DIR__.'/Fixtures/App/AppKernel.php';
@@ -17,7 +26,7 @@ class BundleInMemoryTest extends WebTestCase
         return AppKernel::class;
     }
 
-    protected static function createKernel(array $options = array())
+    protected static function createKernel(array $options = [])
     {
         $class = self::getKernelClass();
 
@@ -29,7 +38,7 @@ class BundleInMemoryTest extends WebTestCase
             self::getVarDir(),
             $options['test_case'],
             $options['root_config'] ?? 'config.yml',
-            $options['environment'] ?? strtolower(static::getVarDir() . $options['test_case']),
+            $options['environment'] ?? strtolower(static::getVarDir().$options['test_case']),
             $options['debug'] ?? true
         );
     }
@@ -37,12 +46,5 @@ class BundleInMemoryTest extends WebTestCase
     private static function getVarDir(): string
     {
         return 'FB'.substr(strrchr(static::class, '\\'), 1);
-    }
-
-    public function testBundle(): void
-    {
-        $client = self::createClient(array('test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml'));
-        $client->request('GET', '/metrics/prometheus');
-        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
 }

@@ -11,7 +11,12 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Class AppMetrics.
+ * Class AppMetrics is an implementation of basic metrics collector that is turned on by default.
+ *
+ * Collected metrics:
+ * - requests (per method and route)
+ * - responses (per method, route and response type)
+ * - request duration histogram (per method and route)
  */
 class AppMetrics implements MetricsGeneratorInterface
 {
@@ -32,17 +37,17 @@ class AppMetrics implements MetricsGeneratorInterface
      */
     private $collectionRegistry;
 
-    public function init(string $namespace, CollectorRegistry $collectionRegistry)
+    public function init(string $namespace, CollectorRegistry $collectionRegistry): void
     {
-        $this->namespace          = $namespace;
+        $this->namespace = $namespace;
         $this->collectionRegistry = $collectionRegistry;
     }
 
-    public function collectRequest(RequestEvent $event)
+    public function collectRequest(RequestEvent $event): void
     {
-        $request       = $event->getRequest();
+        $request = $event->getRequest();
         $requestMethod = $request->getMethod();
-        $requestRoute  = $request->attributes->get('_route');
+        $requestRoute = $request->attributes->get('_route');
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
@@ -51,6 +56,46 @@ class AppMetrics implements MetricsGeneratorInterface
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
         $this->incRequestsTotal($requestMethod, $requestRoute);
+    }
+
+    public function collectResponse(TerminateEvent $event): void
+    {
+        $response = $event->getResponse();
+        $request = $event->getRequest();
+
+        $requestMethod = $request->getMethod();
+        $requestRoute = $request->attributes->get('_route');
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $this->incResponsesTotal('2xx', $requestMethod, $requestRoute);
+        } elseif ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+            $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
+        } elseif ($response->getStatusCode() >= 500) {
+            $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
+        }
+
+        if ($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
+            $evt = $this->stopwatch->stop('execution_time');
+            if (null !== $evt) {
+                $this->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
+            }
+        }
+    }
+
+    public function collectStart(RequestEvent $event): void
+    {
+        // do not track "OPTIONS" requests
+        if ($event->getRequest()->isMethod('OPTIONS')) {
+            return;
+        }
+
+        if (class_exists(self::STOPWATCH_CLASS)) {
+            $className = self::STOPWATCH_CLASS;
+            $this->stopwatch = new $className();
+            $this->stopwatch->start('execution_time');
+        }
     }
 
     private function setInstance(string $value): void
@@ -87,66 +132,12 @@ class AppMetrics implements MetricsGeneratorInterface
         }
     }
 
-    public function collectResponse(TerminateEvent $event)
-    {
-        $response = $event->getResponse();
-        $request  = $event->getRequest();
-
-        $requestMethod = $request->getMethod();
-        $requestRoute  = $request->attributes->get('_route');
-
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            $this->inc2xxResponsesTotal($requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-            $this->inc4xxResponsesTotal($requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 500) {
-            $this->inc5xxResponsesTotal($requestMethod, $requestRoute);
-        }
-
-        if($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
-            $evt = $this->stopwatch->stop('execution_time');
-            if (null !== $evt) {
-                $this->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
-            }
-        }
-    }
-
-    private function inc2xxResponsesTotal(?string $method = null, ?string $route = null): void
+    private function incResponsesTotal(string $type, ?string $method = null, ?string $route = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
-            'http_2xx_responses_total',
-            'total 2xx response count',
-            ['action']
-        );
-        $counter->inc(['all']);
-
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
-        }
-    }
-
-    private function inc4xxResponsesTotal(?string $method = null, ?string $route = null): void
-    {
-        $counter = $this->collectionRegistry->getOrRegisterCounter(
-            $this->namespace,
-            'http_4xx_responses_total',
-            'total 4xx response count',
-            ['action']
-        );
-        $counter->inc(['all']);
-
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
-        }
-    }
-
-    private function inc5xxResponsesTotal(?string $method = null, ?string $route = null): void
-    {
-        $counter = $this->collectionRegistry->getOrRegisterCounter(
-            $this->namespace,
-            'http_5xx_responses_total',
-            'total 5xx response count',
+            sprintf('http_%s_responses_total', $type),
+            sprintf('total %s response count', $type),
             ['action']
         );
         $counter->inc(['all']);
@@ -168,20 +159,6 @@ class AppMetrics implements MetricsGeneratorInterface
 
         if (null !== $method && null !== $route) {
             $histogram->observe($duration, [sprintf('%s-%s', $method, $route)]);
-        }
-    }
-
-    public function collectStart(RequestEvent $event)
-    {
-        // do not track "OPTIONS" requests
-        if ($event->getRequest()->isMethod('OPTIONS')) {
-            return;
-        }
-
-        if (class_exists(self::STOPWATCH_CLASS)) {
-            $className       = self::STOPWATCH_CLASS;
-            $this->stopwatch = new $className();
-            $this->stopwatch->start('execution_time');
         }
     }
 }

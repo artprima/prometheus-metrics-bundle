@@ -9,6 +9,10 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * RegisterMetricsGeneratorPass is a compilation pass that registers all metrics classes taged as
+ * prometheus_metrics_bundle.metrics_generator.
+ */
 class RegisterMetricsGeneratorPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
