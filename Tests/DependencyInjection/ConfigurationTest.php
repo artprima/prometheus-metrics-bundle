@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Artprima\PrometheusMetricsBundle\Tests\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Configuration;
@@ -7,7 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigurationTest extends TestCase
 {
-    public function configDataProvider(): array {
+    public function configDataProvider(): array
+    {
         return [
             [
                 'in_memory',
@@ -83,7 +86,8 @@ class ConfigurationTest extends TestCase
      * @dataProvider configDataProvider
      * @ doesNotPerformAssertions
      */
-    public function testGetConfigTreeBuilder(string $description, array $config, array $expected) {
+    public function testGetConfigTreeBuilder(string $description, array $config, array $expected)
+    {
         $cfg = new Configuration();
         $treeBuilder = $cfg->getConfigTreeBuilder();
         $tree = $treeBuilder->buildTree();

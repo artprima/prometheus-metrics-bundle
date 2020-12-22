@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('artprima_prometheus_metrics');
         $rootNode = $treeBuilder->getRootNode();
@@ -50,7 +50,9 @@ class Configuration implements ConfigurationInterface
                                 ->always()
                                 // here we force casting `float` to `string` to avoid TypeError when working with Redis
                                 // see for more details: https://github.com/phpredis/phpredis/issues/1538
-                                ->then(function ($v) { return (string) $v; })
+                                ->then(function ($v) {
+                                    return (string) $v;
+                                })
                             ->end()
                         ->end()
                         ->booleanNode('persistent_connections')->end()

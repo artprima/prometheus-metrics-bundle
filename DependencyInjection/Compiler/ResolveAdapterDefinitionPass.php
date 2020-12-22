@@ -10,6 +10,9 @@ use Prometheus\Storage\Redis;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * ResolveAdapterDefinitionPass is a compilation pass that sets the metrics backend storage adapter.
+ */
 class ResolveAdapterDefinitionPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
