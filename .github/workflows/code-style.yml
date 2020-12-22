@@ -1,4 +1,4 @@
-name: PHP
+name: Coding Style
 
 on:
   push:
@@ -8,18 +8,8 @@ on:
 
 jobs:
   run:
-    runs-on: ${{ matrix.operating-system }}
-    services:
-      redis:
-        image: redis
-        ports:
-        - 6379:6379
-        options: --entrypoint redis-server
-    strategy:
-      matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['7.2', '7.3', '7.4', '8.0']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    runs-on: ubuntu-latest
+    name: PHP 7.4
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -27,7 +17,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-versions }}
+        php-version: "7.4"
         extensions: mbstring, intl
         ini-values: post_max_size=256M
         coverage: xdebug        
@@ -46,8 +36,8 @@ jobs:
     - name: Install Composer dependencies
       run: |
         composer install --no-progress --prefer-dist --optimize-autoloader
-    - name: Run PHPUnit Tests
-      run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+    - name: Check code style issues
+      run: |
+        vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard
+        composer run-script php-cs-fixer-check
+        composer run-script phpcs-check
