@@ -49,9 +49,10 @@ jobs:
     - name: Run PHPUnit Tests
       run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
     - name: Check code style issues
-      run: 
-        - composer run-script php-cs-fixer-check
-        - composer run-script phpcs-check
+      run: |
+        vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard
+        composer run-script php-cs-fixer-check
+        composer run-script phpcs-check
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
