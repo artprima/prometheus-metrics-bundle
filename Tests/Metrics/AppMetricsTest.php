@@ -76,6 +76,7 @@ class AppMetricsTest extends TestCase
     {
         return [
             [200, 'http_2xx_responses_total'],
+            [300, 'http_3xx_responses_total'],
             [400, 'http_4xx_responses_total'],
             [500, 'http_5xx_responses_total'],
         ];
