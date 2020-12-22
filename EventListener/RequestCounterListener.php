@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
- * Class RequestCounterListener.
+ * Class RequestCounterListener is an event listener that calls the registered metric handlers.
  */
 class RequestCounterListener implements LoggerAwareInterface
 {

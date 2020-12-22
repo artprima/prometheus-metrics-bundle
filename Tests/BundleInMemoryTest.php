@@ -12,6 +12,13 @@ use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
  */
 class BundleInMemoryTest extends WebTestCase
 {
+    public function testBundle(): void
+    {
+        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml']);
+        $client->request('GET', '/metrics/prometheus');
+        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
+    }
+
     protected static function getKernelClass(): string
     {
         require_once __DIR__.'/Fixtures/App/AppKernel.php';
@@ -39,12 +46,5 @@ class BundleInMemoryTest extends WebTestCase
     private static function getVarDir(): string
     {
         return 'FB'.substr(strrchr(static::class, '\\'), 1);
-    }
-
-    public function testBundle(): void
-    {
-        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml']);
-        $client->request('GET', '/metrics/prometheus');
-        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
     }
 }

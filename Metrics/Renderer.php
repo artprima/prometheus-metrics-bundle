@@ -8,6 +8,9 @@ use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Renderer class provides a functionality to render the metrics for the given collector registry.
+ */
 class Renderer
 {
     /**

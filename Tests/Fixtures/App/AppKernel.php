@@ -67,11 +67,6 @@ class AppKernel extends Kernel
         $loader->load($this->rootConfig);
     }
 
-    protected function build(ContainerBuilder $container)
-    {
-        $container->register('logger', NullLogger::class);
-    }
-
     public function serialize()
     {
         return serialize([$this->varDir, $this->testCase, $this->rootConfig, $this->getEnvironment(), $this->isDebug()]);
@@ -86,6 +81,11 @@ class AppKernel extends Kernel
     public function getProjectDir()
     {
         return __DIR__;
+    }
+
+    protected function build(ContainerBuilder $container)
+    {
+        $container->register('logger', NullLogger::class);
     }
 
     protected function getKernelParameters()

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+    <arg name="basepath" value="."/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+
+    <rule ref="Symfony">
+        <exclude name="Symfony.Commenting.License.Warning" />
+        <exclude name="Symfony.Commenting.FunctionComment.Missing" />
+        <exclude name="Symfony.Commenting.FunctionComment.MissingParamTag" />
+        <exclude name="Symfony.Commenting.FunctionComment.MissingReturn" />
+        <exclude name="Symfony.Commenting.FunctionComment.ParamNameNoMatch" />
+        <exclude name="Zend.NamingConventions.ValidVariableName.MemberVarContainsNumbers" />
+        <exclude name="Symfony.Commenting.Annotations.Invalid" />
+    </rule>
+
+    <rule ref="Symfony.Commenting.ClassComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <file>Controller/</file>
+    <file>DependencyInjection/</file>
+    <file>EventListener/</file>
+    <file>Metrics/</file>
+    <file>Tests/</file>
+
+</ruleset>

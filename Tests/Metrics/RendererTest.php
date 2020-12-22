@@ -12,16 +12,23 @@ use Prometheus\MetricFamilySamples;
 
 class RendererTest extends TestCase
 {
+    private static $samples = [
+        'name' => 'name',
+        'type' => 'type',
+        'help' => 'help',
+        'labelNames' => [],
+        'samples' => [],
+    ];
+
     public function testRender(): void
     {
         $collectionRegistry = $this->createMock(CollectorRegistry::class);
-        $collectionRegistry->expects(self::once())->method('getMetricFamilySamples')->willReturn([new MetricFamilySamples([
-            'name' => 'name',
-            'type' => 'type',
-            'help' => 'help',
-            'labelNames' => [],
-            'samples' => [],
-        ])]);
+        $collectionRegistry
+            ->expects(self::once())
+            ->method('getMetricFamilySamples')
+            ->willReturn([
+                new MetricFamilySamples(self::$samples),
+            ]);
         $metrics = new AppMetrics();
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
@@ -32,13 +39,12 @@ class RendererTest extends TestCase
     public function testRenderResponse(): void
     {
         $collectionRegistry = $this->createMock(CollectorRegistry::class);
-        $collectionRegistry->expects(self::once())->method('getMetricFamilySamples')->willReturn([new MetricFamilySamples([
-            'name' => 'name',
-            'type' => 'type',
-            'help' => 'help',
-            'labelNames' => [],
-            'samples' => [],
-        ])]);
+        $collectionRegistry
+            ->expects(self::once())
+            ->method('getMetricFamilySamples')
+            ->willReturn([
+                new MetricFamilySamples(self::$samples),
+            ]);
         $metrics = new AppMetrics();
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
