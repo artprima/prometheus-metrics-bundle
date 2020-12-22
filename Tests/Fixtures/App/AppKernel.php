@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Artprima\PrometheusMetricsBundle\Fixtures\App;
 
 use Psr\Log\NullLogger;
@@ -72,7 +74,7 @@ class AppKernel extends Kernel
 
     public function serialize()
     {
-        return serialize(array($this->varDir, $this->testCase, $this->rootConfig, $this->getEnvironment(), $this->isDebug()));
+        return serialize([$this->varDir, $this->testCase, $this->rootConfig, $this->getEnvironment(), $this->isDebug()]);
     }
 
     public function unserialize($str)

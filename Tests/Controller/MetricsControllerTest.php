@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Artprima\PrometheusMetricsBundle\Controller;
 
 use Artprima\PrometheusMetricsBundle\Controller\MetricsController;
