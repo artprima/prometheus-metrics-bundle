@@ -33,8 +33,8 @@ function patch_composer_json(): void
         exit(-1);
     }
 
-    echo $data;
     echo getcwd();
+    echo $data;
 }
 
 patch_composer_json();
