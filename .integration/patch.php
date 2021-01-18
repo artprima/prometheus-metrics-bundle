@@ -17,7 +17,7 @@ function patch_composer_json(): void
     $json = json_decode($contents, true);
     $json['repositories'] = [[
         'type' => 'path',
-        'url' => '../',
+        'url' => realpath(__DIR__.'/../'),
     ]];
     $json['require']['artprima/prometheus-metrics-bundle'] = '*';
     $json['require-dev'] = (object)$json['require-dev'];
