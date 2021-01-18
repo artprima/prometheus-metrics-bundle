@@ -6,6 +6,7 @@ namespace Artprima\PrometheusMetricsBundle\Tests\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigurationTest extends TestCase
 {
@@ -82,9 +83,22 @@ class ConfigurationTest extends TestCase
         ];
     }
 
+    public function invalidConfigDataProvider(): array
+    {
+        return [
+            [
+                'invalid namespace (with dashes)',
+                [
+                    'namespace' => 'myapp-with-dash',
+                    'type' => 'in_memory',
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.namespace": Invalid namespace. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$',
+            ],
+        ];
+    }
+
     /**
      * @dataProvider configDataProvider
-     * @ doesNotPerformAssertions
      */
     public function testGetConfigTreeBuilder(string $description, array $config, array $expected)
     {
@@ -93,5 +107,21 @@ class ConfigurationTest extends TestCase
         $tree = $treeBuilder->buildTree();
         $result = $tree->finalize($config);
         self::assertEquals($expected, $result, $description);
+    }
+
+    /**
+     * @dataProvider invalidConfigDataProvider
+     */
+    public function testGetConfigTreeBuilder_InvalidConfig(string $description, array $config, string $exceptionMessage, int $exceptionCode = 0)
+    {
+        self::expectExceptionObject(new InvalidConfigurationException(
+            $exceptionMessage,
+            $exceptionCode
+        ));
+
+        $cfg = new Configuration();
+        $treeBuilder = $cfg->getConfigTreeBuilder();
+        $tree = $treeBuilder->buildTree();
+        $result = $tree->finalize($config);
     }
 }
