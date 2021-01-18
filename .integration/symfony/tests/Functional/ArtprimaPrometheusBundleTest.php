@@ -22,5 +22,25 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
             sprintf($expected, PHP_VERSION),
             trim($content)
         );
+        self::assertContains(
+            'symfony_http_2xx_responses_total{action="GET-app_dummy_homepage"} 1'.PHP_EOL,
+            $content
+        );
+        self::assertContains(
+            'symfony_http_2xx_responses_total{action="all"} 1'.PHP_EOL,
+            $content
+        );
+        self::assertContains(
+            'symfony_http_requests_total{action="GET-app_dummy_homepage"} 1'.PHP_EOL,
+            $content
+        );
+        self::assertContains(
+            'symfony_http_requests_total{action="all"} 1'.PHP_EOL,
+            $content
+        );
+        self::assertContains(
+            'symfony_instance_name{instance="dev"} 1'.PHP_EOL,
+            $content
+        );
     }
 }
