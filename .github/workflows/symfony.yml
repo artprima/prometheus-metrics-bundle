@@ -44,8 +44,9 @@ jobs:
       run: |
         php .integration/patch.php
         cd symfony
-        composer require phpunit -n --no-progress --optimize-autoloader
-        composer upgrade -n --no-progress --optimize-autoloader
+        composer require annotations -n --no-progress
+        composer require phpunit -n --no-progress
+        composer upgrade -n --no-progress
     - name: Run Integration tests
       run: |
         cp -rf .integration/symfony/* symfony/
