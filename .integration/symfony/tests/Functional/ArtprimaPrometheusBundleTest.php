@@ -10,7 +10,7 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/non-existent');
+        $client->request('GET', '/');
 
         $client->request('GET', '/metrics/prometheus');
         self::assertResponseIsSuccessful();
