@@ -112,7 +112,7 @@ class ConfigurationTest extends TestCase
     /**
      * @dataProvider invalidConfigDataProvider
      */
-    public function testGetConfigTreeBuilder_InvalidConfig(string $description, array $config, string $exceptionMessage, int $exceptionCode = 0)
+    public function testGetConfigTreeBuilderInvalidConfig(string $description, array $config, string $exceptionMessage, int $exceptionCode = 0)
     {
         self::expectExceptionObject(new InvalidConfigurationException(
             $exceptionMessage,

@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
                     ->validate()
                         // see: https://github.com/artprima/prometheus-metrics-bundle/issues/32
                         ->ifTrue(function ($s) {
-                            return preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $s) !== 1;
+                            return 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $s);
                         })
                         ->thenInvalid('Invalid namespace. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$')
                     ->end()
