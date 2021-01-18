@@ -32,6 +32,9 @@ function patch_composer_json(): void
     if ($result === false) {
         exit(-1);
     }
+
+    echo $data;
+    echo getcwd();
 }
 
 patch_composer_json();
