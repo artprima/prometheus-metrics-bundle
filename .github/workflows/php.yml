@@ -18,11 +18,17 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['7.2', '7.3', '7.4', '8.0']
+        php-versions: ['7.3', '7.4', '8.0']
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        # pulls all commits (needed for lerna / semantic release to correctly version)
+        fetch-depth: "0"
+
+    # pulls all tags (needed for lerna / semantic release to correctly version)
+    - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2

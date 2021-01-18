@@ -212,6 +212,31 @@ Then declare it this way:
             - { name: prometheus_metrics_bundle.metrics_generator }
 ```
 
+Default Metrics
+===============
+
+These are default metrics exported by the application:
+
+```
+# TYPE php_info gauge
+php_info{version="7.3.25-1+ubuntu18.04.1+deb.sury.org+1"} 1
+# HELP symfony_http_2xx_responses_total total 2xx response count
+# TYPE symfony_http_2xx_responses_total counter
+symfony_http_2xx_responses_total{action="GET-app_dummy_homepage"} 1
+symfony_http_2xx_responses_total{action="all"} 1
+# HELP symfony_http_requests_total total request count
+# TYPE symfony_http_requests_total counter
+symfony_http_requests_total{action="GET-app_dummy_homepage"} 1
+symfony_http_requests_total{action="all"} 1
+# HELP symfony_instance_name app instance name
+# TYPE symfony_instance_name gauge
+symfony_instance_name{instance="dev"} 1
+```
+
+Note that, php_info comes from the underlying library `promphp/prometheus_client_php`. Other metrics are gathered
+by the built-in class `Artprima\PrometheusMetricsBundle\Metrics`. Here, in the example we have a prefix `symfony`
+and the metrics show a single request to the root named `app_dummy_homepage`. Symfony instance is named `dev` here.
+Instance name comes from the server var `HOSTNAME` (`$request->server->get('HOSTNAME')`) and defaults to `dev`.
 
 Code license
 ============
