@@ -9,6 +9,7 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
     public function testSearchProductsActionSuccess()
     {
         $client = static::createClient();
+        $client->disableReboot();
 
         $client->request('GET', '/');
 
