@@ -31,7 +31,13 @@ class ResolveAdapterDefinitionPass implements CompilerPassInterface
         $definition->setAbstract(false);
         $definition->setClass($adapterClasses[$container->getParameter('prometheus_metrics_bundle.type')]);
         if ('redis' === $container->getParameter('prometheus_metrics_bundle.type')) {
-            $definition->setArguments([$container->getParameter('prometheus_metrics_bundle.redis')]);
+            $redisArguments = $container->getParameter('prometheus_metrics_bundle.redis');
+            $prefix = $redisArguments['prefix'] ?? null;
+            if (!empty($prefix)) {
+                $definition->addMethodCall('setPrefix', [$prefix]);
+                unset($redisArguments['prefix']);
+            }
+            $definition->setArguments([$redisArguments]);
         }
     }
 }

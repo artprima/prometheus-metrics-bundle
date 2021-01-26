@@ -65,6 +65,15 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('persistent_connections')->end()
                         ->scalarNode('password')->end()
                         ->integerNode('database')->end()
+                        ->scalarNode('prefix')
+                            ->cannotBeEmpty()
+                            ->validate()
+                                ->ifTrue(function ($s) {
+                                    return 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $s);
+                                })
+                                ->thenInvalid('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$')
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('ignored_routes')
