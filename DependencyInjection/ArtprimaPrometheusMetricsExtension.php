@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -23,6 +24,9 @@ class ArtprimaPrometheusMetricsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
+        $container->registerForAutoconfiguration(MetricsCollectorInterface::class)
+            ->addTag('prometheus_metrics_bundle.metrics_collector');
 
         $container->setParameter('prometheus_metrics_bundle.namespace', $config['namespace']);
         $container->setParameter('prometheus_metrics_bundle.type', $config['type']);

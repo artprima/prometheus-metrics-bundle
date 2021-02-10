@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\EventListener;
 
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -18,18 +18,18 @@ class RequestCounterListener implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * @var MetricsGeneratorRegistry
+     * @var MetricsCollectorRegistry
      */
-    private $metricsGenerators;
+    private $metricsCollectors;
 
     /**
      * @var array
      */
     private $ignoredRoutes;
 
-    public function __construct(MetricsGeneratorRegistry $metricsGenerators, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
+    public function __construct(MetricsCollectorRegistry $metricsCollectors, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
-        $this->metricsGenerators = $metricsGenerators;
+        $this->metricsCollectors = $metricsCollectors;
         $this->ignoredRoutes = $ignoredRoutes;
     }
 
@@ -39,14 +39,14 @@ class RequestCounterListener implements LoggerAwareInterface
             return;
         }
 
-        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             try {
-                $generator->collectStart($event);
+                $collector->collectStart($event);
             } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'request_collector', 'class' => get_class($generator)]
+                        ['from' => 'request_collector', 'class' => get_class($collector)]
                     );
                 }
             }
@@ -64,14 +64,14 @@ class RequestCounterListener implements LoggerAwareInterface
             return;
         }
 
-        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             try {
-                $generator->collectRequest($event);
+                $collector->collectRequest($event);
             } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'request_collector', 'class' => get_class($generator)]
+                        ['from' => 'request_collector', 'class' => get_class($collector)]
                     );
                 }
             }
@@ -85,14 +85,14 @@ class RequestCounterListener implements LoggerAwareInterface
             return;
         }
 
-        foreach ($this->metricsGenerators->getMetricsGenerators() as $generator) {
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             try {
-                $generator->collectResponse($event);
+                $collector->collectResponse($event);
             } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($generator)]
+                        ['from' => 'response_collector', 'class' => get_class($collector)]
                     );
                 }
             }

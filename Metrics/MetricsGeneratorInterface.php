@@ -4,22 +4,11 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
-use Prometheus\CollectorRegistry;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
-
 /**
- * Interface MetricsGeneratorInterface is a basic interface to be implemented by any metrics collector.
+ * MetricsGeneratorInterface is a deprecated basic interface that used to be implemented by any metrics collector.
  *
- * TODO: rename this interface to MetricsCollectorInterface
+ * @deprecated in 1.8, use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface
  */
-interface MetricsGeneratorInterface
+interface MetricsGeneratorInterface extends MetricsCollectorInterface
 {
-    public function init(string $namespace, CollectorRegistry $collectionRegistry): void;
-
-    public function collectStart(RequestEvent $event): void;
-
-    public function collectRequest(RequestEvent $event): void;
-
-    public function collectResponse(TerminateEvent $event): void;
 }

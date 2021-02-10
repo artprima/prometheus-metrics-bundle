@@ -105,10 +105,10 @@ app_metrics:
 
 Now your metrics are available to Prometheus using http://<yourapp_url>/metrics/prometheus.
 
-Custom Metrics Generator
+Custom Metrics Collector
 ========================
 
-If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface`. Something like this:
+If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`. Something like this:
 
 ```php
 <?php
@@ -117,15 +117,15 @@ declare(strict_types=1);
 
 namespace App\Metrics;
 
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Prometheus\CollectorRegistry;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
- * Class MyMetricsGenerator.
+ * Class MyMetricsCollector.
  */
-class MyMetricsGenerator implements MetricsGeneratorInterface
+class MyMetricsCollector implements MetricsCollectorInterface
 {
     /**
      * @var string
@@ -203,11 +203,13 @@ class MyMetricsGenerator implements MetricsGeneratorInterface
 }
 ```
 
-Then declare it this way:
+When using autoconfigure = true, by implementing `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`
+Symfony will automatically configure your metrics collector to be used by the collector registry.  
+
+If you don't use autoconfigure = true, then you will have to add this to your `services.yaml`:
 
 ```yaml
-    App\Metrics\MyMetricsGenerator:
-        # NB: do NOT add a call to `init()` as it will be done automatically by the relevant compiler pass.
+    App\Metrics\MyMetricsCollector:
         tags:
             - { name: prometheus_metrics_bundle.metrics_generator }
 ```

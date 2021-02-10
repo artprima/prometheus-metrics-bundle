@@ -20,6 +20,7 @@ class DummyController extends AbstractController
     {
         $response = new Response();
         $response->setContent('hello');
+
         return $response;
     }
 }
