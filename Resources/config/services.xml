@@ -33,7 +33,8 @@
     <service id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" class="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" public="false" autowire="false" autoconfigure="false">
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="false" autowire="false" autoconfigure="false">
+    <!-- MetricsController service is declared as public because controllers are required to be public -->
+    <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="true" autowire="false" autoconfigure="false">
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\Renderer"/>
     </service>
 </services>
