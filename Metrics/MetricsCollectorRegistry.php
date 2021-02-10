@@ -6,7 +6,7 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 /**
  * MetricsCollectorRegistry holds all registered metric collectors.
-*/
+ */
 final class MetricsCollectorRegistry
 {
     /**

@@ -19,9 +19,9 @@ use Symfony\Component\Stopwatch\Stopwatch;
  */
 class AppMetrics implements MetricsCollectorInterface
 {
-    private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
-
     use MetricsCollectorInitTrait;
+
+    private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
 
     /**
      * @var Stopwatch

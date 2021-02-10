@@ -26,5 +26,4 @@ trait MetricsCollectorInitTrait
         $this->namespace = $namespace;
         $this->collectionRegistry = $collectionRegistry;
     }
-
 }
