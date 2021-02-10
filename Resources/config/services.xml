@@ -12,28 +12,28 @@
         <argument type="service" id="prometheus_metrics_bundle.adapter" />
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" class="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" public="true" autowire="false" autoconfigure="false">
+    <service id="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" class="Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener" public="false" autowire="false" autoconfigure="false">
         <tag name="kernel.event_listener" event="kernel.request"/>
         <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestPre" priority="1024"/>
         <tag name="kernel.event_listener" event="kernel.terminate"/>
-        <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry"/>
+        <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry"/>
         <call method="setLogger">
             <argument type="service" id="logger" on-invalid="ignore"/>
         </call>
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\Metrics\Renderer" class="Artprima\PrometheusMetricsBundle\Metrics\Renderer" public="true" autowire="false" autoconfigure="false">
+    <service id="Artprima\PrometheusMetricsBundle\Metrics\Renderer" class="Artprima\PrometheusMetricsBundle\Metrics\Renderer" public="false" autowire="false" autoconfigure="false">
         <argument type="service" id="prometheus_metrics_bundle.collector_registry" />
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" class="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" public="true" autowire="false" autoconfigure="false">
-        <tag name="prometheus_metrics_bundle.metrics_generator"/>
+    <service id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" class="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" public="false" autowire="false" autoconfigure="false">
+        <tag name="prometheus_metrics_bundle.metrics_collector"/>
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry" class="Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry" public="true" autowire="false" autoconfigure="false">
+    <service id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" class="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" public="false" autowire="false" autoconfigure="false">
     </service>
 
-    <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="true" autowire="false" autoconfigure="false">
+    <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="false" autowire="false" autoconfigure="false">
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\Renderer"/>
     </service>
 </services>
