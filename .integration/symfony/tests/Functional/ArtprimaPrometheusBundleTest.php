@@ -42,5 +42,9 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
             'symfony_instance_name{instance="dev"} 1'.PHP_EOL,
             $content
         );
+        self::assertContains(
+            'symfony_app_version{version="1.2.3"} 1'.PHP_EOL,
+            $content
+        );
     }
 }

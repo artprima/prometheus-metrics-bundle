@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle\EventListener;
 
 use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorInterface;
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsGeneratorRegistry;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,14 +24,14 @@ class RequestCounterListenerTest extends TestCase
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectRequest')->with($evt);
-        $generator2 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator2->expects(self::once())->method('collectRequest')->with($evt);
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectRequest')->with($evt);
+        $collector2 = $this->createMock(MetricsCollectorInterface::class);
+        $collector2->expects(self::once())->method('collectRequest')->with($evt);
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
-        $registry->registerMetricsGenerator($generator2);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
 
         $listener = new RequestCounterListener($registry);
         $listener->onKernelRequest($evt);
@@ -44,14 +44,14 @@ class RequestCounterListenerTest extends TestCase
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::never())->method('collectRequest');
-        $generator2 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator2->expects(self::never())->method('collectRequest');
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::never())->method('collectRequest');
+        $collector2 = $this->createMock(MetricsCollectorInterface::class);
+        $collector2->expects(self::never())->method('collectRequest');
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
-        $registry->registerMetricsGenerator($generator2);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
 
         $listener = new RequestCounterListener($registry, ['test_route']);
         $listener->onKernelRequest($evt);
@@ -64,14 +64,14 @@ class RequestCounterListenerTest extends TestCase
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(false);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::never())->method('collectRequest');
-        $generator2 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator2->expects(self::never())->method('collectRequest');
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::never())->method('collectRequest');
+        $collector2 = $this->createMock(MetricsCollectorInterface::class);
+        $collector2->expects(self::never())->method('collectRequest');
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
-        $registry->registerMetricsGenerator($generator2);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
 
         $listener = new RequestCounterListener($registry);
         $listener->onKernelRequest($evt);
@@ -84,11 +84,11 @@ class RequestCounterListenerTest extends TestCase
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
 
         $listener = new RequestCounterListener($registry);
         $logger = new BufferingLogger();
@@ -107,11 +107,11 @@ class RequestCounterListenerTest extends TestCase
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
 
         $listener = new RequestCounterListener($registry);
         $listener->onKernelRequest($evt);
@@ -124,14 +124,14 @@ class RequestCounterListenerTest extends TestCase
         $response = new Response('', 500);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectResponse')->with($evt);
-        $generator2 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator2->expects(self::once())->method('collectResponse')->with($evt);
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectResponse')->with($evt);
+        $collector2 = $this->createMock(MetricsCollectorInterface::class);
+        $collector2->expects(self::once())->method('collectResponse')->with($evt);
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
-        $registry->registerMetricsGenerator($generator2);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
 
         $listener = new RequestCounterListener($registry);
         $listener->onKernelTerminate($evt);
@@ -144,11 +144,11 @@ class RequestCounterListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
 
         $listener = new RequestCounterListener($registry);
         $logger = new BufferingLogger();
@@ -167,11 +167,11 @@ class RequestCounterListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $generator1 = $this->createMock(MetricsGeneratorInterface::class);
-        $generator1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
+        $collector1 = $this->createMock(MetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
-        $registry = new MetricsGeneratorRegistry();
-        $registry->registerMetricsGenerator($generator1);
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
 
         $listener = new RequestCounterListener($registry);
         $listener->onKernelTerminate($evt);
