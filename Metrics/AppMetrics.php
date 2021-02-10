@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
-use Prometheus\CollectorRegistry;
 use Prometheus\Exception\MetricNotFoundException;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
@@ -22,26 +21,12 @@ class AppMetrics implements MetricsCollectorInterface
 {
     private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
 
+    use MetricsCollectorInitTrait;
+
     /**
      * @var Stopwatch
      */
     private $stopwatch;
-
-    /**
-     * @var string
-     */
-    private $namespace;
-
-    /**
-     * @var CollectorRegistry
-     */
-    private $collectionRegistry;
-
-    public function init(string $namespace, CollectorRegistry $collectionRegistry): void
-    {
-        $this->namespace = $namespace;
-        $this->collectionRegistry = $collectionRegistry;
-    }
 
     public function collectRequest(RequestEvent $event): void
     {
