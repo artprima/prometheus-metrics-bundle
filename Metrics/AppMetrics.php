@@ -50,15 +50,16 @@ class AppMetrics implements MetricsCollectorInterface
 
         $requestMethod = $request->getMethod();
         $requestRoute = $request->attributes->get('_route');
+        $statusCode = $response->getStatusCode();
 
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            $this->incResponsesTotal('2xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
-            $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-            $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 500) {
-            $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
+        if ($statusCode >= 200 && $statusCode < 300) {
+            $this->incResponsesTotal('2xx', $requestMethod, $requestRoute, $statusCode);
+        } elseif ($statusCode >= 300 && $statusCode < 400) {
+            $this->incResponsesTotal('3xx', $requestMethod, $requestRoute, $statusCode);
+        } elseif ($statusCode >= 400 && $statusCode < 500) {
+            $this->incResponsesTotal('4xx', $requestMethod, $requestRoute, $statusCode);
+        } elseif ($statusCode >= 500) {
+            $this->incResponsesTotal('5xx', $requestMethod, $requestRoute, $statusCode);
         }
 
         if ($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
@@ -117,18 +118,18 @@ class AppMetrics implements MetricsCollectorInterface
         }
     }
 
-    private function incResponsesTotal(string $type, ?string $method = null, ?string $route = null): void
+    private function incResponsesTotal(string $type, ?string $method = null, ?string $route = null, ?int $status = null): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
             sprintf('http_%s_responses_total', $type),
             sprintf('total %s response count', $type),
-            ['action']
+            ['action', 'status']
         );
         $counter->inc(['all']);
 
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        if (null !== $method && null !== $route && null !== $status) {
+            $counter->inc([sprintf('%s-%s', $method, $route), $status]);
         }
     }
 
