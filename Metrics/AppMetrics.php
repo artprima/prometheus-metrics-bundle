@@ -126,7 +126,7 @@ class AppMetrics implements MetricsCollectorInterface
             sprintf('total %s response count', $type),
             ['action', 'status']
         );
-        $counter->inc(['all']);
+        $counter->inc(['all', 'all']);
 
         if (null !== $method && null !== $route && null !== $status) {
             $counter->inc([sprintf('%s-%s', $method, $route), $status]);
