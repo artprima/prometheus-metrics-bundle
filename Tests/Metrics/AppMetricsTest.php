@@ -100,7 +100,7 @@ class AppMetricsTest extends TestCase
         $responseContent = $response->getContent();
 
         self::assertStringContainsString("dummy_{$metricsName}{action=\"all\",status=\"$code\"} 1\n", $responseContent);
-        self::assertStringContainsString("dummy_{$metricsName}{action=\"GET-test_route\",status=\"$code\"} 1\n", $responseContent);
+        self::assertStringContainsString("dummy_{$metricsName}{action=\"GET-test_route\",status=\"all\"} 1\n", $responseContent);
     }
 
     public function testSetRequestDuration(): void

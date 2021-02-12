@@ -27,7 +27,7 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
             $content
         );
         self::assertContains(
-            'symfony_http_2xx_responses_total{action="all",status="200"} 1'.PHP_EOL,
+            'symfony_http_2xx_responses_total{action="all",status="all"} 1'.PHP_EOL,
             $content
         );
         self::assertContains(
