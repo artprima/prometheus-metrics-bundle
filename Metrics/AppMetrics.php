@@ -17,7 +17,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * - responses (per method, route and response type)
  * - request duration histogram (per method and route)
  */
-class AppMetrics implements MetricsCollectorInterface
+class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsCollectorInterface, TerminateMetricsCollectorInterface
 {
     use MetricsCollectorInitTrait;
 

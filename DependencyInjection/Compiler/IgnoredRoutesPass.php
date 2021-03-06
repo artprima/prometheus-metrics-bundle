@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler;
 
-use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
+use Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -15,11 +15,11 @@ class IgnoredRoutesPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->hasDefinition(RequestCounterListener::class)) {
+        if (!$container->hasDefinition(MetricsCollectorListener::class)) {
             return;
         }
 
         $ignoredRoutes = $container->getParameter('prometheus_metrics_bundle.ignored_routes');
-        $container->getDefinition(RequestCounterListener::class)->addArgument($ignoredRoutes);
+        $container->getDefinition(MetricsCollectorListener::class)->addArgument($ignoredRoutes);
     }
 }

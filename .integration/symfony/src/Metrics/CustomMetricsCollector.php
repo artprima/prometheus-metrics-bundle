@@ -4,28 +4,33 @@ declare(strict_types=1);
 
 namespace App\Metrics;
 
+use Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInitTrait;
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
 use Prometheus\Exception\MetricNotFoundException;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 // this class should be autoconfigured because of MetricsCollectorInterface
-class CustomMetricsCollector implements MetricsCollectorInterface
+class CustomMetricsCollector implements RequestMetricsCollectorInterface, ExceptionMetricsCollectorInterface
 {
     use MetricsCollectorInitTrait;
-
-    public function collectStart(RequestEvent $event): void
-    {
-    }
 
     public function collectRequest(RequestEvent $event): void
     {
         $this->setAppVersion('1.2.3');
     }
 
-    public function collectResponse(TerminateEvent $event): void
+    public function collectException(ExceptionEvent $event): void
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $counter = $this->collectionRegistry->getOrRegisterCounter(
+            $this->namespace,
+            'exception',
+            'app exception',
+            ['class']
+        );
+        $counter->inc([get_class($event->getThrowable())]);
     }
 
     private function setAppVersion(string $value): void
