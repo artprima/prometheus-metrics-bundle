@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Artprima\PrometheusMetricsBundle\EventListener;
 
-use Artprima\PrometheusMetricsBundle\EventListener\RequestCounterListener;
+use Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class RequestCounterListenerTest extends TestCase
+class MetricsCollectorListenerTest extends TestCase
 {
     public function testOnKernelRequest(): void
     {
@@ -33,7 +33,7 @@ class RequestCounterListenerTest extends TestCase
         $registry->registerMetricsCollector($collector1);
         $registry->registerMetricsCollector($collector2);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $listener->onKernelRequest($evt);
     }
 
@@ -53,7 +53,7 @@ class RequestCounterListenerTest extends TestCase
         $registry->registerMetricsCollector($collector1);
         $registry->registerMetricsCollector($collector2);
 
-        $listener = new RequestCounterListener($registry, ['test_route']);
+        $listener = new MetricsCollectorListener($registry, ['test_route']);
         $listener->onKernelRequest($evt);
     }
 
@@ -73,7 +73,7 @@ class RequestCounterListenerTest extends TestCase
         $registry->registerMetricsCollector($collector1);
         $registry->registerMetricsCollector($collector2);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $listener->onKernelRequest($evt);
     }
 
@@ -90,7 +90,7 @@ class RequestCounterListenerTest extends TestCase
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $logger = new BufferingLogger();
         $listener->setLogger($logger);
         $listener->onKernelRequest($evt);
@@ -113,7 +113,7 @@ class RequestCounterListenerTest extends TestCase
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $listener->onKernelRequest($evt);
     }
 
@@ -133,7 +133,7 @@ class RequestCounterListenerTest extends TestCase
         $registry->registerMetricsCollector($collector1);
         $registry->registerMetricsCollector($collector2);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $listener->onKernelTerminate($evt);
     }
 
@@ -150,7 +150,7 @@ class RequestCounterListenerTest extends TestCase
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $logger = new BufferingLogger();
         $listener->setLogger($logger);
         $listener->onKernelTerminate($evt);
@@ -173,7 +173,7 @@ class RequestCounterListenerTest extends TestCase
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
 
-        $listener = new RequestCounterListener($registry);
+        $listener = new MetricsCollectorListener($registry);
         $listener->onKernelTerminate($evt);
     }
 }
