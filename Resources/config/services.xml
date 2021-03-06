@@ -15,6 +15,7 @@
     <service id="Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener" class="Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener" public="false" autowire="false" autoconfigure="false">
         <tag name="kernel.event_listener" event="kernel.request"/>
         <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestPre" priority="1024"/>
+        <tag name="kernel.event_listener" event="kernel.exception" method="onKernelExceptionPre" />
         <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="1024"/>
         <tag name="kernel.event_listener" event="kernel.terminate"/>
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry"/>

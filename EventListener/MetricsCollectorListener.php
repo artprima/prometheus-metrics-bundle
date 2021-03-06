@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\EventListener;
 
 use Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
+use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -42,6 +47,10 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectStart', PreRequestMetricsCollectorInterface::class)) {
+                continue;
+            }
+
             try {
                 $collector->collectStart($event);
             } catch (\Exception $e) {
@@ -67,6 +76,10 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectRequest', RequestMetricsCollectorInterface::class)) {
+                continue;
+            }
+
             try {
                 $collector->collectRequest($event);
             } catch (\Exception $e) {
@@ -74,6 +87,31 @@ class MetricsCollectorListener implements LoggerAwareInterface
                     $this->logger->error(
                         $e->getMessage(),
                         ['from' => 'request_collector', 'class' => get_class($collector)]
+                    );
+                }
+            }
+        }
+    }
+
+    public function onKernelExceptionPre(ExceptionEvent $event): void
+    {
+        $requestRoute = $event->getRequest()->attributes->get('_route');
+        if (in_array($requestRoute, $this->ignoredRoutes, true)) {
+            return;
+        }
+
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectPreException', PreExceptionMetricsCollectorInterface::class)) {
+                continue;
+            }
+
+            try {
+                $collector->collectPreException($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'response_collector', 'class' => get_class($collector)]
                     );
                 }
             }
@@ -88,7 +126,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
-            if (!$collector instanceof ExceptionMetricsCollectorInterface) {
+            if (!self::isSupportedEvent($collector, 'collectException', ExceptionMetricsCollectorInterface::class)) {
                 continue;
             }
 
@@ -113,6 +151,10 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectResponse', TerminateMetricsCollectorInterface::class)) {
+                continue;
+            }
+
             try {
                 $collector->collectResponse($event);
             } catch (\Exception $e) {
@@ -124,5 +166,27 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 }
             }
         }
+    }
+
+    private static function isSupportedEvent(MetricsCollectorInterface $collector, string $method, string $interface): bool
+    {
+        if (is_subclass_of($collector, $interface)) {
+            // supported
+            return true;
+        }
+
+        if (!is_callable([$collector, $method])) {
+            // not supported
+            return false;
+        }
+
+        @trigger_error(sprintf(
+            'Metrics Collector has a public method %s but doesn\'t implement %s.',
+            $method,
+            $interface
+        ), E_USER_DEPRECATED);
+
+        // supported, but deprecated
+        return true;
     }
 }

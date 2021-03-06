@@ -7,10 +7,9 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
- * ExceptionMetricsCollectorInterface is an extention to the base MetricsCollectorInterface,
- * which allows you to collect metrics when an exception occurs in your code.
+ * ExceptionMetricsCollectorInterface lets collecting metrics on "kernel.exception" event.
  */
-interface ExceptionMetricsCollectorInterface extends MetricsCollectorInterface
+interface ExceptionMetricsCollectorInterface
 {
     public function collectException(ExceptionEvent $event): void;
 }
