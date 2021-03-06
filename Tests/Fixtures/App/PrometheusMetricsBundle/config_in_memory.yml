@@ -14,3 +14,4 @@ artprima_prometheus_metrics:
     type: in_memory
     # this will remove "prometheus_bundle_prometheus" from the ignored routes
     ignored_routes: []
+    disable_default_metrics: false
