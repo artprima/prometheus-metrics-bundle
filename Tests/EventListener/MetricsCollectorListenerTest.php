@@ -7,6 +7,7 @@ namespace Tests\Artprima\PrometheusMetricsBundle\EventListener;
 use Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -124,9 +125,9 @@ class MetricsCollectorListenerTest extends TestCase
         $response = new Response('', 500);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->with($evt);
-        $collector2 = $this->createMock(RequestMetricsCollectorInterface::class);
+        $collector2 = $this->createMock(TerminateMetricsCollectorInterface::class);
         $collector2->expects(self::once())->method('collectResponse')->with($evt);
 
         $registry = new MetricsCollectorRegistry();
@@ -144,7 +145,7 @@ class MetricsCollectorListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
@@ -167,7 +168,7 @@ class MetricsCollectorListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $evt = new TerminateEvent($kernel, $request, $response);
 
-        $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
