@@ -34,6 +34,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
             $container->setParameter('prometheus_metrics_bundle.redis', $config['redis']);
         }
         $container->setParameter('prometheus_metrics_bundle.ignored_routes', $config['ignored_routes']);
+        $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');

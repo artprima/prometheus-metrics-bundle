@@ -80,6 +80,9 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->end()
                     ->defaultValue(['prometheus_bundle_prometheus'])
                 ->end()
+                ->booleanNode('disable_default_metrics')
+                    ->defaultValue(false)
+                ->end()
             ->end();
 
         // Here you should define the parameters that are allowed to
