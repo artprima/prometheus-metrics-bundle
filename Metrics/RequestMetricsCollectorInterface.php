@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 /**
  * RequestMetricsCollectorInterface lets collecting metrics on "kernel.request" event.
  */
-interface RequestMetricsCollectorInterface
+interface RequestMetricsCollectorInterface extends MetricsCollectorInterface
 {
     public function collectRequest(RequestEvent $event): void;
 }
