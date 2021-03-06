@@ -23,4 +23,12 @@ class DummyController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * @Route("/exception")
+     */
+    public function exception()
+    {
+        throw new \RuntimeException('something went wrong');
+    }
 }
