@@ -108,7 +108,8 @@ Now your metrics are available to Prometheus using http://<yourapp_url>/metrics/
 Custom Metrics Collector
 ========================
 
-If you want to collect your own metrics, you should create a class that will implement `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`. Something like this:
+If you want to collect your own metrics, you should create a class that will implement one or several interfaces that are
+the children of the `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`.
 
 ```php
 <?php
@@ -117,7 +118,8 @@ declare(strict_types=1);
 
 namespace App\Metrics;
 
-use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use Prometheus\CollectorRegistry;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
@@ -125,7 +127,7 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 /**
  * Class MyMetricsCollector.
  */
-class MyMetricsCollector implements MetricsCollectorInterface
+class MyMetricsCollector implements RequestMetricsCollectorInterface, TerminateMetricsCollectorInterface
 {
     /**
      * @var string
@@ -204,7 +206,24 @@ class MyMetricsCollector implements MetricsCollectorInterface
 ```
 
 When using autoconfigure = true, by implementing `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`
-Symfony will automatically configure your metrics collector to be used by the collector registry.  
+Symfony will automatically configure your metrics collector to be used by the collector registry.
+
+Please note that `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface` is a base interface since version 1.9.0.
+Which itself should not be implemented directly. Instead, your class should implement one or more child interfaces:
+
+- `Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface`
+  - collect metrics on "kernel.request" event with a priority of 1024.
+- `Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface`
+  - collect metrics on "kernel.request" event (default priority).
+- `Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface`
+  - collect metrics on "kernel.exception" event with a priority of 1024.
+- `Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface`
+  - collect metrics on "kernel.exception" event with (default priority).
+- `Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface`
+  - collect metrics on "kernel.terminate" event.
+
+The old behavior (where `MetricsCollectorInterface` was a direct interface to implement), is still preserved, but will
+be removed in future releases of the bundle.
 
 If you don't use autoconfigure = true, then you will have to add this to your `services.yaml`:
 

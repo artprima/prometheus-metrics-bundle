@@ -22,6 +22,8 @@ class RegisterMetricsCollectorPass implements CompilerPassInterface
             return;
         }
 
+        $disableDefaultMetrics = $container->getParameter('prometheus_metrics_bundle.disable_default_metrics');
+
         $definition = $container->getDefinition(MetricsCollectorRegistry::class);
 
         foreach ($container->findTaggedServiceIds('prometheus_metrics_bundle.metrics_generator') as $id => $tags) {
@@ -41,6 +43,12 @@ class RegisterMetricsCollectorPass implements CompilerPassInterface
 
         foreach ($container->findTaggedServiceIds('prometheus_metrics_bundle.metrics_collector') as $id => $tags) {
             $collector = $container->getDefinition($id);
+
+            if ($disableDefaultMetrics && $collector->hasTag('prometheus_metrics_bundle.default_metrics')) {
+                // don't register default metrics, if it's disabled in the configuration.
+                continue;
+            }
+
             $collector->addMethodCall('init', [
                 $container->getParameter('prometheus_metrics_bundle.namespace'),
                 new Reference('prometheus_metrics_bundle.collector_registry'),

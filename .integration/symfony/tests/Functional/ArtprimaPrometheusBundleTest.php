@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ArtprimaPrometheusBundleTest extends WebTestCase
 {
-    public function testSearchProductsActionSuccess()
+    public function testHomepageMetrics()
     {
         $client = static::createClient();
         $client->disableReboot();
@@ -44,6 +44,23 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
         );
         self::assertContains(
             'symfony_app_version{version="1.2.3"} 1'.PHP_EOL,
+            $content
+        );
+    }
+
+    public function testExceptionMetrics()
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        $client->request('GET', '/exception');
+
+        $client->request('GET', '/metrics/prometheus');
+        self::assertResponseIsSuccessful();
+        $content = $client->getResponse()->getContent();
+        echo $content;
+        self::assertContains(
+            'symfony_exception{class="RuntimeException"} 1'.PHP_EOL,
             $content
         );
     }

@@ -23,6 +23,7 @@ class ConfigurationTest extends TestCase
                     'namespace' => 'myapp',
                     'type' => 'in_memory',
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
                 ],
             ],
             [
@@ -38,6 +39,7 @@ class ConfigurationTest extends TestCase
                         'persistent_connections' => false,
                         'password' => null,
                     ],
+                    'disable_default_metrics' => false,
                 ],
                 [
                     'namespace' => 'myapp',
@@ -51,6 +53,7 @@ class ConfigurationTest extends TestCase
                         'persistent_connections' => false,
                         'password' => null,
                     ],
+                    'disable_default_metrics' => false,
                 ],
             ],
             [
@@ -65,6 +68,7 @@ class ConfigurationTest extends TestCase
                         'persistent_connections' => false,
                         'password' => null,
                     ],
+                    'disable_default_metrics' => false,
                 ],
                 [
                     'namespace' => 'myapp',
@@ -78,6 +82,7 @@ class ConfigurationTest extends TestCase
                         'persistent_connections' => false,
                         'password' => null,
                     ],
+                    'disable_default_metrics' => false,
                 ],
             ],
         ];
