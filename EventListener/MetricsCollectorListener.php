@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\EventListener;
 
+use Artprima\PrometheusMetricsBundle\Metrics\ConsoleErrorMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\ConsoleTerminateMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
@@ -157,6 +159,46 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectResponse($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                    );
+                }
+            }
+        }
+    }
+
+    public function onConsoleTerminate($event)
+    {
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectConsole', ConsoleTerminateMetricsCollectorInterface::class)) {
+                continue;
+            }
+
+            try {
+                $collector->collectConsole($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                    );
+                }
+            }
+        }
+    }
+
+    public function onConsoleError($event)
+    {
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!self::isSupportedEvent($collector, 'collectConsoleError', ConsoleErrorMetricsCollectorInterface::class)) {
+                continue;
+            }
+
+            try {
+                $collector->collectConsoleError($event);
             } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
