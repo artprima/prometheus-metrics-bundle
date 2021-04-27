@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle\EventListener;
 
 use Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener;
+use Artprima\PrometheusMetricsBundle\Metrics\ConsoleCommandMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ConsoleErrorMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ConsoleTerminateMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface;
@@ -15,6 +16,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Input\InputInterface;
@@ -232,6 +234,27 @@ class MetricsCollectorListenerTest extends TestCase
         $listener->onKernelExceptionPre($evt);
     }
 
+    public function testOnConsoleCommand(): void
+    {
+        $evt = new ConsoleCommandEvent(
+            $this->createMock(Command::class),
+            $this->createMock(InputInterface::class),
+            $this->createMock(OutputInterface::class)
+        );
+
+        $collector1 = $this->createMock(ConsoleCommandMetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectConsoleCommand')->with($evt);
+        $collector2 = $this->createMock(ConsoleCommandMetricsCollectorInterface::class);
+        $collector2->expects(self::once())->method('collectConsoleCommand')->with($evt);
+
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
+
+        $listener = new MetricsCollectorListener($registry);
+        $listener->onConsoleCommand($evt);
+    }
+
     public function testOnConsoleTerminate(): void
     {
         $evt = new ConsoleTerminateEvent(
@@ -242,9 +265,9 @@ class MetricsCollectorListenerTest extends TestCase
         );
 
         $collector1 = $this->createMock(ConsoleTerminateMetricsCollectorInterface::class);
-        $collector1->expects(self::once())->method('collectConsole')->with($evt);
+        $collector1->expects(self::once())->method('collectConsoleTerminate')->with($evt);
         $collector2 = $this->createMock(ConsoleTerminateMetricsCollectorInterface::class);
-        $collector2->expects(self::once())->method('collectConsole')->with($evt);
+        $collector2->expects(self::once())->method('collectConsoleTerminate')->with($evt);
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);

@@ -221,6 +221,12 @@ Which itself should not be implemented directly. Instead, your class should impl
   - collect metrics on "kernel.exception" event with (default priority).
 - `Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface`
   - collect metrics on "kernel.terminate" event.
+- `Artprima\PrometheusMetricsBundle\Metrics\ConsoleCommandMetricsCollectorInterface`
+  - collect metrics on "console.command" event.
+- `Artprima\PrometheusMetricsBundle\Metrics\ConsoleTerminateMetricsCollectorInterface`
+  - collect metrics on "console.terminate" event.
+- `Artprima\PrometheusMetricsBundle\Metrics\ConsoleErrorMetricsCollectorInterface`
+  - collect metrics on "console.error" event.
 
 The old behavior (where `MetricsCollectorInterface` was a direct interface to implement), is still preserved, but will
 be removed in future releases of the bundle.
