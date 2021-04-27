@@ -11,5 +11,5 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
  */
 interface ConsoleTerminateMetricsCollectorInterface extends MetricsCollectorInterface
 {
-    public function collectConsole(ConsoleTerminateEvent $event): void;
+    public function collectConsoleTerminate(ConsoleTerminateEvent $event): void;
 }
