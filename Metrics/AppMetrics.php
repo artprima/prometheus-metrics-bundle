@@ -7,7 +7,6 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 use Prometheus\Exception\MetricNotFoundException;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Class AppMetrics is an implementation of basic metrics collector that is turned on by default.
@@ -21,12 +20,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 {
     use MetricsCollectorInitTrait;
 
-    private const STOPWATCH_CLASS = '\Symfony\Component\Stopwatch\Stopwatch';
-
-    /**
-     * @var Stopwatch
-     */
-    private $stopwatch;
+    private $startedAt;
 
     public function collectRequest(RequestEvent $event): void
     {
@@ -61,12 +55,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
         }
 
-        if ($this->stopwatch && $this->stopwatch->isStarted('execution_time')) {
-            $evt = $this->stopwatch->stop('execution_time');
-            if (null !== $evt) {
-                $this->setRequestDuration($evt->getDuration() / 1000, $requestMethod, $requestRoute);
-            }
-        }
+        $this->setRequestDuration(microtime(true) - $this->startedAt, $requestMethod, $requestRoute);
     }
 
     public function collectStart(RequestEvent $event): void
@@ -76,11 +65,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             return;
         }
 
-        if (class_exists(self::STOPWATCH_CLASS)) {
-            $className = self::STOPWATCH_CLASS;
-            $this->stopwatch = new $className();
-            $this->stopwatch->start('execution_time');
-        }
+        $this->startedAt = microtime(true);
     }
 
     private function setInstance(string $value): void
