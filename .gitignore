@@ -7,3 +7,5 @@ coverage
 
 /.phpcs-cache
 /phpcs.xml
+
+/.phpunit.result.cache

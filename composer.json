@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": "^7.2|^8.0",
+    "php": "^7.3|^8.0",
     "ext-json": "*",
     "promphp/prometheus_client_php": "^2.2",
     "symfony/http-kernel": "^4.4|^5.1.5",
@@ -19,7 +19,6 @@
     "symfony/config": "^4.4|^5.1.5"
   },
   "require-dev": {
-    "symfony/stopwatch": "^4.4|^5.0",
     "phpunit/phpunit": "^8.0|^9.0",
     "symfony/yaml": "^4.4|^5.0",
     "symfony/browser-kit": "^4.4|^5.0",

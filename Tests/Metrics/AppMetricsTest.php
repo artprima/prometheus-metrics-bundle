@@ -103,8 +103,13 @@ class AppMetricsTest extends TestCase
         self::assertStringContainsString("dummy_{$metricsName}{action=\"GET-test_route\"} 1\n", $responseContent);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSetRequestDuration(): void
     {
+        self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
+
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
 
@@ -121,11 +126,55 @@ class AppMetricsTest extends TestCase
         $metrics->collectResponse($evt);
         $response = $this->renderer->renderResponse();
         $content = $response->getContent();
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET-test_route",le=', $content);
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET-test_route"}', $content);
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="GET-test_route"}', $content);
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le=', $content);
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="all"}', $content);
-        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="all"}', $content);
+        self::assertStringContainsString(
+            <<<'PHPEOL'
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.005"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.01"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.025"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.05"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.075"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.1"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.25"} 0
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.5"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="0.75"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="1"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="2.5"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="5"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="7.5"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="10"} 1
+            dummy_request_durations_histogram_seconds_bucket{action="all",le="+Inf"} 1
+            dummy_request_durations_histogram_seconds_count{action="all"} 1
+            dummy_request_durations_histogram_seconds_sum{action="all"} 0.5
+            PHPEOL,
+            $content
+        );
+    }
+
+    public static function microtime($asFloat = false)
+    {
+        static $sequence = -1;
+        ++$sequence;
+        if (0 === $sequence % 2) {
+            return 0; // start time
+        }
+
+        return 0.5; // stop time
+    }
+
+    private static function registerMicrotimeMock($ns)
+    {
+        $self = \get_called_class();
+
+        if (\function_exists($ns.'\microtime')) {
+            return;
+        }
+        eval(<<<EOPHP
+namespace $ns;
+
+function microtime(\$asFloat = false)
+{
+    return \\$self::microtime(\$asFloat);
+}
+EOPHP);
     }
 }

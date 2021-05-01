@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use Prometheus\Storage\Adapter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ArtprimaPrometheusBundleTest extends WebTestCase
@@ -60,6 +61,42 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
         $content = $client->getResponse()->getContent();
         echo $content;
         self::assertContains(
+            'symfony_exception{class="RuntimeException"} 1'.PHP_EOL,
+            $content
+        );
+    }
+
+    public function testWipeStorage()
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        /** @var Adapter $adapter */
+        $adapter = self::$container->get('prometheus_metrics_bundle.adapter');
+        self::assertTrue($adapter instanceof Adapter);
+
+        // generate some metrics
+        $client->request('GET', '/exception');
+
+        // check metrics exist
+        $client->request('GET', '/metrics/prometheus');
+        self::assertResponseIsSuccessful();
+        $content = $client->getResponse()->getContent();
+        echo $content;
+        self::assertContains(
+            'symfony_exception{class="RuntimeException"} 1'.PHP_EOL,
+            $content
+        );
+
+        // wipe storage
+        $adapter->wipeStorage();
+
+        // check no metrics exist
+        $client->request('GET', '/metrics/prometheus');
+        self::assertResponseIsSuccessful();
+        $content = $client->getResponse()->getContent();
+        echo $content;
+        self::assertNotContains(
             'symfony_exception{class="RuntimeException"} 1'.PHP_EOL,
             $content
         );
