@@ -83,6 +83,9 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('disable_default_metrics')
                     ->defaultValue(false)
                 ->end()
+                ->booleanNode('enable_console_metrics')
+                    ->defaultValue(false)
+                ->end()
             ->end();
 
         // Here you should define the parameters that are allowed to

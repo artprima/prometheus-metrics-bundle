@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler;
 
+use Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -54,6 +55,23 @@ class RegisterMetricsCollectorPass implements CompilerPassInterface
                 new Reference('prometheus_metrics_bundle.collector_registry'),
             ]);
             $definition->addMethodCall('registerMetricsCollector', [new Reference($id)]);
+        }
+
+        $consoleMetricsEnabled = $container->getParameter('prometheus_metrics_bundle.enable_console_metrics');
+        if ($consoleMetricsEnabled) {
+            $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
+            $listenerDefinition->addTag('kernel.event_listener', [
+                'event' => 'console.command',
+                'method' => 'onConsoleCommand',
+            ]);
+            $listenerDefinition->addTag('kernel.event_listener', [
+                'event' => 'console.terminate',
+                'method' => 'onConsoleTerminate',
+            ]);
+            $listenerDefinition->addTag('kernel.event_listener', [
+                'event' => 'console.error',
+                'method' => 'onConsoleError',
+            ]);
         }
     }
 }
