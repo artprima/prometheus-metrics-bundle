@@ -85,6 +85,12 @@ artprima_prometheus_metrics:
         read_timeout: 10
         persistent_connections: false
         password: ~
+
+    # used to disable default application metrics
+    disable_default_metrics: false
+
+    # used to enable console metrics
+    enable_console_metrics: false
 ```
 
 `routes.yaml`
@@ -208,8 +214,8 @@ class MyMetricsCollector implements RequestMetricsCollectorInterface, TerminateM
 When using autoconfigure = true, by implementing `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface`
 Symfony will automatically configure your metrics collector to be used by the collector registry.
 
-Please note that `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface` is a base interface since version 1.9.0.
-Which itself should not be implemented directly. Instead, your class should implement one or more child interfaces:
+Please note that `Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface` is a base interface since version 1.9.0,
+which itself should not be implemented directly. Instead, your class should implement one or more child interfaces:
 
 - `Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface`
   - collect metrics on "kernel.request" event with a priority of 1024.
@@ -221,6 +227,9 @@ Which itself should not be implemented directly. Instead, your class should impl
   - collect metrics on "kernel.exception" event with (default priority).
 - `Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface`
   - collect metrics on "kernel.terminate" event.
+  
+The following collectors will only work if you define `enable_console_metrics: true` in the bundle configuration:
+
 - `Artprima\PrometheusMetricsBundle\Metrics\ConsoleCommandMetricsCollectorInterface`
   - collect metrics on "console.command" event.
 - `Artprima\PrometheusMetricsBundle\Metrics\ConsoleTerminateMetricsCollectorInterface`
