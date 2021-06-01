@@ -38,6 +38,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
+        $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectRequest')->with($evt);
@@ -58,6 +59,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
+        $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
         $collector1->expects(self::never())->method('collectRequest');
@@ -78,6 +80,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(false);
+        $evt->method('isMainRequest')->willReturn(false);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
         $collector1->expects(self::never())->method('collectRequest');
@@ -98,6 +101,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
+        $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectRequest')->willThrowException(new Exception('test exception'));
@@ -121,6 +125,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
         $evt->method('isMasterRequest')->willReturn(true);
+        $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectRequest')->willThrowException(new Exception('test exception'));
