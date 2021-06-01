@@ -50,6 +50,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
     public function onKernelRequestPre(RequestEvent $event): void
     {
         if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
+            // support for Symfony < 5.3
             return;
         }
 
@@ -74,6 +75,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
+            // support for Symfony < 5.3
             return;
         }
 
