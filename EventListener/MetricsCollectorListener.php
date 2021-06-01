@@ -49,7 +49,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
     public function onKernelRequestPre(RequestEvent $event): void
     {
-        if (!$event->isMasterRequest()) {
+        if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
             return;
         }
 
@@ -73,7 +73,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->isMasterRequest()) {
+        if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
             return;
         }
 
