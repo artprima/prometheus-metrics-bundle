@@ -46,6 +46,7 @@ jobs:
         cd symfony
         composer upgrade -n --no-progress
         composer require symfony/phpunit-bridge:5.2.* -n --no-progress
+        composer require symfony/browser-kit -n --no-progress
         composer require annotations -n --no-progress
     - name: Run Integration tests
       run: |
