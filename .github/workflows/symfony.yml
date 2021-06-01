@@ -51,4 +51,4 @@ jobs:
       run: |
         cp -rf .integration/symfony/* symfony/
         cd symfony
-        php bin/phpunit
+        php vendor/bin/phpunit
