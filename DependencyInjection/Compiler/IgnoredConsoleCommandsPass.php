@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * IgnoredRoutesPass is a compilation pass that sets ignored routes argument for the metrics.
  */
-class IgnoredRoutesPass implements CompilerPassInterface
+class IgnoredConsoleCommandsPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
@@ -19,10 +19,10 @@ class IgnoredRoutesPass implements CompilerPassInterface
             return;
         }
 
-        $ignoredRoutes = $container->getParameter('prometheus_metrics_bundle.ignored_routes');
+        $ignoredConsoleCommands = $container->getParameter('prometheus_metrics_bundle.ignored_console_commands');
         $container->getDefinition(MetricsCollectorListener::class)->setArgument(
-            '$ignoredRoutes',
-            $ignoredRoutes
+            '$ignoredConsoleCommands',
+            $ignoredConsoleCommands
         );
     }
 }

@@ -34,6 +34,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
             $container->setParameter('prometheus_metrics_bundle.redis', $config['redis']);
         }
         $container->setParameter('prometheus_metrics_bundle.ignored_routes', $config['ignored_routes']);
+        $container->setParameter('prometheus_metrics_bundle.ignored_console_commands', $config['ignored_console_commands']);
         $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_console_metrics', $config['enable_console_metrics']);
 

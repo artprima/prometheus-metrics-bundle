@@ -41,10 +41,19 @@ class MetricsCollectorListener implements LoggerAwareInterface
      */
     private $ignoredRoutes;
 
-    public function __construct(MetricsCollectorRegistry $metricsCollectors, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
-    {
+    /**
+     * @var array
+     */
+    private $ignoredConsoleCommands;
+
+    public function __construct(
+        MetricsCollectorRegistry $metricsCollectors,
+        array $ignoredRoutes = ['prometheus_bundle_prometheus'],
+        array $ignoredConsoleCommands = []
+    ) {
         $this->metricsCollectors = $metricsCollectors;
         $this->ignoredRoutes = $ignoredRoutes;
+        $this->ignoredConsoleCommands = $ignoredConsoleCommands;
     }
 
     public function onKernelRequestPre(RequestEvent $event): void
