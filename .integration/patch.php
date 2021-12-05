@@ -23,6 +23,8 @@ function patch_composer_json(): void
     $json['require-dev'] = (object)$json['require-dev'];
     $json['minimum-stability'] = 'dev';
     $json['prefer-stable'] = true;
+    $json['extra']['symfony']['allow-contribe'] = false;
+
     $data = json_encode($json, JSON_PRETTY_PRINT);
     if ($data === false) {
         exit(-1);
