@@ -20,7 +20,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 {
     use MetricsCollectorInitTrait;
 
-    private float $startedAt;
+    private float $startedAt = 0;
 
     public function collectRequest(RequestEvent $event): void
     {
