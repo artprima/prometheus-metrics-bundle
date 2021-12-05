@@ -19,11 +19,10 @@ function patch_composer_json(): void
         'type' => 'path',
         'url' => realpath(__DIR__.'/../'),
     ]];
-    $json['require']['artprima/prometheus-metrics-bundle'] = '*';
     $json['require-dev'] = (object)$json['require-dev'];
     $json['minimum-stability'] = 'dev';
     $json['prefer-stable'] = true;
-    $json['extra']['symfony']['allow-contribe'] = false;
+    $json['extra']['symfony']['allow-contrib'] = false;
 
     $data = json_encode($json, JSON_PRETTY_PRINT);
     if ($data === false) {

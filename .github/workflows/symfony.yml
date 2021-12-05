@@ -48,12 +48,14 @@ jobs:
       run: |
         php .integration/patch.php
         cd symfony
-        composer upgrade -n --no-progress
+        cat composer.json
         composer require symfony/phpunit-bridge:5.2.* -n --no-progress
         composer require symfony/browser-kit -n --no-progress
         composer require annotations -n --no-progress
+        composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
+        cp -rf ../.integration/symfony/* ./
+        composer upgrade -n --no-progress
     - name: Run Integration tests
       run: |
-        cp -rf .integration/symfony/* symfony/
         cd symfony
         php bin/phpunit
