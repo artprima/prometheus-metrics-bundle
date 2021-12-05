@@ -12,8 +12,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * RegisterMetricsCollectorPass is a compilation pass that registers all metrics classes taged as
- * prometheus_metrics_bundle.metrics_collector. In addition it still supports old tags
- * prometheus_metrics_bundle.metrics_generator.
+ * prometheus_metrics_bundle.metrics_collector.
  */
 class RegisterMetricsCollectorPass implements CompilerPassInterface
 {
@@ -26,21 +25,6 @@ class RegisterMetricsCollectorPass implements CompilerPassInterface
         $disableDefaultMetrics = $container->getParameter('prometheus_metrics_bundle.disable_default_metrics');
 
         $definition = $container->getDefinition(MetricsCollectorRegistry::class);
-
-        foreach ($container->findTaggedServiceIds('prometheus_metrics_bundle.metrics_generator') as $id => $tags) {
-            @trigger_error(sprintf(
-                'Service id "%s" uses tag "%s", which is deprecated, use "%s" instead.',
-                $id,
-                'prometheus_metrics_bundle.metrics_generator',
-                'prometheus_metrics_bundle.metrics_collector'
-            ), E_USER_DEPRECATED);
-            $collector = $container->getDefinition($id);
-            $collector->addMethodCall('init', [
-                $container->getParameter('prometheus_metrics_bundle.namespace'),
-                new Reference('prometheus_metrics_bundle.collector_registry'),
-            ]);
-            $definition->addMethodCall('registerMetricsCollector', [new Reference($id)]);
-        }
 
         foreach ($container->findTaggedServiceIds('prometheus_metrics_bundle.metrics_collector') as $id => $tags) {
             $collector = $container->getDefinition($id);

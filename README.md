@@ -4,8 +4,8 @@
 | [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][Develop coverage image]][Develop coverage] |
 
 
-Symfony 5 Prometheus Metrics Bundle
-=====================================
+Symfony 5 and 6 Prometheus Metrics Bundle
+=========================================
 
 Installation
 ============
@@ -49,10 +49,10 @@ class AppKernel extends Kernel
 {
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             // ...
             new Artprima\PrometheusMetricsBundle\ArtprimaPrometheusMetricsBundle(),
-        );
+        ];
 
         // ...
     }
