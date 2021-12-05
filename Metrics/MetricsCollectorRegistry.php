@@ -12,7 +12,7 @@ final class MetricsCollectorRegistry
     /**
      * @var MetricsCollectorInterface[]
      */
-    private $collectors = [];
+    private array $collectors = [];
 
     public function registerMetricsCollector(MetricsCollectorInterface $collector): void
     {

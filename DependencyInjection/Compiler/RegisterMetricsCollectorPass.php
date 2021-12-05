@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * RegisterMetricsCollectorPass is a compilation pass that registers all metrics classes taged as
- * prometheus_metrics_bundle.metrics_collector. In addition it still supports old tags
+ * prometheus_metrics_bundle.metrics_collector. In addition, it still supports old tags
  * prometheus_metrics_bundle.metrics_generator.
  */
 class RegisterMetricsCollectorPass implements CompilerPassInterface

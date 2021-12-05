@@ -31,15 +31,9 @@ class MetricsCollectorListener implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var MetricsCollectorRegistry
-     */
-    private $metricsCollectors;
+    private MetricsCollectorRegistry $metricsCollectors;
 
-    /**
-     * @var array
-     */
-    private $ignoredRoutes;
+    private array $ignoredRoutes;
 
     public function __construct(MetricsCollectorRegistry $metricsCollectors, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
