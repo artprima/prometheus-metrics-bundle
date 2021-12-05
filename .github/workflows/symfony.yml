@@ -20,6 +20,10 @@ jobs:
         operating-system: [ubuntu-latest]
         symfony-versions: ['5.3', '5.4', '6.0']
         php-versions: ['7.4', '8.0', '8.1']
+        exclude:
+          - operating-system: ubuntu-latest
+            symfony-versions: '6.0'
+            php-versions: '7.4'
     name: PHP ${{ matrix.php-versions }} / Symfony ${{ matrix.symfony-versions }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout
@@ -45,7 +49,7 @@ jobs:
         php .integration/patch.php
         cd symfony
         composer upgrade -n --no-progress
-        composer require symfony/phpunit-bridge:5.3.* -n --no-progress
+        composer require symfony/phpunit-bridge:5.2.* -n --no-progress
         composer require symfony/browser-kit -n --no-progress
         composer require annotations -n --no-progress
     - name: Run Integration tests
