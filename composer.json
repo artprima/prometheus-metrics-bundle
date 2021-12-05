@@ -1,6 +1,6 @@
 {
   "name": "artprima/prometheus-metrics-bundle",
-  "description": "Symfony 4/5 Prometheus Metrics Bundle",
+  "description": "Symfony 5 / 6 Prometheus Metrics Bundle",
   "keywords": [ "symfony", "symfony-bundle", "prometheus", "metrics" ],
   "type": "symfony-bundle",
   "license": "MIT",
@@ -11,18 +11,18 @@
     }
   ],
   "require": {
-    "php": "^7.3|^8.0",
+    "php": "^7.4|^8.0",
     "ext-json": "*",
     "promphp/prometheus_client_php": "^2.2",
-    "symfony/http-kernel": "^4.4|^5.1.5",
-    "symfony/dependency-injection": "^4.4|^5.1.5",
-    "symfony/config": "^4.4|^5.1.5"
+    "symfony/http-kernel": "^5.3|^6.0",
+    "symfony/dependency-injection": "^5.3|^6.0",
+    "symfony/config": "^5.3|^6.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^8.0|^9.0",
-    "symfony/yaml": "^4.4|^5.0",
-    "symfony/browser-kit": "^4.4|^5.0",
-    "symfony/framework-bundle": "^4.4|^5.0",
+    "symfony/yaml": "^5.0",
+    "symfony/browser-kit": "^5.0|^6.0",
+    "symfony/framework-bundle": "^5.0|^6.0",
     "friendsofphp/php-cs-fixer": "^2.17",
     "escapestudios/symfony2-coding-standard": "^3.11",
     "squizlabs/php_codesniffer": "^3.5"

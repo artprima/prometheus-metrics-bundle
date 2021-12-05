@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 
 /**
@@ -26,7 +27,7 @@ class BundleInMemoryTest extends WebTestCase
         return AppKernel::class;
     }
 
-    protected static function createKernel(array $options = [])
+    protected static function createKernel(array $options = []): KernelInterface
     {
         $class = self::getKernelClass();
 

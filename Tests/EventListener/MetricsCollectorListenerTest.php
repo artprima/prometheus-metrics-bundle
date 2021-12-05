@@ -37,7 +37,6 @@ class MetricsCollectorListenerTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
-        $evt->method('isMasterRequest')->willReturn(true);
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
@@ -58,7 +57,6 @@ class MetricsCollectorListenerTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
-        $evt->method('isMasterRequest')->willReturn(true);
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
@@ -79,7 +77,6 @@ class MetricsCollectorListenerTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
-        $evt->method('isMasterRequest')->willReturn(false);
         $evt->method('isMainRequest')->willReturn(false);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
@@ -100,7 +97,6 @@ class MetricsCollectorListenerTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
-        $evt->method('isMasterRequest')->willReturn(true);
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
@@ -124,7 +120,6 @@ class MetricsCollectorListenerTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
         $evt->method('getRequest')->willReturn($request);
-        $evt->method('isMasterRequest')->willReturn(true);
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);

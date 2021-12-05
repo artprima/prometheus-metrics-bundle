@@ -31,15 +31,9 @@ class MetricsCollectorListener implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var MetricsCollectorRegistry
-     */
-    private $metricsCollectors;
+    private MetricsCollectorRegistry $metricsCollectors;
 
-    /**
-     * @var array
-     */
-    private $ignoredRoutes;
+    private array $ignoredRoutes;
 
     public function __construct(MetricsCollectorRegistry $metricsCollectors, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
@@ -49,7 +43,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
     public function onKernelRequestPre(RequestEvent $event): void
     {
-        if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
@@ -73,7 +67,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (method_exists($event, 'isMainRequest') ? !$event->isMainRequest() : !$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 

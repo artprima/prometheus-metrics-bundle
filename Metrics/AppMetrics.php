@@ -20,7 +20,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 {
     use MetricsCollectorInitTrait;
 
-    private $startedAt;
+    private float $startedAt = 0;
 
     public function collectRequest(RequestEvent $event): void
     {
@@ -72,7 +72,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     {
         $name = 'instance_name';
         try {
-            // the trick with try/catch let's us setting the instance name only once
+            // the trick with try/catch lets us setting the instance name only once
             $this->collectionRegistry->getGauge($this->namespace, $name);
         } catch (MetricNotFoundException $e) {
             /** @noinspection PhpUnhandledExceptionInspection */

@@ -11,15 +11,9 @@ use Prometheus\CollectorRegistry;
  */
 trait MetricsCollectorInitTrait
 {
-    /**
-     * @var string
-     */
-    protected $namespace;
+    protected string $namespace;
 
-    /**
-     * @var CollectorRegistry
-     */
-    protected $collectionRegistry;
+    protected CollectorRegistry $collectionRegistry;
 
     public function init(string $namespace, CollectorRegistry $collectionRegistry): void
     {

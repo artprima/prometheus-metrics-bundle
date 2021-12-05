@@ -19,6 +19,7 @@ class IgnoredRoutesPass implements CompilerPassInterface
             return;
         }
 
+        /** @var mixed $ignoredRoutes */
         $ignoredRoutes = $container->getParameter('prometheus_metrics_bundle.ignored_routes');
         $container->getDefinition(MetricsCollectorListener::class)->addArgument($ignoredRoutes);
     }

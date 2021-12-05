@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Artprima\PrometheusMetricsBundle\Fixtures\App;
 
+use InvalidArgumentException;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -24,40 +26,40 @@ class AppKernel extends Kernel
     public function __construct($varDir, $testCase, $rootConfig, $environment, $debug)
     {
         if (!is_dir(__DIR__.'/'.$testCase)) {
-            throw new \InvalidArgumentException(sprintf('The test case "%s" does not exist.', $testCase));
+            throw new InvalidArgumentException(sprintf('The test case "%s" does not exist.', $testCase));
         }
         $this->varDir = $varDir;
         $this->testCase = $testCase;
 
         $fs = new Filesystem();
         if (!$fs->isAbsolutePath($rootConfig) && !file_exists($rootConfig = __DIR__.'/'.$testCase.'/'.$rootConfig)) {
-            throw new \InvalidArgumentException(sprintf('The root config "%s" does not exist.', $rootConfig));
+            throw new InvalidArgumentException(sprintf('The root config "%s" does not exist.', $rootConfig));
         }
         $this->rootConfig = $rootConfig;
 
         parent::__construct($environment, $debug);
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         if (!file_exists($filename = $this->getRootDir().'/'.$this->testCase.'/bundles.php')) {
-            throw new \RuntimeException(sprintf('The bundles file "%s" does not exist.', $filename));
+            throw new RuntimeException(sprintf('The bundles file "%s" does not exist.', $filename));
         }
 
         return include $filename;
     }
 
-    public function getRootDir()
+    public function getRootDir(): string
     {
         return __DIR__;
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return sys_get_temp_dir().'/'.$this->varDir.'/'.$this->testCase.'/cache/'.$this->environment;
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return sys_get_temp_dir().'/'.$this->varDir.'/'.$this->testCase.'/logs';
     }
@@ -78,7 +80,7 @@ class AppKernel extends Kernel
         $this->__construct($a[0], $a[1], $a[2], $a[3], $a[4]);
     }
 
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return __DIR__;
     }
@@ -88,7 +90,7 @@ class AppKernel extends Kernel
         $container->register('logger', NullLogger::class);
     }
 
-    protected function getKernelParameters()
+    protected function getKernelParameters(): array
     {
         $parameters = parent::getKernelParameters();
         $parameters['kernel.test_case'] = $this->testCase;

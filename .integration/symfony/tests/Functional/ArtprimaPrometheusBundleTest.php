@@ -72,7 +72,7 @@ class ArtprimaPrometheusBundleTest extends WebTestCase
         $client->disableReboot();
 
         /** @var Adapter $adapter */
-        $adapter = self::$container->get('prometheus_metrics_bundle.adapter');
+        $adapter = self::getContainer()->get('prometheus_metrics_bundle.adapter');
         self::assertTrue($adapter instanceof Adapter);
 
         // generate some metrics

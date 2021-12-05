@@ -11,10 +11,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
  */
 class MetricsController
 {
-    /**
-     * @var Renderer
-     */
-    private $renderer;
+    private Renderer $renderer;
 
     public function __construct(Renderer $metricsRenderer)
     {
