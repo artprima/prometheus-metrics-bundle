@@ -7,7 +7,7 @@ namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -35,9 +35,10 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         }
         $container->setParameter('prometheus_metrics_bundle.ignored_routes', $config['ignored_routes']);
         $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
+        $container->setParameter('prometheus_metrics_bundle.enable_default_prometheus_metrics', !$config['disable_default_prometheus_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_console_metrics', $config['enable_console_metrics']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
     }
 }

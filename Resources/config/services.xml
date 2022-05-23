@@ -10,6 +10,7 @@
 
     <service id="prometheus_metrics_bundle.collector_registry" class="%prometheus_metrics_bundle.collector_registry.class%" public="false" autowire="false" autoconfigure="false">
         <argument type="service" id="prometheus_metrics_bundle.adapter" />
+        <argument>%prometheus_metrics_bundle.enable_default_prometheus_metrics%</argument>
     </service>
 
     <service id="Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener" class="Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener" public="false" autowire="false" autoconfigure="false">
