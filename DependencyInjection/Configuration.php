@@ -83,7 +83,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('disable_default_metrics')
                     ->defaultValue(false)
                 ->end()
-                ->booleanNode('disable_default_prometheus_metrics')
+                ->booleanNode('disable_default_promphp_metrics')
                     ->defaultValue(false)
                 ->end()
                 ->booleanNode('enable_console_metrics')
