@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Artprima\PrometheusMetricsBundle;
+namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -11,19 +11,18 @@ use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 /**
  * @group functional
  */
-class BundleInMemoryTest extends WebTestCase
+class BundleDisablePromMetricsTest extends WebTestCase
 {
-    public function testBundle(): void
+    public function testDisableDefaultPrometheusMetrics(): void
     {
-        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml']);
+        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_disable_default_prometheus_metrics.yml']);
         $client->request('GET', '/metrics/prometheus');
-        self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
-        self::assertStringContainsString('php_info{version=', $client->getResponse()->getContent());
+        self::assertStringNotContainsString('php_info{version=', $client->getResponse()->getContent());
     }
 
     protected static function getKernelClass(): string
     {
-        require_once __DIR__.'/Fixtures/App/AppKernel.php';
+        require_once __DIR__.'/../Fixtures/App/AppKernel.php';
 
         return AppKernel::class;
     }

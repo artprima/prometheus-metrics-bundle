@@ -89,6 +89,9 @@ artprima_prometheus_metrics:
     # used to disable default application metrics
     disable_default_metrics: false
 
+    # used to disable default metrics from promphp/prometheus_client_php
+    disable_default_promphp_metrics: false
+
     # used to enable console metrics
     enable_console_metrics: false
 ```
