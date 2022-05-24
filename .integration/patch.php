@@ -20,7 +20,7 @@ function patch_composer_json(): void
         'url' => realpath(__DIR__.'/../'),
         'options' => [
             'versions' => [
-                'artprima/prometheus-metrics-bundle' => 'e2e',
+                'artprima/prometheus-metrics-bundle' => '1-dev',
             ],
             'symlink' => false,
         ]
