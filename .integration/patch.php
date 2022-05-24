@@ -18,6 +18,12 @@ function patch_composer_json(): void
     $json['repositories'] = [[
         'type' => 'path',
         'url' => realpath(__DIR__.'/../'),
+        'options' => [
+            'versions' => [
+                'artprima/prometheus-metrics-bundle' => '1-dev',
+            ],
+            'symlink' => false,
+        ]
     ]];
     $json['require-dev'] = (object)$json['require-dev'];
     $json['minimum-stability'] = 'dev';
