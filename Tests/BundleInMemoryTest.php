@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Artprima\PrometheusMetricsBundle;
 
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 
@@ -19,6 +21,18 @@ class BundleInMemoryTest extends WebTestCase
         $client->request('GET', '/metrics/prometheus');
         self::assertStringContainsString('myapp_instance_name{instance="dev"} 1', $client->getResponse()->getContent());
         self::assertStringContainsString('php_info{version=', $client->getResponse()->getContent());
+    }
+
+    public function testClearCommand(): void
+    {
+        $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'config_in_memory.yml']);
+        $application = new Application(static::$kernel);
+
+        $tester = new CommandTester($application->get('artprima:prometheus:metrics:clear'));
+        $tester->execute([]);
+
+        $client->request('GET', '/metrics/prometheus');
+        self::assertStringContainsString('', $client->getResponse()->getContent());
     }
 
     protected static function getKernelClass(): string

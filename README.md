@@ -277,6 +277,14 @@ by the built-in class `Artprima\PrometheusMetricsBundle\Metrics`. Here, in the e
 and the metrics show a single request to the root named `app_dummy_homepage`. Symfony instance is named `dev` here.
 Instance name comes from the server var `HOSTNAME` (`$request->server->get('HOSTNAME')`) and defaults to `dev`.
 
+Clear Metrics
+=============
+
+The bundle provides a console command to clear metrics from the storage. Simply run:
+```bash
+./bin/console artprima:prometheus:metrics:clear
+```
+
 Code license
 ============
 
