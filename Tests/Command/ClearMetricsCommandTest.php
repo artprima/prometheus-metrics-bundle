@@ -33,5 +33,4 @@ EOL;
 
         $this->assertSame($expected, $tester->getDisplay());
     }
-
 }

@@ -21,7 +21,6 @@ class ClearMetricsCommand extends Command
      */
     private $storage;
 
-
     public function __construct(Adapter $storage)
     {
         parent::__construct(static::$defaultName);
