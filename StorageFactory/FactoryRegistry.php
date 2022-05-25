@@ -66,7 +66,7 @@ class FactoryRegistry
         $options = parse_url($dsn);
 
         if (false === $options) {
-            throw new InvalidArgumentException('Invalid DSN.');
+            throw new InvalidArgumentException(sprintf('Invalid DSN %s.', $dsn));
         }
 
         $options = array_map('rawurldecode', $options);

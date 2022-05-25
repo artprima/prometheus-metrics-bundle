@@ -51,4 +51,12 @@ class FactoryRegistryTest extends TestCase
         self::assertSame('bar1', $adapter->options['foo1']);
         self::assertSame('bar2', $adapter->options['foo2']);
     }
+
+    public function testCreateWithWrongDsn(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $factory = new FactoryRegistry();
+        $factory->create(['url' => 'http:///']);
+    }
 }

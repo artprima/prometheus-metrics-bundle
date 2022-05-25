@@ -6,6 +6,10 @@ namespace Artprima\PrometheusMetricsBundle\StorageFactory;
 
 use Prometheus\Storage\Adapter;
 
+/**
+ * StorageFactoryInterface provides a way to create instance of @Prometheus\Storage\Adapter.
+ * A storage factory should manage options type, and default values.
+ */
 interface StorageFactoryInterface
 {
     /**

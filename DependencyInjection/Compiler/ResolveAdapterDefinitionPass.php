@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 /**
- * ResolveAdapterDefinitionPass is a compilation pass that register factories of adapter.
+ * ResolveAdapterDefinitionPass is a compilation pass that registers adapter factories.
  */
 class ResolveAdapterDefinitionPass implements CompilerPassInterface
 {
