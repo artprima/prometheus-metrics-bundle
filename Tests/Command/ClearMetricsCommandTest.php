@@ -26,6 +26,6 @@ class ClearMetricsCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertStringContainsString("Clearing storage from $className", $tester->getDisplay());
-        $this->assertStringContainsString("[OK] The storage was successfully cleared.", $tester->getDisplay());
+        $this->assertStringContainsString('[OK] The storage was successfully cleared.', $tester->getDisplay());
     }
 }
