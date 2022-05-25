@@ -5,6 +5,8 @@ CHANGELOG
 
   * Add support for `disable_default_promphp_metrics` config option, which allows disabling
     default metrics from [promphp/prometheus_client_php](https://github.com/promphp/prometheus_client_php) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
+  * Add console command to clear metrics (#33) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
+
 
 * 1.13.0 (2021-12-05)
 
