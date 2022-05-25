@@ -41,5 +41,11 @@
     <service id="Artprima\PrometheusMetricsBundle\Controller\MetricsController" class="Artprima\PrometheusMetricsBundle\Controller\MetricsController" public="true" autowire="false" autoconfigure="false">
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\Renderer"/>
     </service>
+
+    <!-- Register commands -->
+    <service id="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand" class="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand">
+        <argument type="service" id="prometheus_metrics_bundle.adapter"/>
+        <tag name="console.command"  command="artprima:prometheus:metrics:clear"/>
+    </service>
 </services>
 </container>
