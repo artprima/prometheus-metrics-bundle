@@ -10,14 +10,8 @@ use Prometheus\Storage\Adapter;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- *
- */
 class ClearMetricsCommandTest extends TestCase
 {
-    /**
-     *
-     */
     public function testClear()
     {
         $adapter = $this->createMock(Adapter::class);

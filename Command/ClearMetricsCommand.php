@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Clear metrics from prometheus storage
+ * Clear metrics from prometheus storage.
  */
 class ClearMetricsCommand extends Command
 {
@@ -22,9 +22,6 @@ class ClearMetricsCommand extends Command
     private $storage;
 
 
-    /**
-     * @param Adapter $storage
-     */
     public function __construct(Adapter $storage)
     {
         parent::__construct(static::$defaultName);
