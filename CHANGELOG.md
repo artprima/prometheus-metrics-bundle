@@ -4,7 +4,7 @@ CHANGELOG
 * 1.14.0 (2022-05-??)
 
   * Add support for `disable_default_promphp_metrics` config option, which allows disabling
-    default metrics from [promphp/prometheus_client_php](https://github.com/promphp/prometheus_client_php) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
+    default metrics from [promphp/prometheus_client_php](https://github.com/promphp/prometheus_client_php) ([#63](https://github.com/artprima/prometheus-metrics-bundle/pull/63)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
   * Add console command to clear metrics ([#67](https://github.com/artprima/prometheus-metrics-bundle/pull/67)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
   * Add storage adapter factory ([#68](https://github.com/artprima/prometheus-metrics-bundle/pull/68)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt))
 
