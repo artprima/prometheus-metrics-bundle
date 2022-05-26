@@ -25,12 +25,7 @@ class ClearMetricsCommandTest extends TestCase
         $tester = new CommandTester($application->get('artprima:prometheus:metrics:clear'));
         $tester->execute([]);
 
-        $expected = <<<EOL
-Clearing storage from {$className}
-<success>The storage was successfully cleared.</success>
-
-EOL;
-
-        $this->assertSame($expected, $tester->getDisplay());
+        $this->assertStringContainsString("Clearing storage from $className", $tester->getDisplay());
+        $this->assertStringContainsString('[OK] The storage was successfully cleared.', $tester->getDisplay());
     }
 }

@@ -8,6 +8,7 @@ use Prometheus\Storage\Adapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Clear metrics from prometheus storage.
@@ -43,11 +44,12 @@ class ClearMetricsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln(sprintf('Clearing storage from <comment>%s</comment>', get_class($this->storage)));
+        $io = new SymfonyStyle($input, $output);
+        $io->writeln(sprintf('Clearing storage from <comment>%s</comment>', get_class($this->storage)));
 
         $this->storage->wipeStorage();
 
-        $output->writeln('<success>The storage was successfully cleared.</success>');
+        $io->success('The storage was successfully cleared.');
 
         return 0;
     }
