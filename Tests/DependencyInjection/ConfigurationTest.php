@@ -22,6 +22,7 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'in_memory',
+                    'storage' => ['type' => 'in_memory'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
@@ -48,18 +49,19 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'redis',
-                    'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'redis' => [
                         'host' => '127.0.0.1',
                         'port' => 6379,
                         'timeout' => 0.1,
-                        'read_timeout' => 10,
+                        'read_timeout' => '10',
                         'persistent_connections' => false,
                         'password' => null,
                     ],
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
+                    'storage' => ['type' => 'redis'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
                 ],
             ],
             [
@@ -81,18 +83,73 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'redis',
-                    'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'redis' => [
                         'host' => '/var/run/redis/redis.sock',
-                        'port' => 6379,
                         'timeout' => 0.1,
                         'read_timeout' => '10',
                         'persistent_connections' => false,
                         'password' => null,
+                        'port' => 6379,
                     ],
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
+                    'storage' => ['type' => 'redis'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                ],
+            ],
+            [
+                'redis storage dsn',
+                [
+                    'namespace' => 'myapp',
+                    'storage' => 'redis://127.0.0.1:6379?timeout=0.1&read_timeout=10&persistent_connections=false',
+                    'disable_default_metrics' => false,
+                    'enable_console_metrics' => false,
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'url' => 'redis://127.0.0.1:6379?timeout=0.1&read_timeout=10&persistent_connections=false',
+                    ],
+                    'disable_default_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'type' => 'in_memory',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_promphp_metrics' => false,
+                ],
+            ],
+            [
+                'redis storage',
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'host' => '127.0.0.1',
+                        'port' => 6379,
+                        'timeout' => 0.1,
+                        'read_timeout' => 10,
+                        'persistent_connections' => false,
+                        'password' => null,
+                    ],
+                    'disable_default_metrics' => false,
+                    'enable_console_metrics' => false,
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'host' => '127.0.0.1',
+                        'port' => 6379,
+                        'timeout' => 0.1,
+                        'read_timeout' => 10,
+                        'persistent_connections' => false,
+                        'password' => null,
+                    ],
+                    'disable_default_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'type' => 'in_memory',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_promphp_metrics' => false,
                 ],
             ],
         ];
@@ -118,10 +175,10 @@ class ConfigurationTest extends TestCase
     public function testGetConfigTreeBuilder(string $description, array $config, array $expected)
     {
         $cfg = new Configuration();
-        $treeBuilder = $cfg->getConfigTreeBuilder();
-        $tree = $treeBuilder->buildTree();
-        $result = $tree->finalize($config);
-        self::assertEquals($expected, $result, $description);
+        $tree = $cfg->getConfigTreeBuilder()->buildTree();
+        $result = $tree->finalize($tree->normalize($config));
+
+        self::assertSame($expected, $result, $description);
     }
 
     /**

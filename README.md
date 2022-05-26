@@ -71,20 +71,30 @@ artprima_prometheus_metrics:
     # namespace is used to prefix the prometheus metrics
     namespace: myapp
 
-    # metrics backend type
-    type: in_memory # possible values: in_memory, apcu, redis
-
     # ignoring some routes in metrics
     ignored_routes: [some_route_name, another_route_name]
 
-    # used in case of type = "redis"
-    redis:
+    # metrics backend
+    storage:
+        # DSN of the storage. All parsed values will override explicitly set parameters. Ex: redis://127.0.0.1?timeout=0.1
+        url: ~
+        
+        # Known values: in_memory, apcu, redis
+        type: in_memory
+        
+        # Available parameters used by redis
         host: 127.0.0.1
         port: 6379
         timeout: 0.1
         read_timeout: 10
         persistent_connections: false
         password: ~
+        database: ~ # Int value used by redis adapter
+        prefix: ~   # String value used by redis and apcu
+
+        # A variable parameter to define additionnal options as key / value.
+        options:
+            foo: bar
 
     # used to disable default application metrics
     disable_default_metrics: false
@@ -249,6 +259,45 @@ If you don't use autoconfigure = true, then you will have to add this to your `s
     App\Metrics\MyMetricsCollector:
         tags:
             - { name: prometheus_metrics_bundle.metrics_generator }
+```
+
+Custom Storage Adapter Factory
+========================
+
+A storage adapter is an instance of `Prometheus\Storage\Adapter`. 
+To create your own storage adapter you should create a custom factory implementing `Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface`.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Metrics;
+
+use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
+use Prometheus\Storage\Adapter;
+
+class DummyFactory implements StorageFactoryInterface
+{
+    public function getName(): string
+    {
+        return 'dummy';
+    }
+
+    public function create(array $options): Adapter
+    {
+        return new Dummy($options);
+    }
+}
+```
+
+Symfony will automatically configure your storage factory with autoconfigure = true and implementing `Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface`.
+If you don't use autoconfigure = true, then you will have to add this to your `services.yaml`:
+
+```yaml
+    App\Metrics\DummyFactory:
+        tags:
+            - { name: prometheus_metrics_bundle.adapter_factory }
 ```
 
 Default Metrics

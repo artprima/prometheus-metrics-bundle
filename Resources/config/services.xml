@@ -6,7 +6,11 @@
     <parameter key="prometheus_metrics_bundle.collector_registry.class">Prometheus\CollectorRegistry</parameter>
 </parameters>
 <services>
-    <service id="prometheus_metrics_bundle.adapter" class="Prometheus\Storage\Adapter" abstract="true" public="false" autowire="false" autoconfigure="false" />
+    <service id="prometheus_metrics_bundle.adapter" class="Prometheus\Storage\Adapter" public="false" autowire="false" autoconfigure="false">
+        <factory service="Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry"
+                 method="create"/>
+        <argument type="collection"/>
+    </service>
 
     <service id="prometheus_metrics_bundle.collector_registry" class="%prometheus_metrics_bundle.collector_registry.class%" public="false" autowire="false" autoconfigure="false">
         <argument type="service" id="prometheus_metrics_bundle.adapter" />
@@ -46,6 +50,27 @@
     <service id="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand" class="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand">
         <argument type="service" id="prometheus_metrics_bundle.adapter"/>
         <tag name="console.command"  command="artprima:prometheus:metrics:clear"/>
+    </service>
+
+    <!-- Register storage fatories -->
+    <service id="Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry"
+             class="Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry">
+        <argument type="collection"/>
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\StorageFactory\RedisFactory"
+             class="Artprima\PrometheusMetricsBundle\StorageFactory\RedisFactory">
+        <tag name="prometheus_metrics_bundle.adapter_factory" />
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\StorageFactory\InMemoryFactory"
+             class="Artprima\PrometheusMetricsBundle\StorageFactory\InMemoryFactory">
+        <tag name="prometheus_metrics_bundle.adapter_factory" />
+    </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\StorageFactory\ApcFactory"
+             class="Artprima\PrometheusMetricsBundle\StorageFactory\ApcFactory">
+        <tag name="prometheus_metrics_bundle.adapter_factory" />
     </service>
 </services>
 </container>

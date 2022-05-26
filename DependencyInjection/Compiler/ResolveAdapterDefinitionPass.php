@@ -4,40 +4,32 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler;
 
-use Prometheus\Storage\APC;
-use Prometheus\Storage\InMemory;
-use Prometheus\Storage\Redis;
+use Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 /**
- * ResolveAdapterDefinitionPass is a compilation pass that sets the metrics backend storage adapter.
+ * ResolveAdapterDefinitionPass is a compilation pass that registers adapter factories.
  */
 class ResolveAdapterDefinitionPass implements CompilerPassInterface
 {
+    use PriorityTaggedServiceTrait;
+
+    const TAG_NAME = 'prometheus_metrics_bundle.adapter_factory';
+
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('prometheus_metrics_bundle.adapter')) {
+        if (!$container->hasDefinition(FactoryRegistry::class)) {
             return;
         }
 
-        $adapterClasses = [
-            'in_memory' => InMemory::class,
-            'apcu' => APC::class,
-            'redis' => Redis::class,
-        ];
-
-        $definition = $container->getDefinition('prometheus_metrics_bundle.adapter');
-        $definition->setAbstract(false);
-        $definition->setClass($adapterClasses[$container->getParameter('prometheus_metrics_bundle.type')]);
-        if ('redis' === $container->getParameter('prometheus_metrics_bundle.type')) {
-            $redisArguments = $container->getParameter('prometheus_metrics_bundle.redis');
-            $prefix = $redisArguments['prefix'] ?? null;
-            if (!empty($prefix)) {
-                $definition->addMethodCall('setPrefix', [$prefix]);
-                unset($redisArguments['prefix']);
-            }
-            $definition->setArguments([$redisArguments]);
+        if (!$factories = $this->findAndSortTaggedServices(self::TAG_NAME, $container)) {
+            throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', self::TAG_NAME, FactoryRegistry::class));
         }
+
+        $factoryRegistry = $container->getDefinition(FactoryRegistry::class);
+        $factoryRegistry->replaceArgument(0, $factories);
     }
 }

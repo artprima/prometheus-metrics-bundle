@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
+use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -28,11 +30,19 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $container->registerForAutoconfiguration(MetricsCollectorInterface::class)
             ->addTag('prometheus_metrics_bundle.metrics_collector');
 
+        $container->registerForAutoconfiguration(StorageFactoryInterface::class)
+            ->addTag(ResolveAdapterDefinitionPass::TAG_NAME);
+
         $container->setParameter('prometheus_metrics_bundle.namespace', $config['namespace']);
-        $container->setParameter('prometheus_metrics_bundle.type', $config['type']);
-        if ('redis' === $config['type']) {
-            $container->setParameter('prometheus_metrics_bundle.redis', $config['redis']);
+        $container->setParameter('prometheus_metrics_bundle.storage', $config['storage']);
+
+        if (isset($config['type'])) {
+            $container->setParameter('prometheus_metrics_bundle.type', $config['type']);
+            if ('redis' === $config['type']) {
+                $container->setParameter('prometheus_metrics_bundle.redis', $config['redis']);
+            }
         }
+
         $container->setParameter('prometheus_metrics_bundle.ignored_routes', $config['ignored_routes']);
         $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_default_promphp_metrics', !$config['disable_default_promphp_metrics']);
@@ -40,5 +50,23 @@ class ArtprimaPrometheusMetricsExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        $this->prepareAdapterParameters($config, $container);
+    }
+
+    /**
+     * Set the parameters for the factory of adapter.
+     */
+    private function prepareAdapterParameters(array $config, ContainerBuilder $container)
+    {
+        $factoryParameters = $config['storage'];
+
+        // Backward compatibility: add legacy redis configuration if set to the factory
+        if (!empty($config['redis'])) {
+            $factoryParameters = array_merge($factoryParameters, $config['redis']);
+        }
+
+        $container->getDefinition('prometheus_metrics_bundle.adapter')
+            ->setArguments([$factoryParameters]);
     }
 }

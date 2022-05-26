@@ -1,0 +1,16 @@
+framework:
+    secret:        test
+    router:        { resource: "%kernel.project_dir%/%kernel.test_case%/routing.yml" }
+    test: true
+    default_locale: en
+    session:
+        storage_factory_id: session.storage.factory.mock_file
+
+services:
+    logger: { class: Psr\Log\NullLogger }
+
+artprima_prometheus_metrics:
+    namespace: myapp
+    storage: "%env(TESTS_REDIS_URL)%"
+    # this will remove "prometheus_bundle_prometheus" from the ignored routes
+    ignored_routes: []
