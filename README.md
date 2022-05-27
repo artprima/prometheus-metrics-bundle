@@ -7,6 +7,8 @@
 Symfony 5 and 6 Prometheus Metrics Bundle
 =========================================
 
+A Symfony bundle for the `promphp/prometheus_client_php`.
+
 Installation
 ============
 
@@ -79,7 +81,7 @@ artprima_prometheus_metrics:
         # DSN of the storage. All parsed values will override explicitly set parameters. Ex: redis://127.0.0.1?timeout=0.1
         url: ~
         
-        # Known values: in_memory, apcu, redis
+        # Known values: in_memory, apcu, apcng, redis
         type: in_memory
         
         # Available parameters used by redis
@@ -105,6 +107,15 @@ artprima_prometheus_metrics:
     # used to enable console metrics
     enable_console_metrics: false
 ```
+
+Supported types are:
+| Adapter name | Prometheus class            |
+|--------------|-----------------------------|
+| in_memory    | Prometheus\Storage\InMemory |
+| apcu         | Prometheus\Storage\APC      |
+| apcung       | Prometheus\Storage\APCng    |
+| redis        | Prometheus\Storage\Redis    |
+
 
 `routes.yaml`
 

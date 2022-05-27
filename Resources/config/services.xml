@@ -72,5 +72,10 @@
              class="Artprima\PrometheusMetricsBundle\StorageFactory\ApcFactory">
         <tag name="prometheus_metrics_bundle.adapter_factory" />
     </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\StorageFactory\APCngFactory"
+             class="Artprima\PrometheusMetricsBundle\StorageFactory\APCngFactory">
+        <tag name="prometheus_metrics_bundle.adapter_factory" />
+    </service>
 </services>
 </container>
