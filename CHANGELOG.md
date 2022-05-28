@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 1.14.0 (2022-05-??)
+* 1.14.0 (2022-05-28)
 
   * Add support for `disable_default_promphp_metrics` config option, which allows disabling
     default metrics from [promphp/prometheus_client_php](https://github.com/promphp/prometheus_client_php) ([#63](https://github.com/artprima/prometheus-metrics-bundle/pull/63)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt)).
