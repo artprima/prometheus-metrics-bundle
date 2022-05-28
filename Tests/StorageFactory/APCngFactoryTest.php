@@ -10,14 +10,13 @@ use Prometheus\Storage\APCng;
 
 class APCngFactoryTest extends TestCase
 {
-    /**
     public function testCreate(): void
     {
         $factory = new APCngFactory();
 
         self::assertInstanceOf(APCng::class, $factory->create([]));
     }
-     */
+
     public function testFactoryName(): void
     {
         $factory = new APCngFactory();
