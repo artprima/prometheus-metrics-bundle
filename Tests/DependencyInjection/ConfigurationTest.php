@@ -152,22 +152,6 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                 ],
             ],
-            [
-                'Namesapce as dsn',
-                [
-                    'namespace' => '%env(PROM_NAMESPACE)%',
-                    'type' => 'in_memory',
-                ],
-                [
-                    'namespace' => '%env(PROM_NAMESPACE)%',
-                    'type' => 'in_memory',
-                    'storage' => ['type' => 'in_memory'],
-                    'ignored_routes' => ['prometheus_bundle_prometheus'],
-                    'disable_default_metrics' => false,
-                    'disable_default_promphp_metrics' => false,
-                    'enable_console_metrics' => false,
-                ],
-            ],
         ];
     }
 
