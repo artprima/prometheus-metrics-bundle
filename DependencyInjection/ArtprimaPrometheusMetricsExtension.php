@@ -33,7 +33,15 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $container->registerForAutoconfiguration(StorageFactoryInterface::class)
             ->addTag(ResolveAdapterDefinitionPass::TAG_NAME);
 
-        $container->setParameter('prometheus_metrics_bundle.namespace', $config['namespace']);
+        // see: https://github.com/artprima/prometheus-metrics-bundle/issues/80
+        $namespace = $container->resolveEnvPlaceholders($config['namespace'], true);
+
+        // see: https://github.com/artprima/prometheus-metrics-bundle/issues/32
+        if (1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $namespace)) {
+            throw new \InvalidArgumentException('Invalid namespace. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$');
+        }
+
+        $container->setParameter('prometheus_metrics_bundle.namespace', $namespace);
         $container->setParameter('prometheus_metrics_bundle.storage', $config['storage']);
 
         if (isset($config['type'])) {

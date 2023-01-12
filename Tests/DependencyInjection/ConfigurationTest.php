@@ -159,12 +159,15 @@ class ConfigurationTest extends TestCase
     {
         return [
             [
-                'invalid namespace (with dashes)',
+                'Invalid prefix',
                 [
-                    'namespace' => 'myapp-with-dash',
                     'type' => 'in_memory',
+                    'namespace' => 'my_app',
+                    'storage' => [
+                        'prefix' => 'prefix-with-dash',
+                    ],
                 ],
-                'Invalid configuration for path "artprima_prometheus_metrics.namespace": Invalid namespace. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$',
+                'Invalid configuration for path "artprima_prometheus_metrics.storage.prefix": Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$',
             ],
         ];
     }
@@ -194,6 +197,6 @@ class ConfigurationTest extends TestCase
         $cfg = new Configuration();
         $treeBuilder = $cfg->getConfigTreeBuilder();
         $tree = $treeBuilder->buildTree();
-        $result = $tree->finalize($config);
+        $tree->finalize($config);
     }
 }

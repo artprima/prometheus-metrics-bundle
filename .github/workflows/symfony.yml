@@ -49,7 +49,7 @@ jobs:
       run: |
         git config --global user.email "${{ github.actor }}"
         git config --global user.name ""github-action-${{ github.actor }}@users.noreply.github.com""
-        /home/runner/.symfony/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
+        /home/runner/.symfony5/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
     - name: Configure Symfony to run integration tests
       run: |
         php .integration/patch.php
