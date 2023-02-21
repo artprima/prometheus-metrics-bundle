@@ -113,7 +113,7 @@ Supported types are:
 |--------------|-----------------------------|
 | in_memory    | Prometheus\Storage\InMemory |
 | apcu         | Prometheus\Storage\APC      |
-| apcung       | Prometheus\Storage\APCng    |
+| apcng        | Prometheus\Storage\APCng    |
 | redis        | Prometheus\Storage\Redis    |
 
 
