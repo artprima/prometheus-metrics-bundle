@@ -14,6 +14,38 @@ class ConfigurationTest extends TestCase
     {
         return [
             [
+                'apcu',
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'apcu',
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'apcu',
+                    'storage' => ['type' => 'apcu'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                ],
+            ],
+            [
+                'apcung',
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'apcung',
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'apcung',
+                    'storage' => ['type' => 'apcung'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                ],
+            ],
+            [
                 'in_memory',
                 [
                     'namespace' => 'myapp',
