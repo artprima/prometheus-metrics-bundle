@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('artprima_prometheus_metrics');
         $rootNode = $treeBuilder->getRootNode();
 
-        $supportedTypes = ['in_memory', 'apcu', 'apcung', 'redis'];
+        $supportedTypes = ['in_memory', 'apcu', 'apcng', 'redis'];
 
         $rootNode
             // Manage deprecated parameter "type": will be transform as storage.url

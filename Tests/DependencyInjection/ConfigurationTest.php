@@ -30,15 +30,15 @@ class ConfigurationTest extends TestCase
                 ],
             ],
             [
-                'apcung',
+                'apcng',
                 [
                     'namespace' => 'myapp',
-                    'type' => 'apcung',
+                    'type' => 'apcng',
                 ],
                 [
                     'namespace' => 'myapp',
-                    'type' => 'apcung',
-                    'storage' => ['type' => 'apcung'],
+                    'type' => 'apcng',
+                    'storage' => ['type' => 'apcng'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
