@@ -2,14 +2,14 @@ name: Coding Style
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master ]
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: PHP 7.4
+    name: PHP 8.0
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -17,10 +17,10 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: "7.4"
+        php-version: "8.0"
         extensions: mbstring, intl
         ini-values: post_max_size=256M
-        coverage: xdebug        
+        coverage: xdebug
         tools: php-cs-fixer, phpunit
     - name: Get composer cache directory
       id: composer-cache

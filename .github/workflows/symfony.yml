@@ -2,9 +2,9 @@ name: Symfony
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master ]
 
 jobs:
   run:
@@ -18,17 +18,14 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        symfony-versions: ['5.4', '6.0', '6.1']
-        php-versions: ['7.4', '8.0', '8.1']
+        symfony-versions: ['5.4', '6.2']
+        php-versions: ['8.0', '8.1', '8.2']
         exclude:
           - operating-system: ubuntu-latest
-            symfony-versions: '6.0'
-            php-versions: '7.4'
-          - operating-system: ubuntu-latest
             symfony-versions: '6.1'
-            php-versions: '7.4'
+            php-versions: '8.0'
           - operating-system: ubuntu-latest
-            symfony-versions: '6.1'
+            symfony-versions: '6.2'
             php-versions: '8.0'
     name: PHP ${{ matrix.php-versions }} / Symfony ${{ matrix.symfony-versions }} Test on ${{ matrix.operating-system }}
     steps:
@@ -41,7 +38,7 @@ jobs:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring, intl, redis
         ini-values: post_max_size=256M
-        coverage: xdebug        
+        coverage: xdebug
         tools: php-cs-fixer, phpunit
     - name: Download Symfony Binary
       run:  wget https://get.symfony.com/cli/installer -O - | bash
