@@ -9,7 +9,7 @@ CHANGELOG
 * 1.15.0 (2023-02-21)
 
   * Allow usage of env var for the namespace ([#81](https://github.com/artprima/prometheus-metrics-bundle/commit/c560b4d9193104b0438f3bd943fd9a8814cc69a0)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt))
-  * Fix supported storage types by adding 'apcng' to allowed values ([#82](https://github.com/artprima/prometheus-metrics-bundle/commit/ff351e8f7e90508924dbdc9405f3bd51da1aab8d)) (thanks to [@edditor](https://github.com/github.com/edditor))
+  * Fix supported storage types by adding 'apcng' to allowed values ([#82](https://github.com/artprima/prometheus-metrics-bundle/commit/ff351e8f7e90508924dbdc9405f3bd51da1aab8d)) (thanks to [@edditor](https://github.com/edditor))
 
 
 * 1.14.0 (2022-05-28)
