@@ -15,8 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class ClearMetricsCommand extends Command
 {
-    protected static $defaultName = 'artprima:prometheus:metrics:clear';
-
     /**
      * @var Adapter
      */
@@ -24,7 +22,7 @@ class ClearMetricsCommand extends Command
 
     public function __construct(Adapter $storage)
     {
-        parent::__construct(static::$defaultName);
+        parent::__construct(null);
 
         $this->storage = $storage;
     }
@@ -35,6 +33,7 @@ class ClearMetricsCommand extends Command
     protected function configure()
     {
         $this
+            ->setName('artprima:prometheus:metrics:clear')
             ->setDescription('Clear all collected metrics from storage')
         ;
     }
