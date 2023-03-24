@@ -49,7 +49,7 @@
     <!-- Register commands -->
     <service id="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand" class="Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand">
         <argument type="service" id="prometheus_metrics_bundle.adapter"/>
-        <tag name="console.command"  command="artprima:prometheus:metrics:clear"/>
+        <tag name="console.command" command="artprima:prometheus:metrics:clear" description="Clear all collected metrics from storage"/>
     </service>
 
     <!-- Register storage fatories -->
