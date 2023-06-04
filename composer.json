@@ -28,9 +28,9 @@
     "squizlabs/php_codesniffer": "^3.5"
   },
   "scripts": {
-     "php-cs-fixer": "php-cs-fixer --config=./.php_cs.dist",
-     "php-cs-fixer-check": "php-cs-fixer fix --config=.php_cs.dist -v --diff --allow-risky=yes --ansi --dry-run",
-     "php-cs-fixer-fix": "php-cs-fixer fix --config=.php_cs.dist -v --diff --allow-risky=yes --ansi",
+     "php-cs-fixer": "php-cs-fixer --config=./.php-cs-fixer.dist.php",
+     "php-cs-fixer-check": "php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --diff --allow-risky=yes --ansi --dry-run",
+     "php-cs-fixer-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --diff --allow-risky=yes --ansi",
      "phpcs-check": "phpcs"
   },
   "suggest": {
