@@ -6,7 +6,8 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('config')
 ;
 
-return PhpCsFixer\Config::create()
+$config = new PhpCsFixer\Config();
+return $config
     ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
