@@ -27,9 +27,6 @@ class ClearMetricsCommand extends Command
         $this->storage = $storage;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -38,9 +35,6 @@ class ClearMetricsCommand extends Command
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

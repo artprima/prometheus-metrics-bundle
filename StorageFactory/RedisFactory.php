@@ -10,8 +10,6 @@ use Prometheus\Storage\Redis;
 class RedisFactory implements StorageFactoryInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @return Redis
      */
     public function create(array $options): Adapter
@@ -47,9 +45,6 @@ class RedisFactory implements StorageFactoryInterface
         return new Redis($options);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         return 'redis';

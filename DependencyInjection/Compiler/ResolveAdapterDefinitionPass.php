@@ -17,7 +17,7 @@ class ResolveAdapterDefinitionPass implements CompilerPassInterface
 {
     use PriorityTaggedServiceTrait;
 
-    const TAG_NAME = 'prometheus_metrics_bundle.adapter_factory';
+    public const TAG_NAME = 'prometheus_metrics_bundle.adapter_factory';
 
     public function process(ContainerBuilder $container)
     {

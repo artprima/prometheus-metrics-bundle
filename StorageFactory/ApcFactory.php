@@ -10,8 +10,6 @@ use Prometheus\Storage\APC;
 class ApcFactory implements StorageFactoryInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @return APC
      */
     public function create(array $options): Adapter
@@ -19,9 +17,6 @@ class ApcFactory implements StorageFactoryInterface
         return new APC($options['prefix'] ?? APC::PROMETHEUS_PREFIX);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         return 'apcu';
