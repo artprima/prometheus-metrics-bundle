@@ -14,7 +14,6 @@ use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterfa
 use Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
-use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -54,7 +53,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectStart($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -83,7 +82,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectRequest($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -108,7 +107,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectPreException($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -133,7 +132,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectException($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -158,7 +157,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectResponse($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -178,7 +177,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectConsoleCommand($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -198,7 +197,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectConsoleTerminate($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
@@ -218,7 +217,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
 
             try {
                 $collector->collectConsoleError($event);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),

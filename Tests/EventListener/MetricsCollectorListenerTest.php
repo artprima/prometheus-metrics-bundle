@@ -13,7 +13,6 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
-use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -28,7 +27,6 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Throwable;
 
 class MetricsCollectorListenerTest extends TestCase
 {
@@ -100,7 +98,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
-        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new Exception('test exception'));
+        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
@@ -123,7 +121,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt->method('isMainRequest')->willReturn(true);
 
         $collector1 = $this->createMock(RequestMetricsCollectorInterface::class);
-        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new Exception('test exception'));
+        $collector1->expects(self::once())->method('collectRequest')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
@@ -160,7 +158,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = new TerminateEvent($kernel, $request, $response);
 
         $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
-        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new Exception('test exception'));
+        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
@@ -183,7 +181,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = new TerminateEvent($kernel, $request, $response);
 
         $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
-        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new Exception('test exception'));
+        $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
@@ -196,7 +194,7 @@ class MetricsCollectorListenerTest extends TestCase
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $exception = new Exception('dummy');
+        $exception = new \Exception('dummy');
 
         $evt = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exception);
 
@@ -217,7 +215,7 @@ class MetricsCollectorListenerTest extends TestCase
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $exception = new Exception('dummy');
+        $exception = new \Exception('dummy');
 
         $evt = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exception);
 
@@ -282,7 +280,7 @@ class MetricsCollectorListenerTest extends TestCase
         $evt = new ConsoleErrorEvent(
             $this->createMock(InputInterface::class),
             $this->createMock(OutputInterface::class),
-            $this->createMock(Throwable::class),
+            $this->createMock(\Throwable::class),
             $this->createMock(Command::class)
         );
 

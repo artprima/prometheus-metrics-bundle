@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\StorageFactory;
 
-use InvalidArgumentException;
 use Prometheus\Storage\Adapter;
 
 class FactoryRegistry
@@ -44,7 +43,7 @@ class FactoryRegistry
         }
 
         if (!($name = $options['type'] ?? false) || !isset($this->factories[$name])) {
-            throw new InvalidArgumentException('The scheme of the adapter is not defined. Could not find factory for "'.$name.'"');
+            throw new \InvalidArgumentException('The scheme of the adapter is not defined. Could not find factory for "'.$name.'"');
         }
 
         return $this->factories[$name]->create($options);
@@ -66,7 +65,7 @@ class FactoryRegistry
         $options = parse_url($dsn);
 
         if (false === $options) {
-            throw new InvalidArgumentException(sprintf('Invalid DSN %s.', $dsn));
+            throw new \InvalidArgumentException(sprintf('Invalid DSN %s.', $dsn));
         }
 
         $options = array_map('rawurldecode', $options);

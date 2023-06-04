@@ -10,8 +10,6 @@ use Prometheus\Storage\InMemory;
 class InMemoryFactory implements StorageFactoryInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @return InMemory
      */
     public function create(array $options): Adapter
@@ -19,9 +17,6 @@ class InMemoryFactory implements StorageFactoryInterface
         return new InMemory();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         return 'in_memory';

@@ -6,12 +6,14 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('config')
 ;
 
-return PhpCsFixer\Config::create()
+$config = new PhpCsFixer\Config();
+return $config
     ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
         'array_syntax' => ['syntax' => 'short'],
         'declare_strict_types' => true,
+        'nullable_type_declaration_for_default_null_value' => false,
     ])
     ->setFinder($finder)
 ;
