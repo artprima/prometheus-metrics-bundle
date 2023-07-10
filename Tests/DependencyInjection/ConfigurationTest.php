@@ -10,7 +10,7 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigurationTest extends TestCase
 {
-    public function configDataProvider(): array
+    public static function configDataProvider(): array
     {
         return [
             [
@@ -187,7 +187,7 @@ class ConfigurationTest extends TestCase
         ];
     }
 
-    public function invalidConfigDataProvider(): array
+    public static function invalidConfigDataProvider(): array
     {
         return [
             [

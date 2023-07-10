@@ -72,7 +72,7 @@ class AppMetricsTest extends TestCase
         );
     }
 
-    public function provideMetricsName(): array
+    public static function provideMetricsName(): array
     {
         return [
             [200, 'http_2xx_responses_total'],

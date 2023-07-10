@@ -168,7 +168,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
     }
 
-    public function onConsoleCommand(ConsoleCommandEvent $event)
+    public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             if (!self::isSupportedEvent($collector, 'collectConsoleCommand', ConsoleCommandMetricsCollectorInterface::class)) {
@@ -188,7 +188,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
     }
 
-    public function onConsoleTerminate(ConsoleTerminateEvent $event)
+    public function onConsoleTerminate(ConsoleTerminateEvent $event): void
     {
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             if (!self::isSupportedEvent($collector, 'collectConsoleTerminate', ConsoleTerminateMetricsCollectorInterface::class)) {
@@ -208,7 +208,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
     }
 
-    public function onConsoleError(ConsoleErrorEvent $event)
+    public function onConsoleError(ConsoleErrorEvent $event): void
     {
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
             if (!self::isSupportedEvent($collector, 'collectConsoleError', ConsoleErrorMetricsCollectorInterface::class)) {

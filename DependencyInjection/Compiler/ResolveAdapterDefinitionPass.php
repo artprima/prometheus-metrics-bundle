@@ -19,7 +19,7 @@ class ResolveAdapterDefinitionPass implements CompilerPassInterface
 
     public const TAG_NAME = 'prometheus_metrics_bundle.adapter_factory';
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(FactoryRegistry::class)) {
             return;
