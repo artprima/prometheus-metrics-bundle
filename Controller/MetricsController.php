@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\Controller;
 
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MetricsController.
@@ -18,7 +19,7 @@ class MetricsController
         $this->renderer = $metricsRenderer;
     }
 
-    public function prometheus()
+    public function prometheus(): Response
     {
         return $this->renderer->renderResponse();
     }

@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class ArtprimaPrometheusMetricsExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -62,7 +62,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
     /**
      * Set the parameters for the factory of adapter.
      */
-    private function prepareAdapterParameters(array $config, ContainerBuilder $container)
+    private function prepareAdapterParameters(array $config, ContainerBuilder $container): void
     {
         $factoryParameters = $config['storage'];
 
