@@ -1,11 +1,15 @@
 CHANGELOG
 =========
 
+* 1.18.0 (2023-08-13)
+
+  * Improve compatibility with Symfony 6.3 and PHPUnit 10 ([#88](https://github.com/artprima/prometheus-metrics-bundle/pull/91)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt))
+
 * 1.17.0 (2023-06-04)
 
   * Add support for Symfony 6.3
   * Update dev and testing dependencies
-  * Add lazy load command description for `artprima:prometheus:metrics:clear` ([#86](https://github.com/artprima/prometheus-metrics-bundle/pull/86))  (thanks to [@marein](https://github.com/marein))
+  * Add lazy load command description for `artprima:prometheus:metrics:clear` ([#86](https://github.com/artprima/prometheus-metrics-bundle/pull/86)) (thanks to [@marein](https://github.com/marein))
 
 * 1.16.0 (2023-02-22)
 
