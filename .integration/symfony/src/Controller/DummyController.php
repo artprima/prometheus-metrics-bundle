@@ -6,16 +6,12 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Controller to render a basic "homepage".
  */
 class DummyController extends AbstractController
 {
-    /**
-     * @Route("/")
-     */
     public function homepage()
     {
         $response = new Response();
@@ -24,9 +20,6 @@ class DummyController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/exception")
-     */
     public function exception()
     {
         throw new \RuntimeException('something went wrong');
