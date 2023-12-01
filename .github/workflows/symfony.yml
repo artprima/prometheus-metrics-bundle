@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        symfony-versions: ['5.4', '6.2', '6.3']
+        symfony-versions: ['5.4', '6.2', '6.3', '6.4']
         php-versions: ['8.0', '8.1', '8.2', '8.3']
         exclude:
           - operating-system: ubuntu-latest
@@ -29,6 +29,9 @@ jobs:
             php-versions: '8.0'
           - operating-system: ubuntu-latest
             symfony-versions: '6.3'
+            php-versions: '8.0'
+          - operating-system: ubuntu-latest
+            symfony-versions: '6.4'
             php-versions: '8.0'
     name: PHP ${{ matrix.php-versions }} / Symfony ${{ matrix.symfony-versions }} Test on ${{ matrix.operating-system }}
     steps:
@@ -55,9 +58,8 @@ jobs:
         php .integration/patch.php
         cd symfony
         cat composer.json
-        composer require symfony/phpunit-bridge:5.4.* -n --no-progress
+        composer require symfony/phpunit-bridge -n --no-progress
         composer require symfony/browser-kit -n --no-progress
-        composer require annotations -n --no-progress
         composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
         cp -rf ../.integration/symfony/* ./
         composer upgrade -n --no-progress

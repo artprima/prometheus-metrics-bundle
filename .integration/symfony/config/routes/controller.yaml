@@ -1,0 +1,7 @@
+app_dummy_homepage:
+    path: /
+    controller: App\Controller\DummyController::homepage
+
+app_dummy_exception:
+    path: /exception
+    controller: App\Controller\DummyController::exception
