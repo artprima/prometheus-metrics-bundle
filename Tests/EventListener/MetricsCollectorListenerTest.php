@@ -196,7 +196,7 @@ class MetricsCollectorListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $exception = new \Exception('dummy');
 
-        $evt = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exception);
+        $evt = new ExceptionEvent($kernel, $request, defined('HttpKernelInterface::MASTER_REQUEST') ? HttpKernelInterface::MASTER_REQUEST : HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $collector1 = $this->createMock(ExceptionMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectException')->with($evt);
@@ -217,7 +217,7 @@ class MetricsCollectorListenerTest extends TestCase
         $kernel = $this->createMock(HttpKernelInterface::class);
         $exception = new \Exception('dummy');
 
-        $evt = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $exception);
+        $evt = new ExceptionEvent($kernel, $request, defined('HttpKernelInterface::MASTER_REQUEST') ? HttpKernelInterface::MASTER_REQUEST : HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $collector1 = $this->createMock(PreExceptionMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectPreException')->with($evt);

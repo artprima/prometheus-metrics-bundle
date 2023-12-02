@@ -83,7 +83,7 @@ class AppKernel extends Kernel
         return __DIR__;
     }
 
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         $container->register('logger', NullLogger::class);
     }
