@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+* 1.19.0 (2023-12-04)
+
+  * This release introduces an official support for php 8.3 and Symfony 6.4/7.0 (thanks to [@rmb](https://github.com/rmbl))
+  * Add php 8.3 to GitHub Actions workflows ([#92](https://github.com/artprima/prometheus-metrics-bundle/pull/92))
+  * Add symfony 6.4 to GitHub workflow ([#93](https://github.com/artprima/prometheus-metrics-bundle/issues/93))
+  * Add symfony 7.0 to GitHub workflow ([#94](https://github.com/artprima/prometheus-metrics-bundle/issues/94))
+
 * 1.18.0 (2023-08-13)
 
   * Improve compatibility with Symfony 6.3 and PHPUnit 10 ([#88](https://github.com/artprima/prometheus-metrics-bundle/pull/91)) (thanks to [@Johnmeurt](https://github.com/Johnmeurt))
