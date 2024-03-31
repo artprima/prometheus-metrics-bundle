@@ -4,7 +4,7 @@
 | [![Coverage Status][Master coverage image]][Master coverage] |
 
 
-Symfony 5 and 6 Prometheus Metrics Bundle
+Symfony 5/6/7 Prometheus Metrics Bundle
 =========================================
 
 A Symfony bundle for the `promphp/prometheus_client_php`.
@@ -18,7 +18,7 @@ Applications that use Symfony Flex
 Open a command console, enter your project directory and execute:
 
 ```console
-$ composer require artprima/prometheus-metrics-bundle
+composer require artprima/prometheus-metrics-bundle
 ```
 
 Applications that don't use Symfony Flex
@@ -30,7 +30,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```console
-$ composer require artprima/prometheus-metrics-bundle
+composer require artprima/prometheus-metrics-bundle
 ```
 
 This command requires you to have Composer installed globally, as explained
