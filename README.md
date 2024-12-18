@@ -270,7 +270,7 @@ If you don't use autoconfigure = true, then you will have to add this to your `s
 ```yaml
     App\Metrics\MyMetricsCollector:
         tags:
-            - { name: prometheus_metrics_bundle.metrics_generator }
+            - { name: prometheus_metrics_bundle.metrics_collector }
 ```
 
 Custom Storage Adapter Factory
