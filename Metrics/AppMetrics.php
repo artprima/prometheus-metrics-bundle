@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 use Prometheus\Exception\MetricNotFoundException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
@@ -22,11 +23,18 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private float $startedAt = 0;
 
+    private ?MetricInfoResolverInterface $requestResolver;
+
+    public function __construct(?MetricInfoResolverInterface $requestResolver = null)
+    {
+        $this->requestResolver = $requestResolver;
+    }
+
     public function collectRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        $requestMethod = $request->getMethod();
-        $requestRoute = $request->attributes->get('_route');
+        $metricInfo = $this->resolveMetricInfo($request);
+        $requestMethod = $metricInfo->getRequestMethod();
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
@@ -34,7 +42,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
-        $this->incRequestsTotal($requestMethod, $requestRoute);
+        $this->incRequestsTotal($requestMethod, $metricInfo->getRequestRoute());
     }
 
     public function collectResponse(TerminateEvent $event): void
@@ -42,17 +50,24 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        $requestMethod = $request->getMethod();
-        $requestRoute = $request->attributes->get('_route');
+        $metricInfo = $this->resolveMetricInfo($request);
+        $requestMethod = $metricInfo->getRequestMethod();
+        $requestRoute = $metricInfo->getRequestRoute();
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $this->incResponsesTotal('2xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
-            $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-            $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
-        } elseif ($response->getStatusCode() >= 500) {
-            $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
+        } else {
+            if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+                $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
+            } else {
+                if ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+                    $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
+                } else {
+                    if ($response->getStatusCode() >= 500) {
+                        $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
+                    }
+                }
+            }
         }
 
         $this->setRequestDuration(microtime(true) - $this->startedAt, $requestMethod, $requestRoute);
@@ -130,5 +145,14 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         if (null !== $method && null !== $route) {
             $histogram->observe($duration, [sprintf('%s-%s', $method, $route)]);
         }
+    }
+
+    private function resolveMetricInfo(Request $request): MetricInfo
+    {
+        if (null === $this->requestResolver) {
+            return new MetricInfo($request->getMethod(), $request->attributes->get('_route'));
+        }
+
+        return $this->requestResolver->resolveData($request);
     }
 }
