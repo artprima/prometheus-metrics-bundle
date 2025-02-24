@@ -195,8 +195,7 @@ class AppMetricsTest extends TestCase
         if (\function_exists($ns.'\microtime')) {
             return;
         }
-        eval(
-            <<<EOPHP
+        eval(<<<EOPHP
 namespace $ns;
 
 function microtime(\$asFloat = false)
