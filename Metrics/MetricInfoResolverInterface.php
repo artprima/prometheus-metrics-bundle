@@ -8,5 +8,5 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface MetricInfoResolverInterface
 {
-    public function resolveData(Request $request) : MetricInfo;
+    public function resolveData(Request $request): MetricInfo;
 }

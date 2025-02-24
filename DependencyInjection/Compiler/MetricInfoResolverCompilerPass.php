@@ -10,13 +10,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class MetricInfoResolverCompilerPass implements CompilerPassInterface
 {
-
     public function process(ContainerBuilder $container)
     {
         $definition = $container->getDefinition(AppMetrics::class);
         $taggedServices = $container->findTaggedServiceIds('prometheus_metrics_bundle.metric_info_resolver');
 
-        if ($taggedServices === []) {
+        if ([] === $taggedServices) {
             return;
         }
         if (count($taggedServices) > 1) {

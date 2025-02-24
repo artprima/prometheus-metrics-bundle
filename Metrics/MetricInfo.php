@@ -17,14 +17,13 @@ class MetricInfo
         $this->requestRoute = $requestRoute;
     }
 
-    public function getRequestMethod() : string
+    public function getRequestMethod(): string
     {
         return $this->requestMethod;
     }
 
-    public function getRequestRoute() : string
+    public function getRequestRoute(): string
     {
         return $this->requestRoute;
     }
-
 }

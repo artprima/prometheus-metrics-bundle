@@ -25,7 +25,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private ?MetricInfoResolverInterface $metricInfoResolver = null;
 
-    public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver) : void
+    public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver): void
     {
         $this->metricInfoResolver = $metricInfoResolver;
     }
