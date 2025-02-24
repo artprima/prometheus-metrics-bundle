@@ -23,11 +23,11 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private float $startedAt = 0;
 
-    private ?MetricInfoResolverInterface $requestResolver;
+    private ?MetricInfoResolverInterface $metricInfoResolver = null;
 
-    public function __construct(?MetricInfoResolverInterface $requestResolver = null)
+    public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver) : void
     {
-        $this->requestResolver = $requestResolver;
+        $this->metricInfoResolver = $metricInfoResolver;
     }
 
     public function collectRequest(RequestEvent $event): void
@@ -149,10 +149,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private function resolveMetricInfo(Request $request): MetricInfo
     {
-        if (null === $this->requestResolver) {
+        if (null === $this->metricInfoResolver) {
             return new MetricInfo($request->getMethod(), $request->attributes->get('_route'));
         }
 
-        return $this->requestResolver->resolveData($request);
+        return $this->metricInfoResolver->resolveData($request);
     }
 }
