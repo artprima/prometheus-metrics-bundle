@@ -6,6 +6,7 @@ namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
+use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolver;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
@@ -150,6 +151,32 @@ class AppMetricsTest extends TestCase
         );
     }
 
+    public function testUseMetricInfoResolver(): void
+    {
+        $metrics = new AppMetrics();
+        $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setMetricInfoResolver(new DummyMetricInfoResolver());
+
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
+        $reqEvt = $this->createMock(RequestEvent::class);
+        $reqEvt->method('getRequest')->willReturn($request);
+
+        $response = new Response('', 200);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
+
+        $metrics->collectStart($reqEvt);
+        $metrics->collectRequest($reqEvt);
+        $metrics->collectResponse($evt);
+        $response = $this->renderer->renderResponse();
+        $content = $response->getContent();
+
+        self::assertStringContainsString('dummy_http_2xx_responses_total{action="GET /test"} 1', $content);
+        self::assertStringContainsString('dummy_http_requests_total{action="GET /test"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET /test",le="0.005"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET /test"} 1', $content);
+    }
+
     public static function microtime($asFloat = false)
     {
         static $sequence = -1;
@@ -168,7 +195,8 @@ class AppMetricsTest extends TestCase
         if (\function_exists($ns.'\microtime')) {
             return;
         }
-        eval(<<<EOPHP
+        eval(
+            <<<EOPHP
 namespace $ns;
 
 function microtime(\$asFloat = false)

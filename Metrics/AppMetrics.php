@@ -42,7 +42,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
-        $this->incRequestsTotal($requestMethod, $metricInfo->getRequestRoute());
+        $this->incRequestsTotal($metricInfo);
     }
 
     public function collectResponse(TerminateEvent $event): void
@@ -51,26 +51,18 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $request = $event->getRequest();
 
         $metricInfo = $this->resolveMetricInfo($request);
-        $requestMethod = $metricInfo->getRequestMethod();
-        $requestRoute = $metricInfo->getRequestRoute();
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            $this->incResponsesTotal('2xx', $requestMethod, $requestRoute);
-        } else {
-            if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
-                $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
-            } else {
-                if ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-                    $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
-                } else {
-                    if ($response->getStatusCode() >= 500) {
-                        $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
-                    }
-                }
-            }
+            $this->incResponsesTotal('2xx', $metricInfo);
+        } elseif ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+            $this->incResponsesTotal('3xx', $metricInfo);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            $this->incResponsesTotal('4xx', $metricInfo);
+        } elseif ($response->getStatusCode() >= 500) {
+            $this->incResponsesTotal('5xx', $metricInfo);
         }
 
-        $this->setRequestDuration(microtime(true) - $this->startedAt, $requestMethod, $requestRoute);
+        $this->setRequestDuration(microtime(true) - $this->startedAt, $metricInfo);
     }
 
     public function collectStart(RequestEvent $event): void
@@ -101,7 +93,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
     }
 
-    private function incRequestsTotal(?string $method = null, ?string $route = null): void
+    private function incRequestsTotal(MetricInfo $metricInfo): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -112,12 +104,12 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
         $counter->inc(['all']);
 
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
+            $counter->inc($metricInfo->getLabels());
         }
     }
 
-    private function incResponsesTotal(string $type, ?string $method = null, ?string $route = null): void
+    private function incResponsesTotal(string $type, MetricInfo $metricInfo): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
@@ -127,12 +119,12 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         );
         $counter->inc(['all']);
 
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
+            $counter->inc($metricInfo->getLabels());
         }
     }
 
-    private function setRequestDuration(float $duration, ?string $method = null, ?string $route = null): void
+    private function setRequestDuration(float $duration, MetricInfo $metricInfo): void
     {
         $histogram = $this->collectionRegistry->getOrRegisterHistogram(
             $this->namespace,
@@ -142,8 +134,8 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         );
         $histogram->observe($duration, ['all']);
 
-        if (null !== $method && null !== $route) {
-            $histogram->observe($duration, [sprintf('%s-%s', $method, $route)]);
+        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
+            $histogram->observe($duration, $metricInfo->getLabels());
         }
     }
 
