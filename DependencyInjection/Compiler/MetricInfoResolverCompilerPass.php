@@ -7,6 +7,7 @@ namespace Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler;
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class MetricInfoResolverCompilerPass implements CompilerPassInterface
 {
@@ -23,7 +24,7 @@ class MetricInfoResolverCompilerPass implements CompilerPassInterface
         }
 
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('setMetricInfoResolver', [$id]);
+            $definition->addMethodCall('setMetricInfoResolver', [new Reference($id)]);
         }
     }
 }
