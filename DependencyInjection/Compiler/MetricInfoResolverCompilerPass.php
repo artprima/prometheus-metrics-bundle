@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class MetricInfoResolverCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $definition = $container->getDefinition(AppMetrics::class);
         $taggedServices = $container->findTaggedServiceIds('prometheus_metrics_bundle.metric_info_resolver');

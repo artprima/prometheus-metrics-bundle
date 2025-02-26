@@ -338,6 +338,19 @@ by the built-in class `Artprima\PrometheusMetricsBundle\Metrics`. Here, in the e
 and the metrics show a single request to the root named `app_dummy_homepage`. Symfony instance is named `dev` here.
 Instance name comes from the server var `HOSTNAME` (`$request->server->get('HOSTNAME')`) and defaults to `dev`.
 
+Override metric format
+=====================
+
+You can customize the way metrics are recorded in storage by implementing `Artprima\PrometheusMetricsBundle\Metrics\MetricInfoResolverInterface`.
+
+Register your custom resolver in `services.yaml` wit the tag:
+
+```yaml
+    App\Metrics\MyMetricInfoResolver:
+        tags:
+            - { name: prometheus_metrics_bundle.metric_info_resolver }
+```
+
 Clear Metrics
 =============
 

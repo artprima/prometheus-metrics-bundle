@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;

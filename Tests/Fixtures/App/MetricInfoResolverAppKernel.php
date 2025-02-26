@@ -10,7 +10,7 @@ use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 
 class MetricInfoResolverAppKernel extends AppKernel
 {
-    protected function build(ContainerBuilder $container) : void
+    protected function build(ContainerBuilder $container): void
     {
         parent::build($container);
 
@@ -18,5 +18,4 @@ class MetricInfoResolverAppKernel extends AppKernel
             ->register('dummy_metric_info_resolver', DummyMetricInfoResolver::class)
             ->addTag('prometheus_metrics_bundle.metric_info_resolver');
     }
-
 }

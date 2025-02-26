@@ -9,8 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class DummyController extends AbstractController
 {
-
-    public function testAction() : JsonResponse
+    public function testAction(): JsonResponse
     {
         return $this->json(['message' => 'Hello World!']);
     }
