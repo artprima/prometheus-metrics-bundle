@@ -48,6 +48,15 @@ class MetricInfo
     }
 
     /**
+     * Return additional labels values.
+     * @return array<string>
+     */
+    public function getAdditionalLabelsValues(): array
+    {
+        return array_values($this->additionalLabels);
+    }
+
+    /**
      * Will return: ['action', 'color'].
      *
      * @return array<string>
@@ -66,7 +75,7 @@ class MetricInfo
     {
         $values = [sprintf('%s-%s', $this->requestMethod, $this->requestRoute)];
 
-        return array_merge($values, array_values($this->getAdditionalLabels()));
+        return array_merge($values, $this->getAdditionalLabelsValues());
     }
 
     /**

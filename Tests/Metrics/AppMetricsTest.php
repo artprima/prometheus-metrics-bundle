@@ -7,6 +7,7 @@ namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolver;
+use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolverWithLabels;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
@@ -175,6 +176,32 @@ class AppMetricsTest extends TestCase
         self::assertStringContainsString('dummy_http_requests_total{action="GET /test"} 1', $content);
         self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET /test",le="0.005"} 1', $content);
         self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET /test"} 1', $content);
+    }
+
+    public function testUseMetricInfoResolverWithLabels(): void
+    {
+        $metrics = new AppMetrics();
+        $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setMetricInfoResolver(new DummyMetricInfoResolverWithLabels());
+
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
+        $reqEvt = $this->createMock(RequestEvent::class);
+        $reqEvt->method('getRequest')->willReturn($request);
+
+        $response = new Response('', 200);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
+
+        $metrics->collectStart($reqEvt);
+        $metrics->collectRequest($reqEvt);
+        $metrics->collectResponse($evt);
+        $response = $this->renderer->renderResponse();
+        $content = $response->getContent();
+
+        static::assertStringContainsString('dummy_http_2xx_responses_total{action="GET /test",color="red"} 1', $content);
+        static::assertStringContainsString('dummy_http_requests_total{action="GET /test",color="red"} 1', $content);
+        static::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET /test",color="red",le="0.005"} 1', $content);
+        static::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET /test",color="red"} 1', $content);
     }
 
     public static function microtime($asFloat = false)
