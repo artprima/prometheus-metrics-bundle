@@ -99,13 +99,13 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'http_requests_total',
             'total request count',
-            ['action']
+            $metricInfo->getLabelNames()
         );
 
-        $counter->inc(['all']);
+        $counter->inc($metricInfo->getLabelForAll());
 
-        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
-            $counter->inc($metricInfo->getLabels());
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $counter->inc($metricInfo->getLabelValues());
         }
     }
 
@@ -115,12 +115,13 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             sprintf('http_%s_responses_total', $type),
             sprintf('total %s response count', $type),
-            ['action']
+            $metricInfo->getLabelNames()
         );
-        $counter->inc(['all']);
 
-        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
-            $counter->inc($metricInfo->getLabels());
+        $counter->inc($metricInfo->getLabelForAll());
+
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $counter->inc($metricInfo->getLabelValues());
         }
     }
 
@@ -130,13 +131,23 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            ['action']
+            $metricInfo->getLabelNames()
         );
-        $histogram->observe($duration, ['all']);
 
-        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
-            $histogram->observe($duration, $metricInfo->getLabels());
+        $histogram->observe($duration, $metricInfo->getLabelForAll());
+
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $histogram->observe($duration, $metricInfo->getLabelValues());
         }
+    }
+
+    private function isMetricInfoValid(MetricInfo $metricInfo): bool
+    {
+        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
+            return true;
+        }
+
+        return false;
     }
 
     private function resolveMetricInfo(Request $request): MetricInfo
