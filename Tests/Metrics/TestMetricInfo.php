@@ -8,7 +8,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricInfo;
 
 class TestMetricInfo extends MetricInfo
 {
-    public function getLabels(): array
+    public function getLabelValues(): array
     {
         return [sprintf('%s %s', $this->getRequestMethod(), $this->getRequestRoute())];
     }
