@@ -15,7 +15,7 @@ class TestMetricInfoWithLabels extends MetricInfo
         return array_merge($values, $this->getAdditionalLabelsValues());
     }
 
-    public function getLabelForAll(): array
+    public function getLabelValueForAll(): array
     {
         return ['all', '-'];
     }

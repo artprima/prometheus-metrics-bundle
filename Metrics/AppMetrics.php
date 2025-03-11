@@ -102,7 +102,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $metricInfo->getLabelNames()
         );
 
-        $counter->inc($metricInfo->getLabelForAll());
+        $counter->inc($metricInfo->getLabelValueForAll());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $counter->inc($metricInfo->getLabelValues());
@@ -118,7 +118,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $metricInfo->getLabelNames()
         );
 
-        $counter->inc($metricInfo->getLabelForAll());
+        $counter->inc($metricInfo->getLabelValueForAll());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $counter->inc($metricInfo->getLabelValues());
@@ -134,7 +134,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $metricInfo->getLabelNames()
         );
 
-        $histogram->observe($duration, $metricInfo->getLabelForAll());
+        $histogram->observe($duration, $metricInfo->getLabelValueForAll());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $histogram->observe($duration, $metricInfo->getLabelValues());

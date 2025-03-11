@@ -49,6 +49,7 @@ class MetricInfo
 
     /**
      * Return additional labels values.
+     *
      * @return array<string>
      */
     public function getAdditionalLabelsValues(): array
@@ -84,7 +85,7 @@ class MetricInfo
      *
      * @return array<string>
      */
-    public function getLabelForAll(): array
+    public function getLabelValueForAll(): array
     {
         return ['all'];
     }
