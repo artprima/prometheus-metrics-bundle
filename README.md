@@ -326,8 +326,8 @@ If you don't use autoconfigure = true, then you will have to add this to your `s
 Custom Labels
 ========================
 
-Create a subscriber and set up your custom label for example `_color` attribute in the request.
-Given this configuration:
+Set up your custom labels by attaching an attribute or a header in the request.
+For example, given the following configuration:
 
 ```yaml
 artprima_prometheus_metrics:
@@ -367,10 +367,11 @@ class RequestSubscriber implements EventSubscriberInterface
 }
 ```
 
-Then the requests will be tracked with the `color` label.
-For example:
-
-`http_2xx_responses_total{action="GET-app_dummy_homepage",color="red"}`
+Requests will be tracked with the `color` label:
+```
+http_2xx_responses_total{action="GET-app_dummy_homepage",color="red"}
+http_2xx_responses_total{action="GET-all",color=""}
+```
 
 
 Default Metrics
