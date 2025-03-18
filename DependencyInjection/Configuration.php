@@ -151,7 +151,7 @@ class Configuration implements ConfigurationInterface
                                 ->cannotBeEmpty()
                             ->end()
                             ->enumNode('type')
-                                ->info('Location of the label value: In the request attribute or in the request header')
+                                ->info('Type of the label value. Where the value will be collected: in the request attribute or in the request header')
                                 ->values(['request_attribute', 'request_header'])
                                 ->cannotBeEmpty()
                             ->end()
