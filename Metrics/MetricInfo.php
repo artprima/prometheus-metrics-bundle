@@ -38,7 +38,7 @@ class MetricInfo
 
     /**
      * Return additional labels values.
-     * Example: ['color'].
+     * Example: ['blue'].
      *
      * @return array<string>
      */
