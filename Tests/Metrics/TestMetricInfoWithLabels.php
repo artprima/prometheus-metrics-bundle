@@ -12,11 +12,6 @@ class TestMetricInfoWithLabels extends MetricInfo
     {
         $values = [sprintf('%s %s', $this->getRequestMethod(), $this->getRequestRoute())];
 
-        return array_merge($values, $this->getAdditionalLabelsValues());
-    }
-
-    public function getLabelValueForAll(): array
-    {
-        return ['all', '-'];
+        return array_merge($values, $this->getAdditionalLabelValues());
     }
 }
