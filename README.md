@@ -75,6 +75,17 @@ artprima_prometheus_metrics:
 
     # ignoring some routes in metrics
     ignored_routes: [some_route_name, another_route_name]
+    
+    # Custom labels that can be added along the "action" label.
+    # You can set up for example: 
+    # http_2xx_responses_total{action="GET-app_dummy_homepage",color="red",client_name="mobile-app"}
+    labels:
+        - name: "color" 
+          type: "request_attribute" 
+          value: "_color"   # Create a subscriber and set up the `_color` attribute in the request.
+        - name: "client_name"
+          type: "request_header" # Create a subscriber and set up the `X-Client-Name` header in the request.
+          value: "X-Client-Name"
 
     # metrics backend
     storage:
@@ -94,7 +105,7 @@ artprima_prometheus_metrics:
         database: ~ # Int value used by redis adapter
         prefix: ~   # String value used by redis and apcu
 
-        # A variable parameter to define additionnal options as key / value.
+        # A variable parameter to define additional options as key / value.
         options:
             foo: bar
 
@@ -311,6 +322,56 @@ If you don't use autoconfigure = true, then you will have to add this to your `s
         tags:
             - { name: prometheus_metrics_bundle.adapter_factory }
 ```
+
+Custom Labels
+========================
+
+Create a subscriber and set up your custom label for example `_color` attribute in the request.
+Given this configuration:
+
+```yaml
+artprima_prometheus_metrics:
+    # ...
+    labels:
+        - name: "color" 
+          type: "request_attribute" 
+          value: "_color"
+        
+```
+
+And configuring your subscriber like this:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace MyApp;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class RequestSubscriber implements EventSubscriberInterface
+{
+    public function onKernelRequest(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+        $request->attributes->set('_color', 'red');
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::REQUEST => 'onKernelRequest',
+        ];
+    }
+}
+```
+
+Then the requests will be tracked with the `color` label.
+For example:
+
+`http_2xx_responses_total{action="GET-app_dummy_homepage",color="red"}`
+
 
 Default Metrics
 ===============
