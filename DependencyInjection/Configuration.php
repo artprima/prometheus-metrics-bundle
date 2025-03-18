@@ -151,7 +151,7 @@ class Configuration implements ConfigurationInterface
                                 ->cannotBeEmpty()
                             ->end()
                             ->enumNode('type')
-                                ->info('Type of metric, where the value will  find value in the request or in , dynamic_header')
+                                ->info('Location of the label value: In the request attribute or in the request header')
                                 ->values(['request_attribute', 'request_header'])
                                 ->cannotBeEmpty()
                             ->end()
