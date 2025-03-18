@@ -24,10 +24,16 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     private float $startedAt = 0;
 
     private ?MetricInfoResolverInterface $metricInfoResolver = null;
+    private ?LabelResolver $labelResolver = null;
 
     public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver): void
     {
         $this->metricInfoResolver = $metricInfoResolver;
+    }
+
+    public function setLabelResolver(LabelResolver $labelResolver): void
+    {
+        $this->labelResolver = $labelResolver;
     }
 
     public function collectRequest(RequestEvent $event): void
@@ -99,10 +105,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'http_requests_total',
             'total request count',
-            $metricInfo->getLabelNames()
+            $this->getResolvedLabels()
         );
 
-        $counter->inc($metricInfo->getLabelValueForAll());
+        $counter->inc($this->getAllLabelValues());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $counter->inc($metricInfo->getLabelValues());
@@ -115,10 +121,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             sprintf('http_%s_responses_total', $type),
             sprintf('total %s response count', $type),
-            $metricInfo->getLabelNames()
+            $this->getResolvedLabels()
         );
 
-        $counter->inc($metricInfo->getLabelValueForAll());
+        $counter->inc($this->getAllLabelValues());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $counter->inc($metricInfo->getLabelValues());
@@ -131,10 +137,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            $metricInfo->getLabelNames()
+            $this->getResolvedLabels()
         );
 
-        $histogram->observe($duration, $metricInfo->getLabelValueForAll());
+        $histogram->observe($duration, $this->getAllLabelValues());
 
         if ($this->isMetricInfoValid($metricInfo)) {
             $histogram->observe($duration, $metricInfo->getLabelValues());
@@ -152,10 +158,42 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private function resolveMetricInfo(Request $request): MetricInfo
     {
+        $labelValues = $this->getResolvedLabelValues($request);
+
         if (null === $this->metricInfoResolver) {
-            return new MetricInfo($request->getMethod(), $request->attributes->get('_route'));
+            return new MetricInfo($request->getMethod(), $request->attributes->get('_route'), $labelValues);
         }
 
-        return $this->metricInfoResolver->resolveData($request);
+        return $this->metricInfoResolver->resolveData($request, $labelValues);
+    }
+
+    public function getResolvedLabels(): array
+    {
+        if ($this->labelResolver) {
+            return array_merge(['action'], $this->labelResolver->getLabelNames());
+        }
+
+        return ['action'];
+    }
+
+    public function getResolvedLabelValues(Request $request): array
+    {
+        if ($this->labelResolver) {
+            return array_values($this->labelResolver->resolveLabels($request));
+        }
+
+        return [];
+    }
+
+    public function getAllLabelValues(): array
+    {
+        if ($this->labelResolver) {
+            $resolveLabels = $this->labelResolver->getLabelNames();
+
+            // Fill the "all" label with empty string, to match the number of labels.
+            return array_merge(['all'], array_fill(0, count($resolveLabels), ''));
+        }
+
+        return ['all'];
     }
 }
