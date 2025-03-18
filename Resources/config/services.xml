@@ -77,5 +77,9 @@
              class="Artprima\PrometheusMetricsBundle\StorageFactory\APCngFactory">
         <tag name="prometheus_metrics_bundle.adapter_factory" />
     </service>
+
+    <service id="Artprima\PrometheusMetricsBundle\Metrics\LabelResolver"
+             class="Artprima\PrometheusMetricsBundle\Metrics\LabelResolver">
+    </service>
 </services>
 </container>
