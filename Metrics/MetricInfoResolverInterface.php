@@ -18,5 +18,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface MetricInfoResolverInterface
 {
+    /**
+     * Resolve MetricInfo object based on the HttpFoundation request.
+     *
+     * @param Request $request
+     * @param array<string> $labelValues
+     */
     public function resolveData(Request $request, array $labelValues = []): MetricInfo;
 }

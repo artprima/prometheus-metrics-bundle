@@ -12,6 +12,9 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class LabelResolverCompilerPass implements CompilerPassInterface
 {
+    /**
+     * It checks if the labels config is defined in the configuration and adds it to the app metrics service.
+     */
     public function process(ContainerBuilder $container): void
     {
         $definition = $container->getDefinition(AppMetrics::class);
