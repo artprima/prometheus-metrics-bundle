@@ -37,8 +37,7 @@ class MetricInfo
     }
 
     /**
-     * Return additional labels values.
-     * Example: ['blue'].
+     * Return additional labels values. Example: ['red'].
      *
      * @return array<string>
      */
@@ -48,14 +47,16 @@ class MetricInfo
     }
 
     /**
-     * Will return: ['GET-/api/v1/users', 'blue'].
+     * Will return: ['GET-/api/v1/users'] if no additional labels are defined.
+     * 
+     * Will return: ['GET-/api/v1/users', 'red', 'mobile-app'] if additional labels are defined as ['color', 'client_name'].
      *
      * @return array<string>
      */
     public function getLabelValues(): array
     {
-        $values = [sprintf('%s-%s', $this->requestMethod, $this->requestRoute)];
+        $action = sprintf('%s-%s', $this->requestMethod, $this->requestRoute);
 
-        return array_merge($values, $this->getAdditionalLabelValues());
+        return array_merge([$action], $this->getAdditionalLabelValues());
     }
 }
