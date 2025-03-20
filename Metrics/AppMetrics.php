@@ -105,7 +105,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'http_requests_total',
             'total request count',
-            $this->getResolvedLabels()
+            $this->getLabelNames()
         );
 
         $counter->inc($this->getAllLabelValues());
@@ -121,7 +121,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             sprintf('http_%s_responses_total', $type),
             sprintf('total %s response count', $type),
-            $this->getResolvedLabels()
+            $this->getLabelNames()
         );
 
         $counter->inc($this->getAllLabelValues());
@@ -137,7 +137,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            $this->getResolvedLabels()
+            $this->getLabelNames()
         );
 
         $histogram->observe($duration, $this->getAllLabelValues());
@@ -167,33 +167,18 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         return $this->metricInfoResolver->resolveData($request, $labelValues);
     }
 
-    public function getResolvedLabels(): array
+    public function getLabelNames(): array
     {
-        if ($this->labelResolver) {
-            return array_merge(['action'], $this->labelResolver->getLabelNames());
-        }
-
-        return ['action'];
+        return $this->labelResolver->getLabelNamesIncludingAction();
     }
 
     public function getResolvedLabelValues(Request $request): array
     {
-        if ($this->labelResolver) {
-            return array_values($this->labelResolver->resolveLabels($request));
-        }
-
-        return [];
+        return $this->labelResolver->getResolvedLabelValues($request);
     }
 
     public function getAllLabelValues(): array
     {
-        if ($this->labelResolver) {
-            $resolveLabels = $this->labelResolver->getLabelNames();
-
-            // Fill the "all" label with empty string, to match the number of labels.
-            return array_merge(['all'], array_fill(0, count($resolveLabels), ''));
-        }
-
-        return ['all'];
+        return $this->labelResolver->getAllLabelValues();
     }
 }

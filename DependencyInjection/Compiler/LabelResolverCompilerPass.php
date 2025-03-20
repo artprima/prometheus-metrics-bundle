@@ -13,17 +13,11 @@ use Symfony\Component\DependencyInjection\Reference;
 class LabelResolverCompilerPass implements CompilerPassInterface
 {
     /**
-     * It checks if the labels config is defined in the configuration and adds it to the app metrics service.
+     * Setup setLabelResolver method call for AppMetrics service.
      */
     public function process(ContainerBuilder $container): void
     {
         $definition = $container->getDefinition(AppMetrics::class);
-
-        if ($container->hasParameter('prometheus_metrics_bundle.labels')) {
-            $labelConfig = $container->getParameter('prometheus_metrics_bundle.labels');
-            if (!empty($labelConfig)) {
-                $definition->addMethodCall('setLabelResolver', [new Reference(LabelResolver::class)]);
-            }
-        }
+        $definition->addMethodCall('setLabelResolver', [new Reference(LabelResolver::class)]);
     }
 }

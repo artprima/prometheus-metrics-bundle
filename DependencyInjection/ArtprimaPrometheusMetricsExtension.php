@@ -60,8 +60,6 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         if (isset($config['labels'])) {
             $labelResolver = $container->getDefinition(LabelResolver::class);
             $labelResolver->addMethodCall('setLabelConfigs', [$config['labels']]);
-
-            $container->setParameter('prometheus_metrics_bundle.labels', $config['labels']);
         }
 
         $this->prepareAdapterParameters($config, $container);

@@ -33,12 +33,14 @@ class AppMetricsTest extends TestCase
         $this->namespace = 'dummy';
         $this->collectionRegistry = new CollectorRegistry(new InMemory());
         $this->renderer = new Renderer($this->collectionRegistry);
+        $this->labelResolver = new LabelResolver();
     }
 
     public function testCollectRequest(): void
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
@@ -58,6 +60,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
         $evt = $this->createMock(RequestEvent::class);
@@ -93,6 +96,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', $code);
@@ -116,6 +120,7 @@ class AppMetricsTest extends TestCase
 
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $reqEvt = $this->createMock(RequestEvent::class);
@@ -158,6 +163,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolver());
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
@@ -185,7 +191,6 @@ class AppMetricsTest extends TestCase
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolverWithLabels());
-
         $labels = [
             ['name' => 'color', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => 'color'],
             ['name' => 'client_name', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-Client-Name'],
