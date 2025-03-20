@@ -82,9 +82,9 @@ artprima_prometheus_metrics:
     labels:
         - name: "color" 
           type: "request_attribute" 
-          value: "_color"   # Create a subscriber and set up the `_color` attribute in the request.
+          value: "_color"   # Create a subscriber and set up the `_color` attribute in the request. See example below.
         - name: "client_name"
-          type: "request_header" # Create a subscriber and set up the `X-Client-Name` header in the request.
+          type: "request_header" # Create a subscriber and set up the `X-Client-Name` header in the request. See example below.
           value: "X-Client-Name"
 
     # metrics backend
