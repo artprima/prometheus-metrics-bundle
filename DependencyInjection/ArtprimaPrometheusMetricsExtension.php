@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
 use Symfony\Component\Config\FileLocator;
@@ -55,6 +56,11 @@ class ArtprimaPrometheusMetricsExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        if (isset($config['labels'])) {
+            $labelResolver = $container->getDefinition(LabelResolver::class);
+            $labelResolver->addMethodCall('setLabelConfigs', [$config['labels']]);
+        }
 
         $this->prepareAdapterParameters($config, $container);
     }

@@ -17,13 +17,13 @@ class MetricInfo
 {
     private string $requestMethod;
     private string $requestRoute;
-    private array $additionalLabels;
+    private array $additionalLabelValues;
 
-    public function __construct(string $requestMethod, string $requestRoute, array $additionalLabels = [])
+    public function __construct(string $requestMethod, string $requestRoute, array $additionalLabelValues = [])
     {
         $this->requestMethod = $requestMethod;
         $this->requestRoute = $requestRoute;
-        $this->additionalLabels = $additionalLabels;
+        $this->additionalLabelValues = $additionalLabelValues;
     }
 
     public function getRequestMethod(): ?string
@@ -37,56 +37,26 @@ class MetricInfo
     }
 
     /**
-     * Additional labels that can be used in the metrics.
-     * For example: ['color' => 'blue'].
+     * Return additional labels values. Example: ['red'].
      *
      * @return array<string>
      */
-    public function getAdditionalLabels(): array
+    public function getAdditionalLabelValues(): array
     {
-        return $this->additionalLabels;
+        return $this->additionalLabelValues;
     }
 
     /**
-     * Return additional labels values.
-     *
-     * @return array<string>
-     */
-    public function getAdditionalLabelsValues(): array
-    {
-        return array_values($this->additionalLabels);
-    }
-
-    /**
-     * Will return: ['action', 'color'].
-     *
-     * @return array<string>
-     */
-    public function getLabelNames(): array
-    {
-        return array_merge(['action'], array_keys($this->getAdditionalLabels()));
-    }
-
-    /**
-     * Will return: ['GET-/api/v1/users', 'blue'].
+     * Will return: ['GET-/api/v1/users'] if no additional labels are defined.
+     * 
+     * Will return: ['GET-/api/v1/users', 'red', 'mobile-app'] if additional labels are defined as ['color', 'client_name'].
      *
      * @return array<string>
      */
     public function getLabelValues(): array
     {
-        $values = [sprintf('%s-%s', $this->requestMethod, $this->requestRoute)];
+        $action = sprintf('%s-%s', $this->requestMethod, $this->requestRoute);
 
-        return array_merge($values, $this->getAdditionalLabelsValues());
-    }
-
-    /**
-     * Used when you want to increment the metric for all labels.
-     * Default example is ['all'].
-     *
-     * @return array<string>
-     */
-    public function getLabelValueForAll(): array
-    {
-        return ['all'];
+        return array_merge([$action], $this->getAdditionalLabelValues());
     }
 }

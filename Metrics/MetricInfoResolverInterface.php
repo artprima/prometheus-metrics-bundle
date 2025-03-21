@@ -18,5 +18,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface MetricInfoResolverInterface
 {
-    public function resolveData(Request $request): MetricInfo;
+    /**
+     * Resolve MetricInfo object based on the HttpFoundation request.
+     *
+     * Labels values are resolved from the request and passed to this method.
+     * For example, if labels are defined as ['color', 'client_name'],
+     * and request has 'color' => 'red' and 'client_name' => 'mobile-app',
+     * then labelValues will be ['red', 'mobile-app'].
+     *
+     * @param array<string> $labelValues
+     */
+    public function resolveData(Request $request, array $labelValues = []): MetricInfo;
 }

@@ -10,11 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DummyMetricInfoResolver implements MetricInfoResolverInterface
 {
-    public function resolveData(Request $request): MetricInfo
+    public function resolveData(Request $request, array $labelValues = []): MetricInfo
     {
         return new TestMetricInfo(
             $request->getMethod(),
-            $request->getPathInfo()
+            $request->getPathInfo(),
+            $labelValues
         );
     }
 }

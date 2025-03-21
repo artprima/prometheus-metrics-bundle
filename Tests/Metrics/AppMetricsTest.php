@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolver;
 use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolverWithLabels;
@@ -31,12 +33,14 @@ class AppMetricsTest extends TestCase
         $this->namespace = 'dummy';
         $this->collectionRegistry = new CollectorRegistry(new InMemory());
         $this->renderer = new Renderer($this->collectionRegistry);
+        $this->labelResolver = new LabelResolver();
     }
 
     public function testCollectRequest(): void
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
@@ -56,6 +60,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
         $evt = $this->createMock(RequestEvent::class);
@@ -91,6 +96,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', $code);
@@ -114,6 +120,7 @@ class AppMetricsTest extends TestCase
 
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $reqEvt = $this->createMock(RequestEvent::class);
@@ -156,6 +163,7 @@ class AppMetricsTest extends TestCase
     {
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
+        $metrics->setLabelResolver($this->labelResolver);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolver());
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
@@ -183,8 +191,20 @@ class AppMetricsTest extends TestCase
         $metrics = new AppMetrics();
         $metrics->init($this->namespace, $this->collectionRegistry);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolverWithLabels());
+        $labels = [
+            ['name' => 'color', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => 'color'],
+            ['name' => 'client_name', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-Client-Name'],
+        ];
+        $metrics->setLabelResolver((new LabelResolver())->setLabelConfigs($labels));
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
+
+        // Setting color attribute
+        $request->attributes->set('color', 'red');
+
+        // Setting X-Client-Name header
+        $request->headers->set('X-Client-Name', 'mobile-app');
+
         $reqEvt = $this->createMock(RequestEvent::class);
         $reqEvt->method('getRequest')->willReturn($request);
 
@@ -198,10 +218,10 @@ class AppMetricsTest extends TestCase
         $response = $this->renderer->renderResponse();
         $content = $response->getContent();
 
-        static::assertStringContainsString('dummy_http_2xx_responses_total{action="GET /test",color="red"} 1', $content);
-        static::assertStringContainsString('dummy_http_requests_total{action="GET /test",color="red"} 1', $content);
-        static::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET /test",color="red",le="0.005"} 1', $content);
-        static::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET /test",color="red"} 1', $content);
+        static::assertStringContainsString('dummy_http_2xx_responses_total{action="GET /test",color="red",client_name="mobile-app"} 1', $content);
+        static::assertStringContainsString('dummy_http_requests_total{action="GET /test",color="red",client_name="mobile-app"} 1', $content);
+        static::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="GET /test",color="red",client_name="mobile-app",le="0.005"} 1', $content);
+        static::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="GET /test",color="red",client_name="mobile-app"} 1', $content);
     }
 
     public static function microtime($asFloat = false)
