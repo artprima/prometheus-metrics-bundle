@@ -192,8 +192,8 @@ class AppMetricsTest extends TestCase
         $metrics->init($this->namespace, $this->collectionRegistry);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolverWithLabels());
         $labels = [
-            new LabelConfig('color', LabelConfig::REQUEST_ATTRIBUTE,'color'),
-            new LabelConfig('client_name', LabelConfig::REQUEST_HEADER,'X-Client-Name'),
+            new LabelConfig('color', LabelConfig::REQUEST_ATTRIBUTE, 'color'),
+            new LabelConfig('client_name', LabelConfig::REQUEST_HEADER, 'X-Client-Name'),
         ];
         $metrics->setLabelResolver(new LabelResolver($labels));
 
