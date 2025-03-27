@@ -13,14 +13,23 @@ use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\MetricInfoReso
  * @see MetricInfoResolverInterface
  * @see MetricInfoResolverCompilerPass
  */
-class MetricInfo
+final class MetricInfo
 {
     private string $requestMethod;
     private string $requestRoute;
     private array $additionalLabelValues;
 
-    public function __construct(string $requestMethod, string $requestRoute, array $additionalLabelValues = [])
+    /**
+     * Formats the action label: Example: '%s %s'.
+     * The first %s will be replaced with the request method and the second %s with the request route.
+     *
+     * @param string $actionFormat
+     */
+    private string $actionFormat;
+
+    public function __construct(string $actionFormat, string $requestMethod, string $requestRoute, array $additionalLabelValues = [])
     {
+        $this->actionFormat = $actionFormat;
         $this->requestMethod = $requestMethod;
         $this->requestRoute = $requestRoute;
         $this->additionalLabelValues = $additionalLabelValues;
@@ -55,7 +64,7 @@ class MetricInfo
      */
     public function getLabelValues(): array
     {
-        $action = sprintf('%s-%s', $this->requestMethod, $this->requestRoute);
+        $action = sprintf($this->actionFormat, $this->requestMethod, $this->requestRoute);
 
         return array_merge([$action], $this->getAdditionalLabelValues());
     }

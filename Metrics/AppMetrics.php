@@ -161,7 +161,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $labelValues = $this->getResolvedLabelValues($request);
 
         if (null === $this->metricInfoResolver) {
-            return new MetricInfo($request->getMethod(), $request->attributes->get('_route'), $labelValues);
+            return new MetricInfo('%s-%s', $request->getMethod(), $request->attributes->get('_route'), $labelValues);
         }
 
         return $this->metricInfoResolver->resolveData($request, $labelValues);
