@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
@@ -58,8 +59,15 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $loader->load('services.xml');
 
         if (isset($config['labels'])) {
-            $labelResolver = $container->getDefinition(LabelResolver::class);
-            $labelResolver->addMethodCall('setLabelConfigs', [$config['labels']]);
+            $labelConfigs = [];
+            foreach ($config['labels'] as $label) {
+                $labelConfigs[] = new LabelConfig(
+                    (string) $label['name'],
+                    (string) $label['type'],
+                    (string) $label['value']
+                );
+            }
+            $container->getDefinition(LabelResolver::class)->setArguments([$labelConfigs]);
         }
 
         $this->prepareAdapterParameters($config, $container);

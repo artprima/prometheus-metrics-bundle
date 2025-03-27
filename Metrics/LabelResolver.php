@@ -16,18 +16,12 @@ class LabelResolver
     /**
      * Setup label configurations, based in yml configuration.
      *
-     * @param array<array{name: string, type: string, value: string}> $labelConfigs
+     * @param LabelConfig[] $labelConfigs
      */
-    public function setLabelConfigs(array $labelConfigs): self
+    public function __construct(array $labelConfigs = [])
     {
-        $this->labelConfigs = array_map(
-            fn (array $config): LabelConfig => LabelConfig::createFromArray($config),
-            $labelConfigs
-        );
-
+        $this->labelConfigs = $labelConfigs;
         $this->labelNames = array_map(fn (LabelConfig $config): string => $config->name, $this->labelConfigs);
-
-        return $this;
     }
 
     /**

@@ -48,7 +48,7 @@ class MetricInfo
 
     /**
      * Will return: ['GET-/api/v1/users'] if no additional labels are defined.
-     * 
+     *
      * Will return: ['GET-/api/v1/users', 'red', 'mobile-app'] if additional labels are defined as ['color', 'client_name'].
      *
      * @return array<string>

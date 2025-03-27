@@ -33,7 +33,7 @@ class AppMetricsTest extends TestCase
         $this->namespace = 'dummy';
         $this->collectionRegistry = new CollectorRegistry(new InMemory());
         $this->renderer = new Renderer($this->collectionRegistry);
-        $this->labelResolver = new LabelResolver();
+        $this->labelResolver = new LabelResolver([]);
     }
 
     public function testCollectRequest(): void
@@ -192,10 +192,10 @@ class AppMetricsTest extends TestCase
         $metrics->init($this->namespace, $this->collectionRegistry);
         $metrics->setMetricInfoResolver(new DummyMetricInfoResolverWithLabels());
         $labels = [
-            ['name' => 'color', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => 'color'],
-            ['name' => 'client_name', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-Client-Name'],
+            new LabelConfig('color', LabelConfig::REQUEST_ATTRIBUTE,'color'),
+            new LabelConfig('client_name', LabelConfig::REQUEST_HEADER,'X-Client-Name'),
         ];
-        $metrics->setLabelResolver((new LabelResolver())->setLabelConfigs($labels));
+        $metrics->setLabelResolver(new LabelResolver($labels));
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
 
