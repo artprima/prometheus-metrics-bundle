@@ -12,10 +12,11 @@ class DummyMetricInfoResolver implements MetricInfoResolverInterface
 {
     public function resolveData(Request $request, array $labelValues = []): MetricInfo
     {
-        return new TestMetricInfo(
-            $request->getMethod(),
-            $request->getPathInfo(),
-            $labelValues
+        return new MetricInfo(
+            [
+                sprintf('%s %s', $request->getMethod(), $request->getPathInfo()),
+                ...$labelValues, // Additional labels.
+            ]
         );
     }
 }

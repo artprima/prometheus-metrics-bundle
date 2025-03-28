@@ -13,50 +13,22 @@ use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\MetricInfoReso
  * @see MetricInfoResolverInterface
  * @see MetricInfoResolverCompilerPass
  */
-class MetricInfo
+final class MetricInfo
 {
-    private string $requestMethod;
-    private string $requestRoute;
-    private array $additionalLabelValues;
+    private array $labelValues;
 
-    public function __construct(string $requestMethod, string $requestRoute, array $additionalLabelValues = [])
+    public function __construct(array $labelValues = [])
     {
-        $this->requestMethod = $requestMethod;
-        $this->requestRoute = $requestRoute;
-        $this->additionalLabelValues = $additionalLabelValues;
-    }
-
-    public function getRequestMethod(): ?string
-    {
-        return $this->requestMethod;
-    }
-
-    public function getRequestRoute(): ?string
-    {
-        return $this->requestRoute;
+        $this->labelValues = $labelValues;
     }
 
     /**
-     * Return additional labels values. Example: ['red'].
-     *
-     * @return array<string>
-     */
-    public function getAdditionalLabelValues(): array
-    {
-        return $this->additionalLabelValues;
-    }
-
-    /**
-     * Will return: ['GET-/api/v1/users'] if no additional labels are defined.
-     * 
-     * Will return: ['GET-/api/v1/users', 'red', 'mobile-app'] if additional labels are defined as ['color', 'client_name'].
+     * Will return: ['GET-/api/v1/users', 'red', 'mobile-app'].
      *
      * @return array<string>
      */
     public function getLabelValues(): array
     {
-        $action = sprintf('%s-%s', $this->requestMethod, $this->requestRoute);
-
-        return array_merge([$action], $this->getAdditionalLabelValues());
+        return $this->labelValues;
     }
 }

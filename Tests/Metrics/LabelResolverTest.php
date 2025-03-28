@@ -11,41 +11,33 @@ use Symfony\Component\HttpFoundation\Request;
 
 class LabelResolverTest extends TestCase
 {
-    private LabelResolver $labelResolver;
-
-    protected function setUp(): void
-    {
-        $this->labelResolver = new LabelResolver();
-    }
-
     public function testGetLabelNames(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
-            ['name' => 'client', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-Client-Name'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
+            new LabelConfig('client', LabelConfig::REQUEST_ATTRIBUTE, 'X-Client-Name'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         $expectedNames = ['owner', 'team', 'client'];
-        $this->assertEquals($expectedNames, $this->labelResolver->getLabelNames());
+        $this->assertEquals($expectedNames, $labelResolver->getLabelNames());
     }
 
     public function testGetLabelNamesNoConfig(): void
     {
-        $this->labelResolver->setLabelConfigs([]);
-        $this->assertEquals([], $this->labelResolver->getLabelNames());
+        $this->assertEquals([], (new LabelResolver())->getLabelNames());
     }
 
     public function testResolveLabelsWithRequestAttributes(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         $request = new Request();
         $request->attributes->set('_owner', 'users-squad');
@@ -56,17 +48,17 @@ class LabelResolverTest extends TestCase
             'team' => 'team-123',
         ];
 
-        $this->assertEquals($expectedLabels, $this->labelResolver->resolveLabels($request));
+        $this->assertEquals($expectedLabels, $labelResolver->resolveLabels($request));
     }
 
     public function testGetLabelNamesIncludingAction(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         $request = new Request();
         $request->attributes->set('_owner', 'users-squad');
@@ -78,17 +70,17 @@ class LabelResolverTest extends TestCase
             'team',
         ];
 
-        $this->assertEquals($expectedLabels, $this->labelResolver->getLabelNamesIncludingAction());
+        $this->assertEquals($expectedLabels, $labelResolver->getLabelNamesIncludingAction());
     }
 
     public function testGetResolvedLabelValues(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         $request = new Request();
         $request->attributes->set('_owner', 'users-squad');
@@ -99,42 +91,41 @@ class LabelResolverTest extends TestCase
             'team-123',
         ];
 
-        $this->assertEquals($expectedLabels, $this->labelResolver->getResolvedLabelValues($request));
+        $this->assertEquals($expectedLabels, $labelResolver->getResolvedLabelValues($request));
     }
 
-    public function testgetAllLabelValues(): void
+    public function testGetAllLabelValues(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
         $expectedLabels = [
             'all',
             '',
             '',
         ];
-        $this->assertEquals($expectedLabels, $this->labelResolver->getAllLabelValues());
+        $this->assertEquals($expectedLabels, $labelResolver->getAllLabelValues());
     }
 
     public function testGetAllLabelValuesNoLabelConfig(): void
     {
-        $this->labelResolver->setLabelConfigs([]);
         $expectedLabels = [
             'all',
         ];
-        $this->assertEquals($expectedLabels, $this->labelResolver->getAllLabelValues());
+        $this->assertEquals($expectedLabels, (new LabelResolver())->getAllLabelValues());
     }
 
     public function testResolveLabelsWithRequestHeaders(): void
     {
         $labelConfigs = [
-            ['name' => 'client', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-Client-Name'],
-            ['name' => 'version', 'type' => LabelConfig::REQUEST_HEADER, 'value' => 'X-App-Version'],
+            new LabelConfig('client', LabelConfig::REQUEST_HEADER, 'X-Client-Name'),
+            new LabelConfig('version', LabelConfig::REQUEST_HEADER, 'X-App-Version'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         $request = new Request();
         $request->headers->set('X-Client-Name', 'mobile-app');
@@ -145,17 +136,17 @@ class LabelResolverTest extends TestCase
             'version' => '1.2.3',
         ];
 
-        $this->assertEquals($expectedLabels, $this->labelResolver->resolveLabels($request));
+        $this->assertEquals($expectedLabels, $labelResolver->resolveLabels($request));
     }
 
     public function testResolveLabelsWithMissingValuesInRequest(): void
     {
         $labelConfigs = [
-            ['name' => 'owner', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_owner'],
-            ['name' => 'team', 'type' => LabelConfig::REQUEST_ATTRIBUTE, 'value' => '_team'],
+            new LabelConfig('owner', LabelConfig::REQUEST_ATTRIBUTE, '_owner'),
+            new LabelConfig('team', LabelConfig::REQUEST_ATTRIBUTE, '_team'),
         ];
 
-        $this->labelResolver->setLabelConfigs($labelConfigs);
+        $labelResolver = new LabelResolver($labelConfigs);
 
         // We only set the _owner and not the _team, _team should be empty string.
         $request = new Request();
@@ -166,6 +157,6 @@ class LabelResolverTest extends TestCase
             'team' => '',
         ];
 
-        $this->assertEquals($expectedLabels, $this->labelResolver->resolveLabels($request));
+        $this->assertEquals($expectedLabels, $labelResolver->resolveLabels($request));
     }
 }

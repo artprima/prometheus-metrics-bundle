@@ -19,13 +19,4 @@ class LabelConfig
         // Throws an exception if the label name is invalid according to the Prometheus specification.
         Collector::assertValidLabel($name);
     }
-
-    public static function createFromArray(array $config): self
-    {
-        return new self(
-            (string) $config['name'],
-            (string) $config['type'],
-            (string) $config['value']
-        );
-    }
 }
