@@ -40,7 +40,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     {
         $request = $event->getRequest();
         $metricInfo = $this->resolveMetricInfo($request);
-        $requestMethod = $metricInfo->getRequestMethod();
+        $requestMethod = $request->getMethod();
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
@@ -149,7 +149,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private function isMetricInfoValid(MetricInfo $metricInfo): bool
     {
-        if (null !== $metricInfo->getRequestMethod() && null !== $metricInfo->getRequestRoute()) {
+        if ([] !== $metricInfo->getLabelValues()) {
             return true;
         }
 
@@ -161,7 +161,9 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $labelValues = $this->getResolvedLabelValues($request);
 
         if (null === $this->metricInfoResolver) {
-            return new MetricInfo('%s-%s', $request->getMethod(), $request->attributes->get('_route'), $labelValues);
+            $action = sprintf('%s-%s', $request->getMethod(), $request->attributes->get('_route'));
+
+            return new MetricInfo([$action, ...$labelValues]);
         }
 
         return $this->metricInfoResolver->resolveData($request, $labelValues);
