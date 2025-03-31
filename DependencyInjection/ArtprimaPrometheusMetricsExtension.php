@@ -12,6 +12,7 @@ use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -59,15 +60,20 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $loader->load('services.xml');
 
         if (isset($config['labels'])) {
-            $labelConfigs = [];
-            foreach ($config['labels'] as $label) {
-                $labelConfigs[] = new LabelConfig(
-                    (string) $label['name'],
-                    (string) $label['type'],
-                    (string) $label['value']
-                );
+            $labelConfigServices = [];
+            foreach ($config['labels'] as $index => $label) {
+                $serviceId = 'prometheus_metrics_bundle.label_config_'.$index;
+                $container->register($serviceId, LabelConfig::class)
+                    ->setArguments([
+                        (string) $label['name'],
+                        (string) $label['type'],
+                        (string) $label['value'],
+                    ]);
+                $labelConfigServices[] = new Reference($serviceId);
             }
-            $container->getDefinition(LabelResolver::class)->setArguments([$labelConfigs]);
+
+            $container->getDefinition(LabelResolver::class)
+                ->setArguments([$labelConfigServices]);
         }
 
         $this->prepareAdapterParameters($config, $container);
