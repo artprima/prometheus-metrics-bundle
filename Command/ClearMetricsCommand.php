@@ -17,16 +17,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('artprima:prometheus:metrics:clear', 'Clear all collected metrics from storage.')]
 class ClearMetricsCommand extends Command
 {
-    /**
-     * @var Adapter
-     */
-    private $storage;
-
-    public function __construct(Adapter $storage)
+    public function __construct(private readonly Adapter $storage)
     {
         parent::__construct(null);
-
-        $this->storage = $storage;
     }
 
     protected function configure(): void
@@ -40,7 +33,7 @@ class ClearMetricsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->writeln(sprintf('Clearing storage from <comment>%s</comment>', get_class($this->storage)));
+        $io->writeln(sprintf('Clearing storage from <comment>%s</comment>', $this->storage::class));
 
         $this->storage->wipeStorage();
 

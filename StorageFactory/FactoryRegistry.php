@@ -58,7 +58,7 @@ class FactoryRegistry
     {
         // Only parsing dsn as url: legacy use case.
         // This will manage non url value as scheme.
-        if (false === strpos($dsn, ':')) {
+        if (!str_contains($dsn, ':')) {
             return ['scheme' => $dsn];
         }
 
@@ -71,7 +71,7 @@ class FactoryRegistry
         $options = array_map('rawurldecode', $options);
 
         // Manage the "driver:var1=value1;var2=value2" synthax.
-        if (isset($options['path']) && !isset($options['query']) && false !== strpos($options['path'], ';')) {
+        if (isset($options['path']) && !isset($options['query']) && str_contains($options['path'], ';')) {
             $options['query'] = str_replace(';', '&', $options['path']);
             unset($options['path']);
         }
