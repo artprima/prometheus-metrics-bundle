@@ -74,7 +74,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         try {
             // the trick with try/catch lets us setting the instance name only once
             $this->collectionRegistry->getGauge($this->namespace, $name);
-        } catch (MetricNotFoundException $e) {
+        } catch (MetricNotFoundException) {
             /** @noinspection PhpUnhandledExceptionInspection */
             $gauge = $this->collectionRegistry->registerGauge(
                 $this->namespace,

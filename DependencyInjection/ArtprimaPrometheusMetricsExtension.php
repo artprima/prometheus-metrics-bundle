@@ -34,7 +34,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $namespace = $container->resolveEnvPlaceholders($config['namespace'], true);
 
         // see: https://github.com/artprima/prometheus-metrics-bundle/issues/32
-        if (1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $namespace)) {
+        if (1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', (string) $namespace)) {
             throw new \InvalidArgumentException('Invalid namespace. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$');
         }
 

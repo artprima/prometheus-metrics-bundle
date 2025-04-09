@@ -30,14 +30,8 @@ class MetricsCollectorListener implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private MetricsCollectorRegistry $metricsCollectors;
-
-    private array $ignoredRoutes;
-
-    public function __construct(MetricsCollectorRegistry $metricsCollectors, array $ignoredRoutes = ['prometheus_bundle_prometheus'])
+    public function __construct(private MetricsCollectorRegistry $metricsCollectors, private array $ignoredRoutes = ['prometheus_bundle_prometheus'])
     {
-        $this->metricsCollectors = $metricsCollectors;
-        $this->ignoredRoutes = $ignoredRoutes;
     }
 
     public function onKernelRequestPre(RequestEvent $event): void
@@ -57,7 +51,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'request_collector', 'class' => get_class($collector)]
+                        ['from' => 'request_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -86,7 +80,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'request_collector', 'class' => get_class($collector)]
+                        ['from' => 'request_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -111,7 +105,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -136,7 +130,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -161,7 +155,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -181,7 +175,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -201,7 +195,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
@@ -221,7 +215,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
                 if ($this->logger) {
                     $this->logger->error(
                         $e->getMessage(),
-                        ['from' => 'response_collector', 'class' => get_class($collector)]
+                        ['from' => 'response_collector', 'class' => $collector::class]
                     );
                 }
             }
