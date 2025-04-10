@@ -81,6 +81,21 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $this->startedAt = microtime(true);
     }
 
+    public function getLabelNames(): array
+    {
+        return $this->labelResolver->getLabelNamesIncludingAction();
+    }
+
+    public function getResolvedLabelValues(Request $request): array
+    {
+        return $this->labelResolver->getResolvedLabelValues($request);
+    }
+
+    public function getAllLabelValues(): array
+    {
+        return $this->labelResolver->getAllLabelValues();
+    }
+
     private function setInstance(string $value): void
     {
         $name = 'instance_name';
@@ -167,20 +182,5 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
 
         return $this->metricInfoResolver->resolveData($request, $labelValues);
-    }
-
-    public function getLabelNames(): array
-    {
-        return $this->labelResolver->getLabelNamesIncludingAction();
-    }
-
-    public function getResolvedLabelValues(Request $request): array
-    {
-        return $this->labelResolver->getResolvedLabelValues($request);
-    }
-
-    public function getAllLabelValues(): array
-    {
-        return $this->labelResolver->getAllLabelValues();
     }
 }

@@ -405,7 +405,7 @@ Override metric format
 
 You can customize the way metrics are recorded in storage by implementing `Artprima\PrometheusMetricsBundle\Metrics\MetricInfoResolverInterface`.
 
-Register your custom resolver in `services.yaml` wit the tag:
+Register your custom resolver in `services.yaml` with the tag:
 
 ```yaml
     App\Metrics\MyMetricInfoResolver:
