@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\IgnoredRoutesPass;
+use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\MetricInfoResolverCompilerPass;
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\RegisterMetricsCollectorPass;
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,5 +20,6 @@ class ArtprimaPrometheusMetricsBundle extends Bundle
         $container->addCompilerPass(new ResolveAdapterDefinitionPass());
         $container->addCompilerPass(new IgnoredRoutesPass());
         $container->addCompilerPass(new RegisterMetricsCollectorPass());
+        $container->addCompilerPass(new MetricInfoResolverCompilerPass());
     }
 }

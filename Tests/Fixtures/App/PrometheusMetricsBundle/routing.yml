@@ -1,2 +1,7 @@
 app_metrics:
     resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml'
+
+dummy_route:
+    path: /dummy/test-action
+    controller: Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\Controller\DummyController::testAction
+    methods: ['get']

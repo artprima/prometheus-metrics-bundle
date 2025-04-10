@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * This is the class that loads and manages the bundle configuration.
@@ -55,6 +58,23 @@ class ArtprimaPrometheusMetricsExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        if (isset($config['labels'])) {
+            $labelConfigServices = [];
+            foreach ($config['labels'] as $index => $label) {
+                $serviceId = 'prometheus_metrics_bundle.label_config_'.$index;
+                $container->register($serviceId, LabelConfig::class)
+                    ->setArguments([
+                        (string) $label['name'],
+                        (string) $label['type'],
+                        (string) $label['value'],
+                    ]);
+                $labelConfigServices[] = new Reference($serviceId);
+            }
+
+            $container->getDefinition(LabelResolver::class)
+                ->setArguments([$labelConfigServices]);
+        }
 
         $this->prepareAdapterParameters($config, $container);
     }

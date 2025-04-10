@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 use Prometheus\Exception\MetricNotFoundException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
@@ -22,11 +23,24 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private float $startedAt = 0;
 
+    private ?MetricInfoResolverInterface $metricInfoResolver = null;
+    private ?LabelResolver $labelResolver = null;
+
+    public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver): void
+    {
+        $this->metricInfoResolver = $metricInfoResolver;
+    }
+
+    public function setLabelResolver(LabelResolver $labelResolver): void
+    {
+        $this->labelResolver = $labelResolver;
+    }
+
     public function collectRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
+        $metricInfo = $this->resolveMetricInfo($request);
         $requestMethod = $request->getMethod();
-        $requestRoute = $request->attributes->get('_route');
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
@@ -34,7 +48,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
-        $this->incRequestsTotal($requestMethod, $requestRoute);
+        $this->incRequestsTotal($metricInfo);
     }
 
     public function collectResponse(TerminateEvent $event): void
@@ -42,20 +56,19 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        $requestMethod = $request->getMethod();
-        $requestRoute = $request->attributes->get('_route');
+        $metricInfo = $this->resolveMetricInfo($request);
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            $this->incResponsesTotal('2xx', $requestMethod, $requestRoute);
+            $this->incResponsesTotal('2xx', $metricInfo);
         } elseif ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
-            $this->incResponsesTotal('3xx', $requestMethod, $requestRoute);
+            $this->incResponsesTotal('3xx', $metricInfo);
         } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
-            $this->incResponsesTotal('4xx', $requestMethod, $requestRoute);
+            $this->incResponsesTotal('4xx', $metricInfo);
         } elseif ($response->getStatusCode() >= 500) {
-            $this->incResponsesTotal('5xx', $requestMethod, $requestRoute);
+            $this->incResponsesTotal('5xx', $metricInfo);
         }
 
-        $this->setRequestDuration(microtime(true) - $this->startedAt, $requestMethod, $requestRoute);
+        $this->setRequestDuration(microtime(true) - $this->startedAt, $metricInfo);
     }
 
     public function collectStart(RequestEvent $event): void
@@ -66,6 +79,21 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
 
         $this->startedAt = microtime(true);
+    }
+
+    public function getLabelNames(): array
+    {
+        return $this->labelResolver->getLabelNamesIncludingAction();
+    }
+
+    public function getResolvedLabelValues(Request $request): array
+    {
+        return $this->labelResolver->getResolvedLabelValues($request);
+    }
+
+    public function getAllLabelValues(): array
+    {
+        return $this->labelResolver->getAllLabelValues();
     }
 
     private function setInstance(string $value): void
@@ -86,49 +114,73 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         }
     }
 
-    private function incRequestsTotal(?string $method = null, ?string $route = null): void
+    private function incRequestsTotal(MetricInfo $metricInfo): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
             'http_requests_total',
             'total request count',
-            ['action']
+            $this->getLabelNames()
         );
 
-        $counter->inc(['all']);
+        $counter->inc($this->getAllLabelValues());
 
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $counter->inc($metricInfo->getLabelValues());
         }
     }
 
-    private function incResponsesTotal(string $type, ?string $method = null, ?string $route = null): void
+    private function incResponsesTotal(string $type, MetricInfo $metricInfo): void
     {
         $counter = $this->collectionRegistry->getOrRegisterCounter(
             $this->namespace,
             sprintf('http_%s_responses_total', $type),
             sprintf('total %s response count', $type),
-            ['action']
+            $this->getLabelNames()
         );
-        $counter->inc(['all']);
 
-        if (null !== $method && null !== $route) {
-            $counter->inc([sprintf('%s-%s', $method, $route)]);
+        $counter->inc($this->getAllLabelValues());
+
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $counter->inc($metricInfo->getLabelValues());
         }
     }
 
-    private function setRequestDuration(float $duration, ?string $method = null, ?string $route = null): void
+    private function setRequestDuration(float $duration, MetricInfo $metricInfo): void
     {
         $histogram = $this->collectionRegistry->getOrRegisterHistogram(
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            ['action']
+            $this->getLabelNames()
         );
-        $histogram->observe($duration, ['all']);
 
-        if (null !== $method && null !== $route) {
-            $histogram->observe($duration, [sprintf('%s-%s', $method, $route)]);
+        $histogram->observe($duration, $this->getAllLabelValues());
+
+        if ($this->isMetricInfoValid($metricInfo)) {
+            $histogram->observe($duration, $metricInfo->getLabelValues());
         }
+    }
+
+    private function isMetricInfoValid(MetricInfo $metricInfo): bool
+    {
+        if ([] !== $metricInfo->getLabelValues()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function resolveMetricInfo(Request $request): MetricInfo
+    {
+        $labelValues = $this->getResolvedLabelValues($request);
+
+        if (null === $this->metricInfoResolver) {
+            $action = sprintf('%s-%s', $request->getMethod(), $request->attributes->get('_route'));
+
+            return new MetricInfo([$action, ...$labelValues]);
+        }
+
+        return $this->metricInfoResolver->resolveData($request, $labelValues);
     }
 }

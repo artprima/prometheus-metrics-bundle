@@ -7,7 +7,15 @@ framework:
         storage_factory_id: session.storage.factory.mock_file
 
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
     logger: { class: Psr\Log\NullLogger }
+
+    Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\Controller\DummyController:
+        tags:
+            - { name: controller.service_arguments }
 
 artprima_prometheus_metrics:
     namespace: myapp

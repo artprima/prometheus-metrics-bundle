@@ -27,6 +27,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
+                    'labels' => [],
                 ],
             ],
             [
@@ -43,6 +44,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
+                    'labels' => [],
                 ],
             ],
             [
@@ -59,6 +61,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
+                    'labels' => [],
                 ],
             ],
             [
@@ -94,6 +97,7 @@ class ConfigurationTest extends TestCase
                     'enable_console_metrics' => false,
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'labels' => [],
                 ],
             ],
             [
@@ -128,6 +132,7 @@ class ConfigurationTest extends TestCase
                     'enable_console_metrics' => false,
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'labels' => [],
                 ],
             ],
             [
@@ -148,6 +153,7 @@ class ConfigurationTest extends TestCase
                     'type' => 'in_memory',
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
+                    'labels' => [],
                 ],
             ],
             [
@@ -182,6 +188,7 @@ class ConfigurationTest extends TestCase
                     'type' => 'in_memory',
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
+                    'labels' => [],
                 ],
             ],
         ];
