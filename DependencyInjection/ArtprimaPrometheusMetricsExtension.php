@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
-
 /**
  * This is the class that loads and manages the bundle configuration.
  *
