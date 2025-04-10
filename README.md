@@ -1,6 +1,8 @@
 |                    [Master][Master Link]                     |
 |:------------------------------------------------------------:|
-|           [![Build Status][Master image]][Master]            |
+|           [![Build Status][Master PHP image]][Master]        |
+|           [![Build Status][Master Symfony image]][Master]    |
+|           [![Build Status][Master Coding Style image]][Master] |
 | [![Coverage Status][Master coverage image]][Master coverage] |
 
 
@@ -443,7 +445,9 @@ Code license
 You are free to use the code in this repository under the terms of the MIT license. LICENSE contains a copy of this license.
 
   [Master Link]: https://github.com/artprima/prometheus-metrics-bundle/tree/master
-  [Master image]: https://github.com/artprima/prometheus-metrics-bundle/workflows/PHP/badge.svg?branch=master
+  [Master PHP image]: https://github.com/artprima/prometheus-metrics-bundle/actions/workflows/php.yml/badge.svg?branch=master
+  [Master Symfony image]: https://github.com/artprima/prometheus-metrics-bundle/actions/workflows/symfony.yml/badge.svg?branch=master
+  [Master Coding Style image]: https://github.com/artprima/prometheus-metrics-bundle/actions/workflows/code-style.yml/badge.svg?branch=master
   [Master]: https://github.com/artprima/prometheus-metrics-bundle/actions?query=workflow%3APHP+branch%3Amaster
   [Master coverage image]: https://img.shields.io/codecov/c/github/artprima/prometheus-metrics-bundle/master.svg
   [Master coverage]: https://codecov.io/gh/artprima/prometheus-metrics-bundle

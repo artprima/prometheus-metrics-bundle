@@ -25,9 +25,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             // Manage deprecated parameter "type": will be transform as storage.url
             ->beforeNormalization()
-                ->ifTrue(static function ($v) {
-                    return !empty($v['type']) && empty($v['storage']);
-                })
+                ->ifTrue(static fn ($v) => !empty($v['type']) && empty($v['storage']))
                 ->then(static function ($v) {
                     $v['storage'] = ['type' => $v['type']];
 
@@ -65,9 +63,7 @@ class Configuration implements ConfigurationInterface
                                 ->always()
                                 // here we force casting `float` to `string` to avoid TypeError when working with Redis
                                 // see for more details: https://github.com/phpredis/phpredis/issues/1538
-                                ->then(function ($v) {
-                                    return (string) $v;
-                                })
+                                ->then(fn ($v) => (string) $v)
                             ->end()
                         ->end()
                         ->booleanNode('persistent_connections')->end()
@@ -76,9 +72,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('prefix')
                             ->cannotBeEmpty()
                             ->validate()
-                                ->ifTrue(function ($s) {
-                                    return 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $s);
-                                })
+                                ->ifTrue(fn ($s) => 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', (string) $s))
                                 ->thenInvalid('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$')
                             ->end()
                         ->end()
@@ -87,9 +81,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('storage')
                     ->beforeNormalization()
                         ->ifString()
-                        ->then(static function ($v) {
-                            return ['url' => $v];
-                        })
+                        ->then(static fn ($v) => ['url' => $v])
                     ->end()
                     ->validate()
                         ->always()
@@ -116,9 +108,7 @@ class Configuration implements ConfigurationInterface
                             ->info('Internal prefix used by the storage. Available for redis and apcu type.')
                             ->cannotBeEmpty()
                             ->validate()
-                                ->ifTrue(function ($s) {
-                                    return 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', $s);
-                                })
+                                ->ifTrue(fn ($s) => 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', (string) $s))
                                 ->thenInvalid('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$')
                             ->end()
                         ->end()

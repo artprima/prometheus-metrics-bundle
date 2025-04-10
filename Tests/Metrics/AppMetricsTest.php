@@ -74,7 +74,7 @@ class AppMetricsTest extends TestCase
 
         self::assertStringContainsString(
             sprintf($expected, PHP_VERSION),
-            trim($responseContent)
+            trim((string) $responseContent)
         );
     }
 
@@ -236,7 +236,7 @@ class AppMetricsTest extends TestCase
 
     private static function registerMicrotimeMock($ns)
     {
-        $self = \get_called_class();
+        $self = static::class;
 
         if (\function_exists($ns.'\microtime')) {
             return;

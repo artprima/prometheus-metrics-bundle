@@ -9,7 +9,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: PHP 8.0
+    name: PHP 8.1
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -17,7 +17,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: "8.0"
+        php-version: "8.1"
         extensions: mbstring, intl
         ini-values: post_max_size=256M
         coverage: xdebug

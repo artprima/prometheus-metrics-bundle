@@ -12,11 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MetricsController
 {
-    private Renderer $renderer;
-
-    public function __construct(Renderer $metricsRenderer)
+    public function __construct(private readonly Renderer $renderer)
     {
-        $this->renderer = $metricsRenderer;
     }
 
     public function prometheus(): Response

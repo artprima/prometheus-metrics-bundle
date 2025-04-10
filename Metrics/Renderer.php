@@ -13,11 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Renderer
 {
-    private CollectorRegistry $collectionRegistry;
-
-    public function __construct(CollectorRegistry $collectionRegistry)
+    public function __construct(private readonly CollectorRegistry $collectionRegistry)
     {
-        $this->collectionRegistry = $collectionRegistry;
     }
 
     public function render(): string

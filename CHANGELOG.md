@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* 1.20.0 (2025-04-09)
+
+  * This release introduces an official support for php 8.4 and Symfony 7.2 (thanks to [@mickverm](https://github.com/mickverm))
+  * Drop php 8.0 and update the code to php 8.1 features ([#108](https://github.com/artprima/prometheus-metrics-bundle/pull/108))
+
 * 1.19.0 (2023-12-04)
 
   * This release introduces an official support for php 8.3 and Symfony 6.4/7.0 (thanks to [@rmbl](https://github.com/rmbl))

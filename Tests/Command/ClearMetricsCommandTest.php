@@ -16,7 +16,7 @@ class ClearMetricsCommandTest extends TestCase
     {
         $adapter = $this->createMock(Adapter::class);
         $adapter->expects($this->once())->method('wipeStorage');
-        $className = get_class($adapter);
+        $className = $adapter::class;
 
         $command = new ClearMetricsCommand($adapter);
         $application = new Application();
