@@ -39,6 +39,10 @@
         <call method="setLabelResolver">
             <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\LabelResolver" />
         </call>
+        <call method="setBuckets">
+            <argument>%prometheus_metrics_bundle.buckets%</argument>
+        </call>
+
     </service>
 
     <service id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" class="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry" public="false" autowire="false" autoconfigure="false">

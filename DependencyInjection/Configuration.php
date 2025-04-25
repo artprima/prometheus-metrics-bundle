@@ -154,6 +154,11 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->defaultValue([])
                 ->end()
+                ->arrayNode('buckets')
+                    ->prototype('float')->end()
+                    ->defaultValue([0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0])
+                    ->cannotBeEmpty()
+                ->end()
             ->end();
 
         // Here you should define the parameters that are allowed to
