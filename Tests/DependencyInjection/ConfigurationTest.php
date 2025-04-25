@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artprima\PrometheusMetricsBundle\Tests\DependencyInjection;
+namespace Tests\Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;

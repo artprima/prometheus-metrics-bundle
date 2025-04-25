@@ -8,7 +8,6 @@ use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
-use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolver;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;

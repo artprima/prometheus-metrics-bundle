@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Metrics;
+namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
