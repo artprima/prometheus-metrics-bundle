@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
-use Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\MetricInfoResolverAppKernel;
+use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\MetricInfoResolverAppKernel;
 use Prometheus\CollectorRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;

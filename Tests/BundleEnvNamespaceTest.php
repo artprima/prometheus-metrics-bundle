@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artprima\PrometheusMetricsBundle\Tests;
+namespace Tests\Artprima\PrometheusMetricsBundle;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;

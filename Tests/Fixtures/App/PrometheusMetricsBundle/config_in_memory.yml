@@ -13,7 +13,7 @@ services:
 
     logger: { class: Psr\Log\NullLogger }
 
-    Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\Controller\DummyController:
+    Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\Controller\DummyController:
         tags:
             - { name: controller.service_arguments }
 

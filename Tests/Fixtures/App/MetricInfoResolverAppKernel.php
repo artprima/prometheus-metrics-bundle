@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Artprima\PrometheusMetricsBundle\Tests\Fixtures\App;
+namespace Tests\Artprima\PrometheusMetricsBundle\Fixtures\App;
 
-use Artprima\PrometheusMetricsBundle\Tests\Metrics\DummyMetricInfoResolver;
+use Tests\Artprima\PrometheusMetricsBundle\Metrics\DummyMetricInfoResolver;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
 

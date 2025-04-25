@@ -3,5 +3,5 @@ app_metrics:
 
 dummy_route:
     path: /dummy/test-action
-    controller: Artprima\PrometheusMetricsBundle\Tests\Fixtures\App\Controller\DummyController::testAction
+    controller: Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\Controller\DummyController::testAction
     methods: ['get']
