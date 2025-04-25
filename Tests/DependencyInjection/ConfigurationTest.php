@@ -28,6 +28,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -45,6 +46,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -62,6 +64,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -98,6 +101,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -133,6 +137,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -154,6 +159,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
             [
@@ -189,6 +195,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
                 ],
             ],
         ];
