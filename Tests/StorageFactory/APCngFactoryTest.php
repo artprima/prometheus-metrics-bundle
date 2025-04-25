@@ -12,6 +12,10 @@ class APCngFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
+        if (!\extension_loaded('apcu')) {
+            self::markTestSkipped('Cannot find the "apcu" extension.');
+        }
+
         $factory = new APCngFactory();
 
         self::assertInstanceOf(APCng::class, $factory->create([]));
