@@ -12,8 +12,8 @@ class ApcFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
-        if (!\extension_loaded('apcu')) {
-            self::markTestSkipped('Cannot find the "apcu" extension.');
+        if (!\extension_loaded('apcu') || !apcu_enabled()) {
+            self::markTestSkipped('Cannot find the "apcu" extension or not enabled');
         }
 
         $factory = new ApcFactory();

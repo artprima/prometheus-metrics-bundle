@@ -423,6 +423,15 @@ The bundle provides a console command to clear metrics from the storage. Simply 
 ./bin/console artprima:prometheus:metrics:clear
 ```
 
+Run Tests
+=========
+
+This bundle uses PHPUnit to run tests:
+
+```bash
+vendor/bin/phpunit
+```
+
 Contributors
 ============
 
@@ -437,6 +446,7 @@ Contributors
 [<img alt="Yozhef" src="https://avatars.githubusercontent.com/u/8971757?v=4&s=117" width="117">](https://github.com/Yozhef) |[<img alt="karolmalinowski" src="https://avatars.githubusercontent.com/u/28944325?v=4&s=117" width="117">](https://github.com/karolmalinowski) |
 :---: |:---: |
 [Yozhef](https://github.com/Yozhef) |[karolmalinowski](https://github.com/karolmalinowski) |
+
 
 
 Code license
