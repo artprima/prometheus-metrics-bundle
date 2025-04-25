@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Artprima\PrometheusMetricsBundle\Fixtures\App;
 
-use Tests\Artprima\PrometheusMetricsBundle\Metrics\DummyMetricInfoResolver;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\AppKernel;
+use Tests\Artprima\PrometheusMetricsBundle\Metrics\DummyMetricInfoResolver;
 
 class MetricInfoResolverAppKernel extends AppKernel
 {
