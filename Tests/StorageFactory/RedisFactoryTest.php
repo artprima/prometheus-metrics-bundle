@@ -12,6 +12,10 @@ class RedisFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
+        if (!\extension_loaded('redis')) {
+            self::markTestSkipped('Cannot find the "redis" extension.');
+        }
+
         $factory = new RedisFactory();
 
         self::assertInstanceOf(Redis::class, $factory->create([]));
@@ -19,6 +23,10 @@ class RedisFactoryTest extends TestCase
 
     public function testFullOptions(): void
     {
+        if (!\extension_loaded('redis')) {
+            self::markTestSkipped('Cannot find the "redis" extension.');
+        }
+
         $factory = new RedisFactory();
 
         self::assertInstanceOf(Redis::class, $factory->create([

@@ -16,6 +16,10 @@ class BundleEnvRedisTest extends WebTestCase
 {
     public function testBundle(): void
     {
+        if (!\extension_loaded('redis')) {
+            self::markTestSkipped('Cannot find the "redis" extension.');
+        }
+
         $_ENV['TESTS_REDIS_URL'] = 'redis://127.0.0.1:6379?timeout=0.1&read_timeout=10&persistent_connections=false';
 
         $client = self::createClient(['test_case' => 'PrometheusMetricsBundle', 'root_config' => 'env_config_redis.yml']);
