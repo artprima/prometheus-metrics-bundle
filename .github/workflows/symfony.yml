@@ -49,7 +49,7 @@ jobs:
         php .integration/patch.php
         cd symfony
         cat composer.json
-        composer require symfony/phpunit-bridge -n --no-progress
+        composer require symfony/phpunit-bridge:^7.2 -n --no-progress
         composer require symfony/browser-kit -n --no-progress
         composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
         cp -rf ../.integration/symfony/* ./
