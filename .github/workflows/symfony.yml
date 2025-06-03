@@ -49,6 +49,7 @@ jobs:
         php .integration/patch.php
         cd symfony
         cat composer.json
+        # Pin phpunit-bridge to 7.2.* to avoid test failures with 7.3+ versions
         composer require symfony/phpunit-bridge:7.2.* -n --no-progress
         composer require symfony/browser-kit -n --no-progress
         composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
