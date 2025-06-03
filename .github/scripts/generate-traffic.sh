@@ -15,8 +15,17 @@ echo "Generating test traffic to populate metrics..."
 # Generate successful requests
 for i in {1..50}; do
   curl -s http://localhost:8080/ > /dev/null &
+  curl -s http://localhost:8080/api/users > /dev/null &
   curl -s http://localhost:8080/health > /dev/null &
   sleep 0.2
+done
+
+# Generate some error requests to populate exception metrics
+for i in {1..30}; do
+  curl -s http://localhost:8080/api/error > /dev/null &
+  curl -s http://localhost:8080/api/database-error > /dev/null &
+  curl -s http://localhost:8080/api/validation-error > /dev/null &
+  sleep 0.3
 done
 
 # Generate some 404s
@@ -27,7 +36,7 @@ done
 
 # Generate some slower requests
 for i in {1..20}; do
-  curl -s http://localhost:8080/slow > /dev/null &
+  curl -s http://localhost:8080/api/slow > /dev/null &
   sleep 0.5
 done
 

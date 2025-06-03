@@ -2,7 +2,7 @@
 
 # Activity simulation script for generating metrics
 SYMFONY_URL="http://symfony-app"
-ENDPOINTS=("/" "/api/users" "/api/error" "/api/slow" "/health")
+ENDPOINTS=("/" "/api/users" "/api/error" "/api/database-error" "/api/validation-error" "/api/slow" "/health")
 
 echo "Starting activity simulation..."
 echo "Symfony URL: $SYMFONY_URL"
