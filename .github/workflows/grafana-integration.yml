@@ -8,6 +8,12 @@ on:
       - 'grafana/**'
       - 'demo/**'
       - '.github/workflows/grafana-integration.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'grafana/**'
+      - 'demo/**'
+      - '.github/workflows/grafana-integration.yml'
   workflow_dispatch:
 
 jobs:
