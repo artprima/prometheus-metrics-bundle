@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ServiceConfigurationTest extends TestCase
 {
-    public function testMetricsCollectorListenerHasCorrectKernelTerminatePriority(): void
+    private function createConfiguredContainer(): ContainerBuilder
     {
         $container = new ContainerBuilder();
         $bundle = new ArtprimaPrometheusMetricsBundle();
@@ -25,6 +25,12 @@ class ServiceConfigurationTest extends TestCase
 
         $container->compile();
 
+        return $container;
+    }
+
+    public function testMetricsCollectorListenerHasCorrectKernelTerminatePriority(): void
+    {
+        $container = $this->createConfiguredContainer();
         $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
         $tags = $listenerDefinition->getTags();
 
@@ -44,18 +50,7 @@ class ServiceConfigurationTest extends TestCase
 
     public function testMetricsCollectorListenerEventPriorities(): void
     {
-        $container = new ContainerBuilder();
-        $bundle = new ArtprimaPrometheusMetricsBundle();
-        $bundle->build($container);
-        $bundle->getContainerExtension()->load([
-            [
-                'namespace' => 'test',
-                'type' => 'in_memory',
-            ]
-        ], $container);
-
-        $container->compile();
-
+        $container = $this->createConfiguredContainer();
         $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
         $tags = $listenerDefinition->getTags();
 
