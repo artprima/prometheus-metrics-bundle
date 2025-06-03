@@ -11,3 +11,7 @@ coverage
 
 /.phpunit.result.cache
 /.phpunit.cache
+
+# Demo artifacts
+/demo/symfony-app/vendor/
+/demo/symfony-app/var/

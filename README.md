@@ -451,6 +451,16 @@ Example Grafana dashboards are provided in the `grafana/` directory to help you 
 
 These dashboards are designed to work with the default metrics provided by the bundle and can be customized further based on your specific monitoring needs.
 
+## Verification
+
+The dashboards have been validated and tested with a working demo environment. See the `demo/` directory for:
+- Validation scripts that verify dashboard structure and metric references
+- Complete Docker-based demo stack with Symfony app, Prometheus, and Grafana
+- Test scripts that demonstrate actual metrics generation
+- Comprehensive verification documentation
+
+Run `php demo/validate-dashboards.php` to validate the dashboard configurations.
+
 Contributors
 ============
 
