@@ -89,7 +89,8 @@ class ServiceConfigurationTest extends TestCase
                     self::assertEquals(
                         $expectedTag['priority'],
                         $tag['priority'] ?? null,
-                        sprintf('Event %s%s should have priority %d',
+                        sprintf(
+                            'Event %s%s should have priority %d',
                             $expectedTag['event'],
                             isset($expectedTag['method']) ? ' (method: '.$expectedTag['method'].')' : '',
                             $expectedTag['priority']
@@ -100,7 +101,8 @@ class ServiceConfigurationTest extends TestCase
                 }
             }
 
-            self::assertTrue($found, sprintf('Event %s%s should be registered',
+            self::assertTrue($found, sprintf(
+                'Event %s%s should be registered',
                 $expectedTag['event'],
                 isset($expectedTag['method']) ? ' (method: '.$expectedTag['method'].')' : ''
             ));
