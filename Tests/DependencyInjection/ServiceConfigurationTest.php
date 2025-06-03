@@ -11,30 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ServiceConfigurationTest extends TestCase
 {
-    private function getMetricsCollectorListenerTags(): array
-    {
-        $container = new ContainerBuilder();
-        $bundle = new ArtprimaPrometheusMetricsBundle();
-        $bundle->build($container);
-        $bundle->getContainerExtension()->load([
-            [
-                'namespace' => 'test',
-                'type' => 'in_memory',
-                'storage' => ['type' => 'in_memory'],
-                'ignored_routes' => ['prometheus_bundle_prometheus'],
-                'disable_default_metrics' => false,
-                'disable_default_promphp_metrics' => false,
-                'enable_console_metrics' => false,
-                'labels' => [],
-            ],
-        ], $container);
-
-        // Check the service definition before compilation (when the service is still available)
-        $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
-
-        return $listenerDefinition->getTags();
-    }
-
     public function testMetricsCollectorListenerHasCorrectKernelTerminatePriority(): void
     {
         $tags = $this->getMetricsCollectorListenerTags();
@@ -95,5 +71,29 @@ class ServiceConfigurationTest extends TestCase
                 isset($expectedTag['method']) ? ' (method: '.$expectedTag['method'].')' : ''
             ));
         }
+    }
+
+    private function getMetricsCollectorListenerTags(): array
+    {
+        $container = new ContainerBuilder();
+        $bundle = new ArtprimaPrometheusMetricsBundle();
+        $bundle->build($container);
+        $bundle->getContainerExtension()->load([
+            [
+                'namespace' => 'test',
+                'type' => 'in_memory',
+                'storage' => ['type' => 'in_memory'],
+                'ignored_routes' => ['prometheus_bundle_prometheus'],
+                'disable_default_metrics' => false,
+                'disable_default_promphp_metrics' => false,
+                'enable_console_metrics' => false,
+                'labels' => [],
+            ],
+        ], $container);
+
+        // Check the service definition before compilation (when the service is still available)
+        $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
+
+        return $listenerDefinition->getTags();
     }
 }
