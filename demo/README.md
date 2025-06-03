@@ -33,6 +33,8 @@ This directory contains a verification setup for the Grafana dashboards provided
    - Symfony app: http://localhost:8080
    - Prometheus: http://localhost:9090
    - Grafana: http://localhost:3000 (admin/admin)
+   
+   **Note**: The Symfony app is fully containerized with all dependencies installed during the Docker build process.
 
 3. **Generate Test Traffic**:
    ```bash

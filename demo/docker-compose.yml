@@ -7,8 +7,6 @@ services:
       - "8080:80"
     environment:
       - SYMFONY_ENV=prod
-    volumes:
-      - ./symfony-app:/var/www/html
     depends_on:
       - prometheus
 

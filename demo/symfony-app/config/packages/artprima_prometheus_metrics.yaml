@@ -1,0 +1,3 @@
+artprima_prometheus_metrics:
+    namespace: symfony
+    storage_type: in_memory

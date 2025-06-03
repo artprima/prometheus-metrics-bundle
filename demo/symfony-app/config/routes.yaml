@@ -4,6 +4,5 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-prometheus_bundle_prometheus:
-    path: /metrics/prometheus
-    controller: Artprima\PrometheusMetricsBundle\Controller\MetricsController::prometheus
+prometheus_bundle:
+    resource: "@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml"
