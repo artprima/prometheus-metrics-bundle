@@ -20,11 +20,16 @@ class ServiceConfigurationTest extends TestCase
             [
                 'namespace' => 'test',
                 'type' => 'in_memory',
-            ]
+                'storage' => ['type' => 'in_memory'],
+                'ignored_routes' => ['prometheus_bundle_prometheus'],
+                'disable_default_metrics' => false,
+                'disable_default_promphp_metrics' => false,
+                'enable_console_metrics' => false,
+                'labels' => [],
+            ],
         ], $container);
 
-        $container->compile();
-
+        // Check the service definition before compilation (when the service is still available)
         $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
         $tags = $listenerDefinition->getTags();
 
@@ -51,11 +56,16 @@ class ServiceConfigurationTest extends TestCase
             [
                 'namespace' => 'test',
                 'type' => 'in_memory',
-            ]
+                'storage' => ['type' => 'in_memory'],
+                'ignored_routes' => ['prometheus_bundle_prometheus'],
+                'disable_default_metrics' => false,
+                'disable_default_promphp_metrics' => false,
+                'enable_console_metrics' => false,
+                'labels' => [],
+            ],
         ], $container);
 
-        $container->compile();
-
+        // Check the service definition before compilation (when the service is still available)
         $listenerDefinition = $container->getDefinition(MetricsCollectorListener::class);
         $tags = $listenerDefinition->getTags();
 
@@ -75,13 +85,13 @@ class ServiceConfigurationTest extends TestCase
                     if (!isset($expectedTag['method']) && isset($tag['method'])) {
                         continue;
                     }
-                    
+
                     self::assertEquals(
                         $expectedTag['priority'],
                         $tag['priority'] ?? null,
                         sprintf('Event %s%s should have priority %d',
                             $expectedTag['event'],
-                            isset($expectedTag['method']) ? ' (method: ' . $expectedTag['method'] . ')' : '',
+                            isset($expectedTag['method']) ? ' (method: '.$expectedTag['method'].')' : '',
                             $expectedTag['priority']
                         )
                     );
@@ -89,10 +99,10 @@ class ServiceConfigurationTest extends TestCase
                     break;
                 }
             }
-            
+
             self::assertTrue($found, sprintf('Event %s%s should be registered',
                 $expectedTag['event'],
-                isset($expectedTag['method']) ? ' (method: ' . $expectedTag['method'] . ')' : ''
+                isset($expectedTag['method']) ? ' (method: '.$expectedTag['method'].')' : ''
             ));
         }
     }
