@@ -442,6 +442,18 @@ Example Grafana dashboards are provided in the `grafana/` directory to help you 
    - System health status overview
    - Instance and PHP version information
 
+## Screenshots
+
+See how the dashboards look with real data:
+
+### Symfony Application Overview Dashboard
+![Symfony Application Overview](screenshots/symfony-app-overview-dashboard.png)
+
+### Symfony Application Monitoring Dashboard  
+![Symfony Application Monitoring](screenshots/symfony-app-monitoring-dashboard.png)
+
+For more details about the screenshots and dashboard features, see the [screenshots documentation](screenshots/README.md).
+
 ## Usage
 
 1. Import the JSON files into your Grafana instance via the dashboard import feature

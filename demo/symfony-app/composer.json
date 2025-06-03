@@ -9,6 +9,11 @@
         "symfony/routing": "^6.4",
         "artprima/prometheus-metrics-bundle": "*"
     },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
+        }
+    },
     "autoload": {
         "psr-4": {
             "App\\": "src/"

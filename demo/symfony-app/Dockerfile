@@ -18,7 +18,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction && \
+    composer dump-autoload --optimize
 
 # Apache configuration
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
