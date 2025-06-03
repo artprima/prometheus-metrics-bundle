@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   symfony-app:
     build: ./symfony-app
@@ -32,6 +30,12 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
+
+  activity-simulator:
+    build: ./activity-simulator
+    depends_on:
+      - symfony-app
+    restart: unless-stopped
 
 volumes:
   grafana-storage:

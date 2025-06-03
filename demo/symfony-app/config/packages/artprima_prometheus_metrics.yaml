@@ -1,4 +1,4 @@
 artprima_prometheus_metrics:
     namespace: symfony
     storage:
-        type: in_memory
+        type: apcu

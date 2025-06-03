@@ -3,9 +3,9 @@
 namespace App;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 class Kernel extends BaseKernel
 {
@@ -21,22 +21,17 @@ class Kernel extends BaseKernel
         }
     }
 
-    protected function configureContainer(ContainerBuilder $container): void
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
-        $container->loadFromExtension('framework', [
-            'secret' => $_ENV['APP_SECRET'] ?? 'your-secret-key-here',
-        ]);
-
-        $container->loadFromExtension('artprima_prometheus_metrics', [
-            'namespace' => 'symfony',
-            'storage' => [
-                'type' => 'in_memory'
-            ]
-        ]);
-    }
-
-    protected function configureRoutes(RoutingConfigurator $routes): void
-    {
-        $routes->import(__DIR__.'/../config/routes.yaml');
+        $configDir = $this->getConfigDir();
+        
+        $loader->load($configDir.'/{packages}/*.yaml', 'glob');
+        $loader->load($configDir.'/{packages}/'.$this->environment.'/*.yaml', 'glob');
+        
+        if (is_file($configDir.'/services.yaml')) {
+            $loader->load($configDir.'/services.yaml');
+        } elseif (is_file($path = $configDir.'/services.php')) {
+            (require $path)($container->withPath($path), $loader, $this);
+        }
     }
 }

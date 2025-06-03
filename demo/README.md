@@ -16,6 +16,7 @@ This directory contains a verification setup for the Grafana dashboards provided
   - Symfony application with the bundle installed
   - Prometheus server configured to scrape metrics
   - Grafana with dashboards automatically provisioned
+  - Activity simulator for continuous traffic generation
 
 ### How to Run the Demo
 
@@ -36,14 +37,32 @@ This directory contains a verification setup for the Grafana dashboards provided
    
    **Note**: The Symfony app is fully containerized with all dependencies installed during the Docker build process.
 
-3. **Generate Test Traffic**:
+3. **Automatic Traffic Generation**:
+   The `activity-simulator` container automatically generates traffic to populate the metrics dashboards with realistic data:
+   - Makes requests to various endpoints (`/`, `/api/users`, `/api/error`, `/api/slow`, `/health`)
+   - Randomized request patterns and delays
+   - Runs continuously to show dynamic data in Grafana
+
+4. **Manual Testing**:
    ```bash
-   # Generate various types of requests to populate metrics
+   # Generate additional test traffic manually
    curl http://localhost:8080/
    curl http://localhost:8080/api/users
    curl http://localhost:8080/api/error
    curl http://localhost:8080/api/slow
    ```
+
+## Configuration
+
+### Bundle Configuration
+- **Storage Type**: Uses APCu for persistent metrics storage across requests
+- **Namespace**: `symfony` (configurable via template variables)
+- **Endpoints**: All demo endpoints include metrics collection
+
+### Controller Services
+- Controllers are properly configured as service subscribers
+- Full Symfony DI container integration
+- All bundle event listeners active
 
 ## Dashboard Features Verified
 

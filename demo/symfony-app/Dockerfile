@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     && docker-php-ext-install zip \
+    && docker-php-ext-install opcache \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
     && a2enmod rewrite
 
 # Install Composer
