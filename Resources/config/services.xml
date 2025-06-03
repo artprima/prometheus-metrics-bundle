@@ -22,7 +22,7 @@
         <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestPre" priority="1024"/>
         <tag name="kernel.event_listener" event="kernel.exception" method="onKernelExceptionPre" />
         <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="1024"/>
-        <tag name="kernel.event_listener" event="kernel.terminate"/>
+        <tag name="kernel.event_listener" event="kernel.terminate" priority="1024"/>
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry"/>
         <call method="setLogger">
             <argument type="service" id="logger" on-invalid="ignore"/>
