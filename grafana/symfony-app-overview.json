@@ -15,7 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
+  "uid": "symfony-overview",
   "links": [],
   "panels": [
     {

@@ -46,4 +46,10 @@ class DemoController
         sleep(2);
         return new JsonResponse(['status' => 'slow response']);
     }
+
+    #[Route('/health', name: 'health')]
+    public function health(): JsonResponse
+    {
+        return new JsonResponse(['status' => 'healthy', 'timestamp' => time()]);
+    }
 }

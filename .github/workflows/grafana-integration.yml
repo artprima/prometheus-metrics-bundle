@@ -1,0 +1,283 @@
+---
+name: Grafana Integration Screenshots
+
+on:
+  push:
+    branches: [master, copilot/*]
+    paths:
+      - 'grafana/**'
+      - 'demo/**'
+      - '.github/workflows/grafana-integration.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'grafana/**'
+      - 'demo/**'
+      - '.github/workflows/grafana-integration.yml'
+  workflow_dispatch:
+
+jobs:
+  grafana-integration:
+    runs-on: ubuntu-latest
+    name: Generate Grafana Dashboard Screenshots
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up Node.js for Puppeteer
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Puppeteer dependencies
+        run: |
+          npm init -y
+          npm install puppeteer
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Create screenshot capture script
+        run: |
+          cat > capture-screenshots.js << 'EOF'
+          const puppeteer = require('puppeteer');
+          const fs = require('fs');
+
+          async function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+          }
+
+          async function waitForGrafana() {
+            console.log('Waiting for Grafana to be ready...');
+            for (let i = 0; i < 60; i++) {
+              try {
+                const response = await fetch('http://localhost:3000/api/health');
+                if (response.ok) {
+                  console.log('Grafana is ready!');
+                  return true;
+                }
+              } catch (e) {
+                // Grafana not ready yet
+              }
+              await sleep(2000);
+            }
+            throw new Error('Grafana failed to start');
+          }
+
+          async function captureScreenshots() {
+            await waitForGrafana();
+
+            const browser = await puppeteer.launch({
+              headless: 'new',
+              args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+              ]
+            });
+
+            const page = await browser.newPage();
+            await page.setViewport({ width: 1920, height: 1080 });
+
+            // Login to Grafana
+            console.log('Logging into Grafana...');
+            await page.goto('http://localhost:3000/login');
+            await page.waitForSelector('input[name="user"]');
+            await page.type('input[name="user"]', 'admin');
+            await page.type('input[name="password"]', 'admin');
+            await page.click('button[type="submit"]');
+
+            // Skip password change if prompted
+            try {
+              await page.waitForSelector('button[aria-label="Skip"]', {
+                timeout: 5000
+              });
+              await page.click('button[aria-label="Skip"]');
+            } catch (e) {
+              console.log('No password change prompt found');
+            }
+
+            // Wait for dashboard to be available
+            await sleep(5000);
+
+            // Create screenshots directory
+            if (!fs.existsSync('screenshots')) {
+              fs.mkdirSync('screenshots');
+            }
+
+            // Capture Symfony Application Overview Dashboard
+            console.log('Capturing Symfony Application Overview dashboard...');
+            const overviewUrl = 'http://localhost:3000/d/symfony-overview/' +
+                               'symfony-application-overview?orgId=1&refresh=5s';
+            await page.goto(overviewUrl);
+            await page.waitForSelector('.panel-container', { timeout: 30000 });
+            await sleep(10000); // Wait for data to load
+            await page.screenshot({
+              path: 'screenshots/symfony-app-overview-dashboard-live.png',
+              fullPage: true
+            });
+
+            // Capture Symfony Application Monitoring Dashboard
+            console.log('Capturing Symfony Application Monitoring dashboard...');
+            const monitoringUrl = 'http://localhost:3000/d/symfony-monitoring/' +
+                                 'symfony-application-monitoring?orgId=1&refresh=5s';
+            await page.goto(monitoringUrl);
+            await page.waitForSelector('.panel-container', { timeout: 30000 });
+            await sleep(10000); // Wait for data to load
+            await page.screenshot({
+              path: 'screenshots/symfony-app-monitoring-dashboard-live.png',
+              fullPage: true
+            });
+
+            await browser.close();
+            console.log('Screenshots captured successfully!');
+          }
+
+          captureScreenshots().catch(console.error);
+          EOF
+
+      - name: Create Grafana provisioning directories
+        run: |
+          mkdir -p demo/grafana/provisioning/dashboards
+          mkdir -p demo/grafana/provisioning/datasources
+
+      - name: Create Grafana datasource provisioning
+        run: |
+          cat > demo/grafana/provisioning/datasources/prometheus.yml << 'EOF'
+          apiVersion: 1
+          datasources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus:9090
+              isDefault: true
+              editable: true
+          EOF
+
+      - name: Create Grafana dashboard provisioning config
+        run: |
+          cat > demo/grafana/provisioning/dashboards/symfony.yml << 'EOF'
+          apiVersion: 1
+          providers:
+            - name: 'Symfony Dashboards'
+              orgId: 1
+              folder: ''
+              type: file
+              disableDeletion: false
+              updateIntervalSeconds: 10
+              allowUiUpdates: true
+              options:
+                path: /etc/grafana/provisioning/dashboards
+          EOF
+
+      - name: Copy dashboard files for provisioning
+        run: |
+          # Copy the dashboard JSON files to the provisioning directory
+          cp grafana/symfony-app-overview.json \
+             demo/grafana/provisioning/dashboards/
+          cp grafana/symfony-app-monitoring.json \
+             demo/grafana/provisioning/dashboards/
+
+      - name: Create test traffic generation script
+        run: |
+          cat > generate-traffic.sh << 'EOF'
+          #!/bin/bash
+
+          echo "Waiting for Symfony app to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/ > /dev/null; then
+              echo "Symfony app is ready!"
+              break
+            fi
+            sleep 2
+            echo "Attempt $i/30..."
+          done
+
+          echo "Generating test traffic to populate metrics..."
+
+          # Generate successful requests
+          for i in {1..50}; do
+            curl -s http://localhost:8080/ > /dev/null &
+            curl -s http://localhost:8080/health > /dev/null &
+            sleep 0.2
+          done
+
+          # Generate some 404s
+          for i in {1..10}; do
+            curl -s http://localhost:8080/nonexistent > /dev/null &
+            sleep 0.1
+          done
+
+          # Generate some slower requests
+          for i in {1..20}; do
+            curl -s http://localhost:8080/slow > /dev/null &
+            sleep 0.5
+          done
+
+          wait
+          echo "Traffic generation completed!"
+          EOF
+          chmod +x generate-traffic.sh
+
+      - name: Start Docker services
+        run: |
+          cd demo
+          docker compose up -d --build
+
+          # Wait for services to be healthy
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+          # Check service status
+          docker compose ps
+          docker compose logs --tail=20
+
+      - name: Generate test traffic
+        run: |
+          ./generate-traffic.sh
+
+          # Wait a bit for metrics to be scraped
+          sleep 15
+
+      - name: Verify Prometheus is collecting metrics
+        run: |
+          echo "Checking Prometheus metrics..."
+          curl -s "http://localhost:9090/api/v1/query?query=symfony_http_requests_total" | jq '.' || true
+
+          echo "Checking if Grafana can reach Prometheus..."
+          curl -s "http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up" | head -20 || true
+
+      - name: Capture live dashboard screenshots
+        run: |
+          xvfb-run -a node capture-screenshots.js
+
+      - name: Verify screenshots were created
+        run: |
+          ls -la screenshots/
+          file screenshots/*.png || true
+
+      - name: Stop Docker services
+        run: |
+          cd demo
+          docker compose down
+          docker compose logs --tail=50 || true
+
+      - name: Upload screenshots as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grafana-dashboard-screenshots
+          path: screenshots/
+          retention-days: 30
+
+      - name: Upload service logs for debugging
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: service-logs
+          path: demo/
+          retention-days: 7

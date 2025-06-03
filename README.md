@@ -473,6 +473,16 @@ The dashboards have been validated and tested with a working demo environment. S
 
 Run `php demo/validate-dashboards.php` to validate the dashboard configurations.
 
+### Automated Integration Testing
+
+This repository includes a GitHub Actions workflow that automatically:
+- Sets up a complete integration environment with Symfony app, Prometheus, and Grafana
+- Generates realistic test traffic to populate metrics
+- Captures live screenshots of the Grafana dashboards with real data
+- Makes the screenshots available as downloadable workflow artifacts
+
+The integration workflow runs automatically on changes to the dashboard files and can also be triggered manually. You can download the latest dashboard screenshots from the [GitHub Actions artifacts](../../actions/workflows/grafana-integration.yml).
+
 Contributors
 ============
 
