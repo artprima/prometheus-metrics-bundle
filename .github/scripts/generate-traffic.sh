@@ -20,12 +20,18 @@ for i in {1..50}; do
   sleep 0.2
 done
 
-# Generate some error requests to populate exception metrics
-for i in {1..30}; do
+# Generate error requests to populate exception metrics with more variety
+for i in {1..50}; do
   curl -s http://localhost:8080/api/error > /dev/null &
   curl -s http://localhost:8080/api/database-error > /dev/null &
   curl -s http://localhost:8080/api/validation-error > /dev/null &
-  sleep 0.3
+  sleep 0.2
+done
+
+# Additional error generation for better exception metrics
+for i in {1..25}; do
+  curl -s http://localhost:8080/api/error > /dev/null &
+  sleep 0.1
 done
 
 # Generate some 404s

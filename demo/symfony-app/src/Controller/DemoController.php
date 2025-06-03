@@ -46,7 +46,8 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     public function error(): Response
     {
         // Simulate random errors with different exception types
-        $errorType = random_int(1, 5);
+        // Higher probability of errors to ensure good demo data
+        $errorType = random_int(1, 8);
         
         switch ($errorType) {
             case 1:
@@ -57,8 +58,14 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
                 throw new \InvalidArgumentException('Invalid parameters provided');
             case 4:
                 throw new \LogicException('Logic error in application flow');
+            case 5:
+                throw new \BadMethodCallException('Method call error occurred');
+            case 6:
+                throw new \DomainException('Domain constraint violation');
+            case 7:
+                throw new \RangeException('Range validation failed');
             default:
-                // 20% chance of success to make errors more realistic
+                // Only 12.5% chance of success to generate more exceptions
                 return new JsonResponse(['status' => 'ok']);
         }
     }
@@ -66,29 +73,43 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     #[Route('/api/database-error', name: 'api_database_error')]
     public function databaseError(): Response
     {
-        // Simulate database-related errors
-        if (random_int(1, 2) === 1) {
-            throw new \PDOException('Database connection failed');
-        }
+        // Simulate database-related errors with higher error rate
+        $errorType = random_int(1, 4);
         
-        return new JsonResponse(['status' => 'database ok']);
+        switch ($errorType) {
+            case 1:
+                throw new \PDOException('Database connection failed');
+            case 2:
+                throw new \RuntimeException('Database query timeout');
+            case 3:
+                throw new \Exception('Database server unavailable');
+            default:
+                // 25% chance of success
+                return new JsonResponse(['status' => 'database ok']);
+        }
     }
 
     #[Route('/api/validation-error', name: 'api_validation_error')]
     public function validationError(): Response
     {
-        // Simulate validation errors
-        $errors = [
-            new \InvalidArgumentException('Email format is invalid'),
-            new \UnexpectedValueException('Unexpected value in input'),
-            new \OutOfBoundsException('Value is out of acceptable range')
-        ];
+        // Simulate validation errors with more variety
+        $errorType = random_int(1, 6);
         
-        if (random_int(1, 3) === 1) {
-            throw $errors[array_rand($errors)];
+        switch ($errorType) {
+            case 1:
+                throw new \InvalidArgumentException('Email format is invalid');
+            case 2:
+                throw new \UnexpectedValueException('Unexpected value in input');
+            case 3:
+                throw new \OutOfBoundsException('Value is out of acceptable range');
+            case 4:
+                throw new \LengthException('Input length validation failed');
+            case 5:
+                throw new \OverflowException('Input data overflow detected');
+            default:
+                // 16.7% chance of success
+                return new JsonResponse(['status' => 'validation passed']);
         }
-        
-        return new JsonResponse(['status' => 'validation passed']);
     }
 
     #[Route('/api/slow', name: 'api_slow')]
