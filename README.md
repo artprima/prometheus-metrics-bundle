@@ -423,6 +423,34 @@ The bundle provides a console command to clear metrics from the storage. Simply 
 ./bin/console artprima:prometheus:metrics:clear
 ```
 
+Grafana Dashboards
+==================
+
+Example Grafana dashboards are provided in the `grafana/` directory to help you visualize the metrics exposed by this bundle.
+
+## Available Dashboards
+
+1. **symfony-app-overview.json** - Comprehensive application overview dashboard featuring:
+   - HTTP request rate and response status code distribution
+   - Response time percentiles and performance metrics
+   - Exception monitoring by class
+   - Application instance and version information
+
+2. **symfony-app-monitoring.json** - Focused monitoring dashboard with:
+   - Key performance indicators (KPIs) at a glance
+   - Error rate tracking and alerting
+   - System health status overview
+   - Instance and PHP version information
+
+## Usage
+
+1. Import the JSON files into your Grafana instance via the dashboard import feature
+2. Configure your Prometheus data source to scrape metrics from your application's `/metrics/prometheus` endpoint
+3. Customize the `namespace` template variable to match your bundle configuration (default: `symfony`)
+4. Select the appropriate `job` to filter metrics by your application instances
+
+These dashboards are designed to work with the default metrics provided by the bundle and can be customized further based on your specific monitoring needs.
+
 Contributors
 ============
 
