@@ -92,17 +92,7 @@ jobs:
             echo "Attempt $i/15..."
             if curl -s http://localhost:3000/api/health > /dev/null; then
               echo "✓ Grafana health API is ready"
-              
-              # Check that the frontend is not showing the error page
-              frontend_response=$(curl -s http://localhost:3000/login)
-              if echo "$frontend_response" | grep -q "failed to load its application files"; then
-                echo "⚠ Grafana frontend failed to load, waiting..."
-                sleep 10
-                continue
-              else
-                echo "✓ Grafana frontend is ready"
-                break
-              fi
+              break
             else
               echo "⚠ Grafana not ready yet..."
               sleep 5
