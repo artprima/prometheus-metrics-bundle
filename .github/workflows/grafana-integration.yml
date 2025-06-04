@@ -105,7 +105,7 @@ jobs:
       - name: Capture live dashboard screenshots (Playwright)
         run: |
           echo "Capturing screenshots with Playwright - 5 minute time range and 5 second refresh..."
-          npm run test:e2e
+          npm run test:e2e:chromium
         working-directory: e2e
 
       - name: Verify screenshots were created
