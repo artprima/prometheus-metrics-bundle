@@ -1,5 +1,5 @@
 ---
-name: Grafana Integration Screenshots (Puppeteer)
+name: Grafana Integration Screenshots (Playwright)
 
 on:
   pull_request:
@@ -7,19 +7,19 @@ on:
     paths:
       - 'grafana/**'
       - 'demo/**'
-      - '.github/workflows/grafana-integration.yml'
+      - '.github/workflows/grafana-integration-playwright.yml'
   push:
     branches: [master]
     paths:
       - 'grafana/**'
       - 'demo/**'
-      - '.github/workflows/grafana-integration.yml'
+      - '.github/workflows/grafana-integration-playwright.yml'
   workflow_dispatch:
 
 jobs:
-  grafana-integration-puppeteer:
+  grafana-integration-playwright:
     runs-on: ubuntu-latest
-    name: Generate Grafana Dashboard Screenshots with Puppeteer
+    name: Generate Grafana Dashboard Screenshots with Playwright
 
     steps:
       - name: Checkout
@@ -28,17 +28,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up Node.js for Puppeteer
+      - name: Set up Node.js for Playwright
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Puppeteer dependencies
+      - name: Install Playwright dependencies
         run: |
           npm init -y
-          npm install puppeteer
+          npm install playwright
           sudo apt-get update
           sudo apt-get install -y xvfb
+          
+          # Install Playwright browsers
+          npx playwright install chromium
 
       - name: Setup Grafana provisioning
         run: |
@@ -124,10 +127,10 @@ jobs:
           echo "=== Prometheus Targets ==="
           curl -s "http://localhost:9090/api/v1/targets" | jq '.data.activeTargets' || true
 
-      - name: Capture live dashboard screenshots (Puppeteer)
+      - name: Capture live dashboard screenshots (Playwright)
         run: |
-          echo "Capturing screenshots with Puppeteer - 5 minute time range and 5 second refresh..."
-          xvfb-run -a node .github/scripts/capture-screenshots.js
+          echo "Capturing screenshots with Playwright - 5 minute time range and 5 second refresh..."
+          node .github/scripts/capture-screenshots-playwright.js
 
       - name: Stop traffic generation
         run: |
@@ -161,7 +164,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: grafana-dashboard-screenshots-puppeteer
+          name: grafana-dashboard-screenshots-playwright
           path: screenshots/
           retention-days: 30
 
@@ -169,6 +172,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: service-logs-puppeteer
+          name: service-logs-playwright
           path: demo/
           retention-days: 7
