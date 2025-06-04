@@ -423,6 +423,66 @@ The bundle provides a console command to clear metrics from the storage. Simply 
 ./bin/console artprima:prometheus:metrics:clear
 ```
 
+Grafana Dashboards
+==================
+
+Example Grafana dashboards are provided in the `grafana/` directory to help you visualize the metrics exposed by this bundle.
+
+## Available Dashboards
+
+1. **symfony-app-overview.json** - Comprehensive application overview dashboard featuring:
+   - HTTP request rate and response status code distribution
+   - Response time percentiles and performance metrics
+   - Exception monitoring by class
+   - Application instance and version information
+
+2. **symfony-app-monitoring.json** - Focused monitoring dashboard with:
+   - Key performance indicators (KPIs) at a glance
+   - Error rate tracking and alerting
+   - System health status overview
+   - Instance and PHP version information
+
+## Screenshots
+
+See how the dashboards look with real data:
+
+### Symfony Application Overview Dashboard
+![Symfony Application Overview](screenshots/symfony-app-overview-dashboard.png)
+
+### Symfony Application Monitoring Dashboard  
+![Symfony Application Monitoring](screenshots/symfony-app-monitoring-dashboard.png)
+
+For more details about the screenshots and dashboard features, see the [screenshots documentation](screenshots/README.md).
+
+## Usage
+
+1. Import the JSON files into your Grafana instance via the dashboard import feature
+2. Configure your Prometheus data source to scrape metrics from your application's `/metrics/prometheus` endpoint
+3. Customize the `namespace` template variable to match your bundle configuration (default: `symfony`)
+4. Select the appropriate `job` to filter metrics by your application instances
+
+These dashboards are designed to work with the default metrics provided by the bundle and can be customized further based on your specific monitoring needs.
+
+## Verification
+
+The dashboards have been validated and tested with a working demo environment. See the `demo/` directory for:
+- Validation scripts that verify dashboard structure and metric references
+- Complete Docker-based demo stack with Symfony app, Prometheus, and Grafana
+- Test scripts that demonstrate actual metrics generation
+- Comprehensive verification documentation
+
+Run `php demo/validate-dashboards.php` to validate the dashboard configurations.
+
+### Automated Integration Testing
+
+This repository includes a GitHub Actions workflow that automatically:
+- Sets up a complete integration environment with Symfony app, Prometheus, and Grafana
+- Generates realistic test traffic to populate metrics
+- Captures live screenshots of the Grafana dashboards with real data
+- Makes the screenshots available as downloadable workflow artifacts
+
+The integration workflow runs automatically on changes to the dashboard files and can also be triggered manually. You can download the latest dashboard screenshots from the [GitHub Actions artifacts](../../actions/workflows/grafana-integration.yml).
+
 Contributors
 ============
 

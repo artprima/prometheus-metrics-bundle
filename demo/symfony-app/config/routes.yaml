@@ -1,0 +1,8 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+prometheus_bundle:
+    resource: "@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml"

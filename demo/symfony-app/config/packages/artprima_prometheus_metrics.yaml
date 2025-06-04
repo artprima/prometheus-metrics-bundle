@@ -1,0 +1,4 @@
+artprima_prometheus_metrics:
+    namespace: symfony
+    storage:
+        type: apcu
