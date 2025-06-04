@@ -16,31 +16,7 @@ async function waitForGrafana() {
       if (response.ok) {
         console.log('Grafana health API is ready!');
         
-        // Check if the login page actually loads the frontend
-        try {
-          const loginResponse = await fetch('http://localhost:3000/login');
-          if (loginResponse.ok) {
-            const loginHtml = await loginResponse.text();
-            
-            // Check if it's the error page or actual login page
-            if (loginHtml.includes('failed to load its application files')) {
-              console.log('Grafana frontend not ready yet (application files not loaded)...');
-              await sleep(5000);
-              continue;
-            }
-            
-            if (loginHtml.includes('login') || loginHtml.includes('grafana') || loginHtml.includes('username')) {
-              console.log('Grafana login page with frontend is accessible!');
-              // Wait more for frontend assets to fully initialize
-              await sleep(10000);
-              return true;
-            } else {
-              console.log('Login page loaded but frontend may not be ready...');
-            }
-          }
-        } catch (e) {
-          console.log('Login page not ready yet...');
-        }
+        return true;
       }
     } catch (e) {
       // Grafana not ready yet
