@@ -87,20 +87,21 @@ jobs:
             fi
           done
           
-          # More thorough Grafana check
-          for i in {1..20}; do
-            echo "Attempt $i/20..."
+          # Wait for Grafana to be ready
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:3000/api/health > /dev/null; then
-              echo "✓ Grafana health check passed"
+              echo "✓ Grafana health API is ready"
               
-              # Verify the frontend is loading properly by checking for login form elements
-              if curl -s http://localhost:3000/login | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
-                echo "✓ Grafana frontend is ready"
-                break
-              else
-                echo "⚠ Grafana frontend still loading..."
+              # Check that the frontend is not showing the error page
+              frontend_response=$(curl -s http://localhost:3000/login)
+              if echo "$frontend_response" | grep -q "failed to load its application files"; then
+                echo "⚠ Grafana frontend failed to load, waiting..."
                 sleep 10
                 continue
+              else
+                echo "✓ Grafana frontend is ready"
+                break
               fi
             else
               echo "⚠ Grafana not ready yet..."
