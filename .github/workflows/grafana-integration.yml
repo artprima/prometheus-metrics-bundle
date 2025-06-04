@@ -1,5 +1,5 @@
 ---
-name: Grafana Integration Screenshots (Puppeteer)
+name: Grafana Integration Screenshots
 
 on:
   pull_request:
@@ -17,9 +17,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  grafana-integration-puppeteer:
+  grafana-integration:
     runs-on: ubuntu-latest
-    name: Generate Grafana Dashboard Screenshots with Puppeteer
+    name: Generate Grafana Dashboard Screenshots
 
     steps:
       - name: Checkout
@@ -28,79 +28,71 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up Node.js for Puppeteer
+      - name: Set up Node.js for Playwright
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Puppeteer dependencies
+      - name: Install Playwright dependencies
         run: |
-          npm init -y
-          npm install puppeteer
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-
-      - name: Setup Grafana provisioning
-        run: |
-          ./.github/scripts/setup-grafana-provisioning.sh
+          npm install
+          
+          # Install Playwright deps + Chromium
+          npm run test:e2e:install-deps
+          npm run test:e2e:install:chromium
+        working-directory: e2e
 
       - name: Start Docker services
         run: |
-          cd demo
           docker compose up -d --build
 
-          # Wait for services to be healthy
+          # Wait for services to be healthy using healthchecks
           echo "Waiting for services to be ready..."
-          sleep 30
+          sleep 45
 
           # Check service status
           echo "=== Docker Services Status ==="
           docker compose ps
           
           echo "=== Service Logs ==="
-          docker compose logs --tail=20
+          docker compose logs --tail=30
           
-          # Test service connectivity
+          # Test service connectivity with more retries
           echo "=== Testing Service Connectivity ==="
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:8080/ > /dev/null; then
               echo "✓ Symfony app is responding"
               break
             else
               echo "⚠ Symfony app not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
           
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:9090/-/ready > /dev/null; then
               echo "✓ Prometheus is ready"
               break
             else
               echo "⚠ Prometheus not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
           
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          # Wait for Grafana to be ready
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:3000/api/health > /dev/null; then
-              echo "✓ Grafana is ready"
+              echo "✓ Grafana health API is ready"
               break
             else
               echo "⚠ Grafana not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
-
-      - name: Start continuous traffic generation in background
-        run: |
-          echo "Starting continuous traffic generation for 5 minutes..."
-          ./.github/scripts/generate-traffic.sh --continuous > traffic.log 2>&1 &
-          echo $! > traffic_pid.txt
-          echo "Traffic generation started in background with PID $(cat traffic_pid.txt)"
+        working-directory: demo
 
       - name: Verify Prometheus is collecting metrics
         run: |
@@ -110,65 +102,52 @@ jobs:
           echo "Checking if Grafana can reach Prometheus..."
           curl -s "http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up" | head -20 || true
 
-      - name: Debug services status before screenshots
+      - name: Capture live dashboard screenshots (Playwright)
         run: |
-          echo "=== Service Status ==="
-          docker compose -f demo/docker-compose.yml ps
-          
-          echo "=== Grafana Health Check ==="
-          curl -s "http://localhost:3000/api/health" | jq '.' || true
-          
-          echo "=== Available Dashboards ==="
-          curl -s -u admin:admin "http://localhost:3000/api/search?type=dash-db" | jq '.' || true
-          
-          echo "=== Prometheus Targets ==="
-          curl -s "http://localhost:9090/api/v1/targets" | jq '.data.activeTargets' || true
-
-      - name: Capture live dashboard screenshots (Puppeteer)
-        run: |
-          echo "Capturing screenshots with Puppeteer - 5 minute time range and 5 second refresh..."
-          xvfb-run -a node .github/scripts/capture-screenshots.js
-
-      - name: Stop traffic generation
-        run: |
-          if [ -f traffic_pid.txt ]; then
-            TRAFFIC_PID=$(cat traffic_pid.txt)
-            echo "Stopping traffic generation (PID: $TRAFFIC_PID)"
-            kill $TRAFFIC_PID || true
-            rm traffic_pid.txt
-          fi
+          echo "Capturing screenshots with Playwright - 5 minute time range and 5 second refresh..."
+          npm run test:e2e:chromium
+        working-directory: e2e
 
       - name: Verify screenshots were created
         run: |
           ls -la screenshots/
-          file screenshots/*.png || true
+          file screenshots/*.png
+        working-directory: e2e
 
       - name: Stop Docker services
         run: |
-          # Stop any remaining traffic generation
-          if [ -f traffic_pid.txt ]; then
-            TRAFFIC_PID=$(cat traffic_pid.txt)
-            echo "Stopping any remaining traffic generation (PID: $TRAFFIC_PID)"
-            kill $TRAFFIC_PID || true
-            rm traffic_pid.txt
-          fi
-          
-          cd demo
           docker compose down
           docker compose logs --tail=50 || true
+        working-directory: demo
 
       - name: Upload screenshots as artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: grafana-dashboard-screenshots-puppeteer
-          path: screenshots/
+          name: grafana-dashboard-screenshots-playwright
+          path: e2e/screenshots/
+          retention-days: 30
+
+      - name: Upload playwright report as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grafana-dashboard-screenshots-playwright-report
+          path: e2e/playwright-report/
+          retention-days: 30
+
+      - name: Upload playwright test results as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grafana-dashboard-screenshots-playwright-test-results
+          path: e2e/test-results/
           retention-days: 30
 
       - name: Upload service logs for debugging
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: service-logs-puppeteer
+          name: service-logs-playwright
           path: demo/
           retention-days: 7
