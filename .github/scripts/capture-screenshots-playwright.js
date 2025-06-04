@@ -1,6 +1,9 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 
+// Add fetchif not available (Node 18+ has it built-in)
+const fetch = globalThis.fetch || require('node-fetch');
+
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -11,12 +14,25 @@ async function waitForGrafana() {
     try {
       const response = await fetch('http://localhost:3000/api/health');
       if (response.ok) {
-        console.log('Grafana is ready!');
-        return true;
+        console.log('Grafana health API is ready!');
+        
+        // Also check if the login page is accessible
+        try {
+          const loginResponse = await fetch('http://localhost:3000/login');
+          if (loginResponse.ok) {
+            console.log('Grafana login page is accessible!');
+            // Wait a bit more for frontend to fully initialize
+            await sleep(5000);
+            return true;
+          }
+        } catch (e) {
+          console.log('Login page not ready yet...');
+        }
       }
     } catch (e) {
       // Grafana not ready yet
     }
+    console.log(`Attempt ${i + 1}/60 - waiting for Grafana...`);
     await sleep(2000);
   }
   throw new Error('Grafana failed to start');
@@ -45,6 +61,11 @@ async function captureScreenshots() {
   });
 
   const page = await context.newPage();
+  
+  // Create screenshots directory early
+  if (!fs.existsSync('screenshots')) {
+    fs.mkdirSync('screenshots');
+  }
   
   // Enable request/response logging for debugging
   page.on('request', request => {
@@ -189,39 +210,175 @@ async function captureScreenshots() {
   }
 
   try {
-    // Login to Grafana
+    // Login to Grafana with robust error handling
     console.log('Logging into Grafana...');
-    await page.goto('http://localhost:3000/login');
-    await page.waitForSelector('input[name="user"]', { timeout: 30000 });
-    await page.fill('input[name="user"]', 'admin');
-    await page.fill('input[name="password"]', 'admin');
-    await page.click('button[type="submit"]');
+    await page.goto('http://localhost:3000/login', { 
+      waitUntil: 'networkidle',
+      timeout: 45000 
+    });
+    
+    // Debug: Check what's on the page
+    console.log('Checking login page content...');
+    const pageTitle = await page.title();
+    console.log(`Login page title: ${pageTitle}`);
+    
+    // Get page content for debugging
+    const bodyContent = await page.evaluate(() => {
+      return document.body ? document.body.innerText.substring(0, 500) : 'No body found';
+    });
+    console.log(`Page content preview: ${bodyContent}`);
+    
+    // Try multiple selectors for the login form
+    let loginFormFound = false;
+    const userInputSelectors = [
+      'input[name="user"]',
+      'input[placeholder*="email"]',
+      'input[placeholder*="username"]',
+      'input[type="text"]',
+      '.login-form input[type="text"]',
+      '[data-testid="data-testid Username input"]'
+    ];
+    
+    for (const selector of userInputSelectors) {
+      try {
+        console.log(`Trying selector: ${selector}`);
+        await page.waitForSelector(selector, { timeout: 10000 });
+        console.log(`Found username input with selector: ${selector}`);
+        await page.fill(selector, 'admin');
+        loginFormFound = true;
+        break;
+      } catch (e) {
+        console.log(`Selector ${selector} not found: ${e.message}`);
+      }
+    }
+    
+    if (!loginFormFound) {
+      // Take a screenshot for debugging
+      await page.screenshot({
+        path: 'screenshots/login-page-debug.png',
+        fullPage: true
+      });
+      throw new Error('Could not find username input field');
+    }
+    
+    // Find and fill password field
+    const passwordSelectors = [
+      'input[name="password"]',
+      'input[type="password"]',
+      '.login-form input[type="password"]',
+      '[data-testid="data-testid Password input"]'
+    ];
+    
+    let passwordFound = false;
+    for (const selector of passwordSelectors) {
+      try {
+        console.log(`Trying password selector: ${selector}`);
+        await page.waitForSelector(selector, { timeout: 5000 });
+        console.log(`Found password input with selector: ${selector}`);
+        await page.fill(selector, 'admin');
+        passwordFound = true;
+        break;
+      } catch (e) {
+        console.log(`Password selector ${selector} not found: ${e.message}`);
+      }
+    }
+    
+    if (!passwordFound) {
+      throw new Error('Could not find password input field');
+    }
+    
+    // Find and click submit button
+    const submitSelectors = [
+      'button[type="submit"]',
+      'button:has-text("Log in")',
+      'button:has-text("Sign in")',
+      '.login-form button',
+      '[data-testid="data-testid Login button"]'
+    ];
+    
+    let submitClicked = false;
+    for (const selector of submitSelectors) {
+      try {
+        console.log(`Trying submit selector: ${selector}`);
+        await page.waitForSelector(selector, { timeout: 5000 });
+        console.log(`Found submit button with selector: ${selector}`);
+        await page.click(selector);
+        submitClicked = true;
+        break;
+      } catch (e) {
+        console.log(`Submit selector ${selector} not found: ${e.message}`);
+      }
+    }
+    
+    if (!submitClicked) {
+      throw new Error('Could not find submit button');
+    }
+    
+    console.log('Login form submitted successfully');
 
     // Skip password change if prompted
     try {
-      await page.waitForSelector('button[aria-label="Skip"]', {
-        timeout: 5000
-      });
-      await page.click('button[aria-label="Skip"]');
-      console.log('Skipped password change');
+      console.log('Checking for password change prompt...');
+      const skipSelectors = [
+        'button[aria-label="Skip"]',
+        'button:has-text("Skip")',
+        'a:has-text("Skip")',
+        '[data-testid="data-testid Skip change password button"]'
+      ];
+      
+      let skipped = false;
+      for (const selector of skipSelectors) {
+        try {
+          await page.waitForSelector(selector, { timeout: 5000 });
+          await page.click(selector);
+          console.log(`Skipped password change with selector: ${selector}`);
+          skipped = true;
+          break;
+        } catch (e) {
+          console.log(`Skip selector ${selector} not found`);
+        }
+      }
+      
+      if (!skipped) {
+        console.log('No password change prompt found');
+      }
     } catch (e) {
-      console.log('No password change prompt found');
+      console.log('Error handling password change prompt:', e.message);
     }
 
-    // Wait for main page to load
+    // Wait for main page to load with multiple approaches
+    console.log('Waiting for Grafana main page...');
     try {
-      await page.waitForSelector('[data-testid="data-testid Nav"]', { timeout: 15000 });
-      console.log('Grafana navigation loaded');
+      const navSelectors = [
+        '[data-testid="data-testid Nav"]',
+        '.sidemenu',
+        '.navbar',
+        '.main-view',
+        '[aria-label="Grafana"]'
+      ];
+      
+      let navLoaded = false;
+      for (const selector of navSelectors) {
+        try {
+          await page.waitForSelector(selector, { timeout: 10000 });
+          console.log(`Grafana navigation loaded with selector: ${selector}`);
+          navLoaded = true;
+          break;
+        } catch (e) {
+          console.log(`Nav selector ${selector} not found`);
+        }
+      }
+      
+      if (!navLoaded) {
+        console.log('Using alternative loading method...');
+        await sleep(15000); // Give more time for loading
+      }
     } catch (e) {
-      console.log('Navigation selector not found, using alternative loading method...');
-      await sleep(10000);
+      console.log('Error waiting for navigation:', e.message);
+      await sleep(15000);
     }
 
-    // Create screenshots directory
-    if (!fs.existsSync('screenshots')) {
-      fs.mkdirSync('screenshots');
-    }
-
+    // Wait for metrics to accumulate
     console.log('Waiting 5 minutes for metrics to accumulate before taking screenshots...');
     await sleep(300000); // Wait 5 minutes (300,000 milliseconds)
     console.log('5 minute wait completed, proceeding with screenshots...');
