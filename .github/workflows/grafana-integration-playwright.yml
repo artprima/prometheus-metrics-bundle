@@ -93,14 +93,14 @@ jobs:
             if curl -s http://localhost:3000/api/health > /dev/null; then
               echo "✓ Grafana health check passed"
               
-              # Also verify the frontend is loading properly
-              if curl -s http://localhost:3000/login | grep -q "failed to load"; then
+              # Verify the frontend is loading properly by checking for login form elements
+              if curl -s http://localhost:3000/login | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
+                echo "✓ Grafana frontend is ready"
+                break
+              else
                 echo "⚠ Grafana frontend still loading..."
                 sleep 10
                 continue
-              else
-                echo "✓ Grafana frontend is ready"
-                break
               fi
             else
               echo "⚠ Grafana not ready yet..."
@@ -127,8 +127,10 @@ jobs:
         run: |
           echo "=== Grafana Status Check ==="
           
-          # Check if Grafana frontend is working
-          if curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+          # Check if Grafana frontend is working by looking for login form elements
+          if curl -s "http://localhost:3000/login" | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
+            echo "✓ Grafana frontend appears to be working"
+          else
             echo "Grafana frontend has issues, attempting to restart..."
             cd demo
             docker compose restart grafana
@@ -138,7 +140,7 @@ jobs:
             for i in {1..10}; do
               echo "Retry attempt $i/10..."
               if curl -s "http://localhost:3000/api/health" > /dev/null; then
-                if ! curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+                if curl -s "http://localhost:3000/login" | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
                   echo "✓ Grafana frontend is now working"
                   break
                 else
@@ -150,8 +152,6 @@ jobs:
                 sleep 5
               fi
             done
-          else
-            echo "✓ Grafana frontend appears to be working"
           fi
           
           echo "=== Final Grafana Status ==="
@@ -161,8 +161,10 @@ jobs:
         run: |
           echo "=== Grafana Status Check ==="
           
-          # Check if Grafana frontend is working
-          if curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+          # Check if Grafana frontend is working by looking for login form elements
+          if curl -s "http://localhost:3000/login" | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
+            echo "✓ Grafana frontend appears to be working"
+          else
             echo "Grafana frontend has issues, attempting to restart..."
             cd demo
             docker compose restart grafana
@@ -172,7 +174,7 @@ jobs:
             for i in {1..10}; do
               echo "Retry attempt $i/10..."
               if curl -s "http://localhost:3000/api/health" > /dev/null; then
-                if ! curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+                if curl -s "http://localhost:3000/login" | grep -q 'input.*name.*user\|input.*name.*email\|input.*name.*username\|class.*login'; then
                   echo "✓ Grafana frontend is now working"
                   break
                 else
@@ -184,8 +186,6 @@ jobs:
                 sleep 5
               fi
             done
-          else
-            echo "✓ Grafana frontend appears to be working"
           fi
           
           echo "=== Final Grafana Status ==="
