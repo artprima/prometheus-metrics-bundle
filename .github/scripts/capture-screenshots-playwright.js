@@ -10,20 +10,33 @@ async function sleep(ms) {
 
 async function waitForGrafana() {
   console.log('Waiting for Grafana to be ready...');
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 90; i++) { // Increased attempts
     try {
       const response = await fetch('http://localhost:3000/api/health');
       if (response.ok) {
         console.log('Grafana health API is ready!');
         
-        // Also check if the login page is accessible
+        // Check if the login page actually loads the frontend
         try {
           const loginResponse = await fetch('http://localhost:3000/login');
           if (loginResponse.ok) {
-            console.log('Grafana login page is accessible!');
-            // Wait a bit more for frontend to fully initialize
-            await sleep(5000);
-            return true;
+            const loginHtml = await loginResponse.text();
+            
+            // Check if it's the error page or actual login page
+            if (loginHtml.includes('failed to load its application files')) {
+              console.log('Grafana frontend not ready yet (application files not loaded)...');
+              await sleep(5000);
+              continue;
+            }
+            
+            if (loginHtml.includes('login') || loginHtml.includes('grafana') || loginHtml.includes('username')) {
+              console.log('Grafana login page with frontend is accessible!');
+              // Wait more for frontend assets to fully initialize
+              await sleep(10000);
+              return true;
+            } else {
+              console.log('Login page loaded but frontend may not be ready...');
+            }
           }
         } catch (e) {
           console.log('Login page not ready yet...');
@@ -32,10 +45,10 @@ async function waitForGrafana() {
     } catch (e) {
       // Grafana not ready yet
     }
-    console.log(`Attempt ${i + 1}/60 - waiting for Grafana...`);
-    await sleep(2000);
+    console.log(`Attempt ${i + 1}/90 - waiting for Grafana...`);
+    await sleep(3000); // Increased wait between attempts
   }
-  throw new Error('Grafana failed to start');
+  throw new Error('Grafana failed to start properly');
 }
 
 async function captureScreenshots() {
@@ -210,111 +223,174 @@ async function captureScreenshots() {
   }
 
   try {
-    // Login to Grafana with robust error handling
+    // Login to Grafana with robust error handling and retry logic
     console.log('Logging into Grafana...');
-    await page.goto('http://localhost:3000/login', { 
-      waitUntil: 'networkidle',
-      timeout: 45000 
-    });
     
-    // Debug: Check what's on the page
-    console.log('Checking login page content...');
-    const pageTitle = await page.title();
-    console.log(`Login page title: ${pageTitle}`);
+    let loginSuccess = false;
+    let attempts = 0;
+    const maxAttempts = 3;
     
-    // Get page content for debugging
-    const bodyContent = await page.evaluate(() => {
-      return document.body ? document.body.innerText.substring(0, 500) : 'No body found';
-    });
-    console.log(`Page content preview: ${bodyContent}`);
-    
-    // Try multiple selectors for the login form
-    let loginFormFound = false;
-    const userInputSelectors = [
-      'input[name="user"]',
-      'input[placeholder*="email"]',
-      'input[placeholder*="username"]',
-      'input[type="text"]',
-      '.login-form input[type="text"]',
-      '[data-testid="data-testid Username input"]'
-    ];
-    
-    for (const selector of userInputSelectors) {
+    while (!loginSuccess && attempts < maxAttempts) {
+      attempts++;
+      console.log(`Login attempt ${attempts}/${maxAttempts}`);
+      
       try {
-        console.log(`Trying selector: ${selector}`);
-        await page.waitForSelector(selector, { timeout: 10000 });
-        console.log(`Found username input with selector: ${selector}`);
-        await page.fill(selector, 'admin');
-        loginFormFound = true;
-        break;
-      } catch (e) {
-        console.log(`Selector ${selector} not found: ${e.message}`);
+        await page.goto('http://localhost:3000/login', { 
+          waitUntil: 'networkidle',
+          timeout: 60000 
+        });
+        
+        // Debug: Check what's on the page
+        console.log('Checking login page content...');
+        const pageTitle = await page.title();
+        console.log(`Login page title: ${pageTitle}`);
+        
+        // Get page content for debugging
+        const bodyContent = await page.evaluate(() => {
+          return document.body ? document.body.innerText.substring(0, 800) : 'No body found';
+        });
+        console.log(`Page content preview: ${bodyContent}`);
+        
+        // Check if it's the Grafana frontend error page
+        if (bodyContent.includes('failed to load its application files')) {
+          console.error('Grafana frontend failed to load - taking debug screenshot');
+          await page.screenshot({
+            path: `screenshots/grafana-frontend-error-attempt-${attempts}.png`,
+            fullPage: true
+          });
+          
+          if (attempts < maxAttempts) {
+            console.log(`Grafana frontend error, waiting 30 seconds before retry...`);
+            await sleep(30000);
+            continue;
+          } else {
+            throw new Error('Grafana frontend failed to load its application files after multiple attempts.');
+          }
+        }
+        
+        // Check page HTML for better debugging
+        const pageHTML = await page.evaluate(() => {
+          return document.documentElement.innerHTML.substring(0, 2000);
+        });
+        console.log(`Page HTML preview: ${pageHTML.substring(0, 500)}...`);
+        
+        // Try multiple selectors for the login form
+        let loginFormFound = false;
+        const userInputSelectors = [
+          'input[name="user"]',
+          'input[placeholder*="email"]',
+          'input[placeholder*="username"]',
+          'input[type="text"]',
+          '.login-form input[type="text"]',
+          '[data-testid="data-testid Username input"]'
+        ];
+        
+        for (const selector of userInputSelectors) {
+          try {
+            console.log(`Trying selector: ${selector}`);
+            await page.waitForSelector(selector, { timeout: 10000 });
+            console.log(`Found username input with selector: ${selector}`);
+            await page.fill(selector, 'admin');
+            loginFormFound = true;
+            break;
+          } catch (e) {
+            console.log(`Selector ${selector} not found: ${e.message}`);
+          }
+        }
+        
+        if (!loginFormFound) {
+          // Take a screenshot for debugging
+          await page.screenshot({
+            path: `screenshots/login-page-debug-attempt-${attempts}.png`,
+            fullPage: true
+          });
+          
+          if (attempts < maxAttempts) {
+            console.log('Login form not found, waiting before retry...');
+            await sleep(20000);
+            continue;
+          } else {
+            throw new Error('Could not find username input field after multiple attempts');
+          }
+        }
+        
+        // Find and fill password field
+        const passwordSelectors = [
+          'input[name="password"]',
+          'input[type="password"]',
+          '.login-form input[type="password"]',
+          '[data-testid="data-testid Password input"]'
+        ];
+        
+        let passwordFound = false;
+        for (const selector of passwordSelectors) {
+          try {
+            console.log(`Trying password selector: ${selector}`);
+            await page.waitForSelector(selector, { timeout: 5000 });
+            console.log(`Found password input with selector: ${selector}`);
+            await page.fill(selector, 'admin');
+            passwordFound = true;
+            break;
+          } catch (e) {
+            console.log(`Password selector ${selector} not found: ${e.message}`);
+          }
+        }
+        
+        if (!passwordFound) {
+          if (attempts < maxAttempts) {
+            console.log('Password field not found, waiting before retry...');
+            await sleep(20000);
+            continue;
+          } else {
+            throw new Error('Could not find password input field after multiple attempts');
+          }
+        }
+        
+        // Find and click submit button
+        const submitSelectors = [
+          'button[type="submit"]',
+          'button:has-text("Log in")',
+          'button:has-text("Sign in")',
+          '.login-form button',
+          '[data-testid="data-testid Login button"]'
+        ];
+        
+        let submitClicked = false;
+        for (const selector of submitSelectors) {
+          try {
+            console.log(`Trying submit selector: ${selector}`);
+            await page.waitForSelector(selector, { timeout: 5000 });
+            console.log(`Found submit button with selector: ${selector}`);
+            await page.click(selector);
+            submitClicked = true;
+            break;
+          } catch (e) {
+            console.log(`Submit selector ${selector} not found: ${e.message}`);
+          }
+        }
+        
+        if (!submitClicked) {
+          if (attempts < maxAttempts) {
+            console.log('Submit button not found, waiting before retry...');
+            await sleep(20000);
+            continue;
+          } else {
+            throw new Error('Could not find submit button after multiple attempts');
+          }
+        }
+        
+        console.log('Login form submitted successfully');
+        loginSuccess = true;
+        
+      } catch (error) {
+        console.error(`Login attempt ${attempts} failed: ${error.message}`);
+        if (attempts >= maxAttempts) {
+          throw error;
+        }
+        console.log('Waiting before retry...');
+        await sleep(20000);
       }
     }
-    
-    if (!loginFormFound) {
-      // Take a screenshot for debugging
-      await page.screenshot({
-        path: 'screenshots/login-page-debug.png',
-        fullPage: true
-      });
-      throw new Error('Could not find username input field');
-    }
-    
-    // Find and fill password field
-    const passwordSelectors = [
-      'input[name="password"]',
-      'input[type="password"]',
-      '.login-form input[type="password"]',
-      '[data-testid="data-testid Password input"]'
-    ];
-    
-    let passwordFound = false;
-    for (const selector of passwordSelectors) {
-      try {
-        console.log(`Trying password selector: ${selector}`);
-        await page.waitForSelector(selector, { timeout: 5000 });
-        console.log(`Found password input with selector: ${selector}`);
-        await page.fill(selector, 'admin');
-        passwordFound = true;
-        break;
-      } catch (e) {
-        console.log(`Password selector ${selector} not found: ${e.message}`);
-      }
-    }
-    
-    if (!passwordFound) {
-      throw new Error('Could not find password input field');
-    }
-    
-    // Find and click submit button
-    const submitSelectors = [
-      'button[type="submit"]',
-      'button:has-text("Log in")',
-      'button:has-text("Sign in")',
-      '.login-form button',
-      '[data-testid="data-testid Login button"]'
-    ];
-    
-    let submitClicked = false;
-    for (const selector of submitSelectors) {
-      try {
-        console.log(`Trying submit selector: ${selector}`);
-        await page.waitForSelector(selector, { timeout: 5000 });
-        console.log(`Found submit button with selector: ${selector}`);
-        await page.click(selector);
-        submitClicked = true;
-        break;
-      } catch (e) {
-        console.log(`Submit selector ${selector} not found: ${e.message}`);
-      }
-    }
-    
-    if (!submitClicked) {
-      throw new Error('Could not find submit button');
-    }
-    
-    console.log('Login form submitted successfully');
 
     // Skip password change if prompted
     try {

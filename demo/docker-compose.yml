@@ -27,9 +27,21 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_FEATURE_TOGGLES_ENABLE=
+      - GF_LOG_LEVEL=info
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   activity-simulator:
     build: ./activity-simulator

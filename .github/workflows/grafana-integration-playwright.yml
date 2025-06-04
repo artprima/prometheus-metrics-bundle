@@ -52,49 +52,59 @@ jobs:
           cd demo
           docker compose up -d --build
 
-          # Wait for services to be healthy
+          # Wait for services to be healthy using healthchecks
           echo "Waiting for services to be ready..."
-          sleep 30
+          sleep 45
 
           # Check service status
           echo "=== Docker Services Status ==="
           docker compose ps
           
           echo "=== Service Logs ==="
-          docker compose logs --tail=20
+          docker compose logs --tail=30
           
-          # Test service connectivity
+          # Test service connectivity with more retries
           echo "=== Testing Service Connectivity ==="
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:8080/ > /dev/null; then
               echo "✓ Symfony app is responding"
               break
             else
               echo "⚠ Symfony app not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
           
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          for i in {1..15}; do
+            echo "Attempt $i/15..."
             if curl -s http://localhost:9090/-/ready > /dev/null; then
               echo "✓ Prometheus is ready"
               break
             else
               echo "⚠ Prometheus not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
           
-          for i in {1..10}; do
-            echo "Attempt $i/10..."
+          # More thorough Grafana check
+          for i in {1..20}; do
+            echo "Attempt $i/20..."
             if curl -s http://localhost:3000/api/health > /dev/null; then
-              echo "✓ Grafana is ready"
-              break
+              echo "✓ Grafana health check passed"
+              
+              # Also verify the frontend is loading properly
+              if curl -s http://localhost:3000/login | grep -q "failed to load"; then
+                echo "⚠ Grafana frontend still loading..."
+                sleep 10
+                continue
+              else
+                echo "✓ Grafana frontend is ready"
+                break
+              fi
             else
               echo "⚠ Grafana not ready yet..."
-              sleep 3
+              sleep 5
             fi
           done
 
@@ -113,7 +123,73 @@ jobs:
           echo "Checking if Grafana can reach Prometheus..."
           curl -s "http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up" | head -20 || true
 
+      - name: Debug and fix Grafana if needed
+        run: |
+          echo "=== Grafana Status Check ==="
+          
+          # Check if Grafana frontend is working
+          if curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+            echo "Grafana frontend has issues, attempting to restart..."
+            cd demo
+            docker compose restart grafana
+            sleep 30
+            
+            # Check again
+            for i in {1..10}; do
+              echo "Retry attempt $i/10..."
+              if curl -s "http://localhost:3000/api/health" > /dev/null; then
+                if ! curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+                  echo "✓ Grafana frontend is now working"
+                  break
+                else
+                  echo "⚠ Frontend still has issues..."
+                  sleep 10
+                fi
+              else
+                echo "⚠ Grafana health check failed..."
+                sleep 5
+              fi
+            done
+          else
+            echo "✓ Grafana frontend appears to be working"
+          fi
+          
+          echo "=== Final Grafana Status ==="
+          curl -s "http://localhost:3000/api/health" | jq '.' || echo "Health check failed"
+
       - name: Debug services status before screenshots
+        run: |
+          echo "=== Grafana Status Check ==="
+          
+          # Check if Grafana frontend is working
+          if curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+            echo "Grafana frontend has issues, attempting to restart..."
+            cd demo
+            docker compose restart grafana
+            sleep 30
+            
+            # Check again
+            for i in {1..10}; do
+              echo "Retry attempt $i/10..."
+              if curl -s "http://localhost:3000/api/health" > /dev/null; then
+                if ! curl -s "http://localhost:3000/login" | grep -q "failed to load"; then
+                  echo "✓ Grafana frontend is now working"
+                  break
+                else
+                  echo "⚠ Frontend still has issues..."
+                  sleep 10
+                fi
+              else
+                echo "⚠ Grafana health check failed..."
+                sleep 5
+              fi
+            done
+          else
+            echo "✓ Grafana frontend appears to be working"
+          fi
+          
+          echo "=== Final Grafana Status ==="
+          curl -s "http://localhost:3000/api/health" | jq '.' || echo "Health check failed"
         run: |
           echo "=== Service Status ==="
           docker compose -f demo/docker-compose.yml ps
