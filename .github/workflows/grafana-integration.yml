@@ -44,7 +44,6 @@ jobs:
 
       - name: Start Docker services
         run: |
-          cd demo
           docker compose up -d --build
 
           # Wait for services to be healthy using healthchecks
