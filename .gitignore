@@ -15,3 +15,9 @@ coverage
 # Demo artifacts
 /demo/symfony-app/vendor/
 /demo/symfony-app/var/
+
+# e2e
+/e2e/screenshots
+/e2e/node_modules
+/e2e/playwright-report
+/e2e/test-results
