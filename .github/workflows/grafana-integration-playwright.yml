@@ -190,7 +190,7 @@ jobs:
           
           echo "=== Final Grafana Status ==="
           curl -s "http://localhost:3000/api/health" | jq '.' || echo "Health check failed"
-        run: |
+          
           echo "=== Service Status ==="
           docker compose -f demo/docker-compose.yml ps
           
