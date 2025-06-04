@@ -28,17 +28,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up Node.js for Puppeteer
+      - name: Set up Node.js for Puppeteer and Playwright
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Puppeteer dependencies
+      - name: Install Puppeteer and Playwright dependencies
         run: |
           npm init -y
-          npm install puppeteer
+          npm install puppeteer playwright
           sudo apt-get update
           sudo apt-get install -y xvfb
+          
+          # Install Playwright browsers
+          npx playwright install chromium
 
       - name: Setup Grafana provisioning
         run: |
@@ -124,10 +127,15 @@ jobs:
           echo "=== Prometheus Targets ==="
           curl -s "http://localhost:9090/api/v1/targets" | jq '.data.activeTargets' || true
 
-      - name: Capture live dashboard screenshots (with 5min wait and last 5min range)
+      - name: Capture live dashboard screenshots (Puppeteer with 5min wait and last 5min range)
         run: |
-          echo "Capturing screenshots with 5 minute time range and 5 second refresh..."
+          echo "Capturing screenshots with Puppeteer - 5 minute time range and 5 second refresh..."
           xvfb-run -a node .github/scripts/capture-screenshots.js
+
+      - name: Capture live dashboard screenshots (Playwright alternative)
+        run: |
+          echo "Capturing screenshots with Playwright as alternative solution..."
+          node .github/scripts/capture-screenshots-playwright.js
 
       - name: Stop traffic generation
         run: |
