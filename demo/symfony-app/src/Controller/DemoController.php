@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,12 +35,12 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     {
         // Simulate random response time
         usleep(random_int(10000, 500000));
-        
+
         return new JsonResponse([
             'users' => [
                 ['id' => 1, 'name' => 'John Doe'],
                 ['id' => 2, 'name' => 'Jane Smith'],
-            ]
+            ],
         ]);
     }
 
@@ -48,7 +50,7 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
         // Simulate random errors with different exception types
         // Higher probability of errors to ensure good demo data
         $errorType = random_int(1, 8);
-        
+
         switch ($errorType) {
             case 1:
                 throw new \Exception('Generic exception occurred');
@@ -75,7 +77,7 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     {
         // Simulate database-related errors with higher error rate
         $errorType = random_int(1, 4);
-        
+
         switch ($errorType) {
             case 1:
                 throw new \PDOException('Database connection failed');
@@ -94,7 +96,7 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     {
         // Simulate validation errors with more variety
         $errorType = random_int(1, 6);
-        
+
         switch ($errorType) {
             case 1:
                 throw new \InvalidArgumentException('Email format is invalid');
@@ -117,6 +119,7 @@ class DemoController extends AbstractController implements ServiceSubscriberInte
     {
         // Simulate slow endpoint
         sleep(2);
+
         return new JsonResponse(['status' => 'slow response']);
     }
 

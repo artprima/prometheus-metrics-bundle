@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -24,10 +26,10 @@ class Kernel extends BaseKernel
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $configDir = $this->getConfigDir();
-        
+
         $loader->load($configDir.'/{packages}/*.yaml', 'glob');
         $loader->load($configDir.'/{packages}/'.$this->environment.'/*.yaml', 'glob');
-        
+
         if (is_file($configDir.'/services.yaml')) {
             $loader->load($configDir.'/services.yaml');
         } elseif (is_file($path = $configDir.'/services.php')) {

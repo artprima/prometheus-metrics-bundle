@@ -1,13 +1,14 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 // Simple test to demonstrate the metrics exposed by the bundle
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
-use Artprima\PrometheusMetricsBundle\Metrics\MetricInfo;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
@@ -20,7 +21,7 @@ $storage = new InMemory();
 $registry = new CollectorRegistry($storage);
 $renderer = new Renderer($registry, 'symfony');
 
-// Initialize AppMetrics  
+// Initialize AppMetrics
 $appMetrics = new AppMetrics();
 $appMetrics->init('symfony', $registry);
 
@@ -42,34 +43,34 @@ $requestTypes = [
 ];
 
 foreach ($requestTypes as $i => $requestType) {
-    echo "  Request " . ($i + 1) . ": {$requestType['method']} /{$requestType['route']} -> {$requestType['status']}\n";
-    
+    echo '  Request '.($i + 1).": {$requestType['method']} /{$requestType['route']} -> {$requestType['status']}\n";
+
     // Create mock request
-    $request = new \Symfony\Component\HttpFoundation\Request();
+    $request = new Symfony\Component\HttpFoundation\Request();
     $request->setMethod($requestType['method']);
     $request->attributes->set('_route', $requestType['route']);
     $request->server->set('HOSTNAME', 'demo-server');
-    
+
     // Create events
-    $requestEvent = new \Symfony\Component\HttpKernel\Event\RequestEvent(
-        new \Symfony\Component\HttpKernel\HttpKernel(
-            new \Symfony\Component\EventDispatcher\EventDispatcher(),
-            new \Symfony\Component\HttpKernel\Controller\ControllerResolver()
+    $requestEvent = new Symfony\Component\HttpKernel\Event\RequestEvent(
+        new Symfony\Component\HttpKernel\HttpKernel(
+            new Symfony\Component\EventDispatcher\EventDispatcher(),
+            new Symfony\Component\HttpKernel\Controller\ControllerResolver()
         ),
         $request,
-        \Symfony\Component\HttpKernel\HttpKernelInterface::MAIN_REQUEST
+        Symfony\Component\HttpKernel\HttpKernelInterface::MAIN_REQUEST
     );
-    
-    $response = new \Symfony\Component\HttpFoundation\Response('', $requestType['status']);
-    $terminateEvent = new \Symfony\Component\HttpKernel\Event\TerminateEvent(
-        new \Symfony\Component\HttpKernel\HttpKernel(
-            new \Symfony\Component\EventDispatcher\EventDispatcher(),
-            new \Symfony\Component\HttpKernel\Controller\ControllerResolver()
+
+    $response = new Symfony\Component\HttpFoundation\Response('', $requestType['status']);
+    $terminateEvent = new Symfony\Component\HttpKernel\Event\TerminateEvent(
+        new Symfony\Component\HttpKernel\HttpKernel(
+            new Symfony\Component\EventDispatcher\EventDispatcher(),
+            new Symfony\Component\HttpKernel\Controller\ControllerResolver()
         ),
         $request,
         $response
     );
-    
+
     // Collect metrics
     $appMetrics->collectStart($requestEvent);
     usleep(rand(10000, 100000)); // Simulate request duration

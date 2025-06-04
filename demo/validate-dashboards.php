@@ -1,32 +1,34 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 // Simple validation script for Grafana dashboard JSON files
 
-$dashboardsDir = dirname(__DIR__) . '/grafana';
+$dashboardsDir = dirname(__DIR__).'/grafana';
 $dashboards = [
     'symfony-app-overview.json',
-    'symfony-app-monitoring.json'
+    'symfony-app-monitoring.json',
 ];
 
 $errors = [];
 
 foreach ($dashboards as $dashboard) {
-    $file = $dashboardsDir . '/' . $dashboard;
-    
+    $file = $dashboardsDir.'/'.$dashboard;
+
     if (!file_exists($file)) {
         $errors[] = "Dashboard file $dashboard not found";
         continue;
     }
-    
+
     $json = file_get_contents($file);
     $data = json_decode($json, true);
-    
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        $errors[] = "Invalid JSON in $dashboard: " . json_last_error_msg();
+
+    if (JSON_ERROR_NONE !== json_last_error()) {
+        $errors[] = "Invalid JSON in $dashboard: ".json_last_error_msg();
         continue;
     }
-    
+
     // Validate basic dashboard structure
     $requiredFields = ['panels', 'title'];
     foreach ($requiredFields as $field) {
@@ -34,28 +36,28 @@ foreach ($dashboards as $dashboard) {
             $errors[] = "Missing required field '$field' in $dashboard";
         }
     }
-    
+
     if (!isset($data['panels']) || !is_array($data['panels'])) {
         $errors[] = "No panels found in $dashboard";
         continue;
     }
-    
+
     // Validate that panels have required prometheus metrics (with template variables)
     $expectedMetrics = [
         'http_requests_total',
         'request_durations_histogram_seconds',
-        'http_2xx_responses_total', 
+        'http_2xx_responses_total',
         'http_4xx_responses_total',
-        'http_5xx_responses_total'
+        'http_5xx_responses_total',
     ];
-    
+
     $foundMetrics = [];
     foreach ($data['panels'] as $panel) {
         if (isset($panel['targets'])) {
             foreach ($panel['targets'] as $target) {
                 if (isset($target['expr'])) {
                     foreach ($expectedMetrics as $metric) {
-                        if (strpos($target['expr'], $metric) !== false) {
+                        if (false !== strpos($target['expr'], $metric)) {
                             $foundMetrics[] = $metric;
                         }
                     }
@@ -63,12 +65,12 @@ foreach ($dashboards as $dashboard) {
             }
         }
     }
-    
+
     $missingMetrics = array_diff($expectedMetrics, $foundMetrics);
     if (!empty($missingMetrics)) {
-        $errors[] = "Dashboard $dashboard is missing metrics: " . implode(', ', $missingMetrics);
+        $errors[] = "Dashboard $dashboard is missing metrics: ".implode(', ', $missingMetrics);
     }
-    
+
     echo "✓ Dashboard $dashboard validated successfully\n";
 }
 

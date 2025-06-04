@@ -77,10 +77,15 @@ async function captureScreenshots() {
     fs.mkdirSync('screenshots');
   }
 
+  console.log('Waiting 5 minutes for metrics to accumulate before taking screenshots...');
+  await sleep(300000); // Wait 5 minutes (300,000 milliseconds)
+  console.log('5 minute wait completed, proceeding with screenshots...');
+
   // Function to capture dashboard with retry logic
   async function captureDashboard(dashboardId, name, filename) {
     console.log(`Capturing ${name} dashboard...`);
-    const dashboardUrl = `http://localhost:3000/d/${dashboardId}?orgId=1&refresh=5s&kiosk=tv`;
+    // Set time range to last 5 minutes and refresh every 5 seconds
+    const dashboardUrl = `http://localhost:3000/d/${dashboardId}?orgId=1&refresh=5s&from=now-5m&to=now&kiosk=tv`;
     
     try {
       await page.goto(dashboardUrl, { waitUntil: 'networkidle0', timeout: 45000 });

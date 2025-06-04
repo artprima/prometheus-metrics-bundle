@@ -95,12 +95,12 @@ jobs:
             fi
           done
 
-      - name: Generate test traffic
+      - name: Start continuous traffic generation in background
         run: |
-          ./.github/scripts/generate-traffic.sh
-
-          # Wait a bit for metrics to be scraped
-          sleep 15
+          echo "Starting continuous traffic generation for 5 minutes..."
+          ./.github/scripts/generate-traffic.sh --continuous > traffic.log 2>&1 &
+          echo $! > traffic_pid.txt
+          echo "Traffic generation started in background with PID $(cat traffic_pid.txt)"
 
       - name: Verify Prometheus is collecting metrics
         run: |
@@ -124,9 +124,19 @@ jobs:
           echo "=== Prometheus Targets ==="
           curl -s "http://localhost:9090/api/v1/targets" | jq '.data.activeTargets' || true
 
-      - name: Capture live dashboard screenshots
+      - name: Capture live dashboard screenshots (with 5min wait and last 5min range)
         run: |
+          echo "Capturing screenshots with 5 minute time range and 5 second refresh..."
           xvfb-run -a node .github/scripts/capture-screenshots.js
+
+      - name: Stop traffic generation
+        run: |
+          if [ -f traffic_pid.txt ]; then
+            TRAFFIC_PID=$(cat traffic_pid.txt)
+            echo "Stopping traffic generation (PID: $TRAFFIC_PID)"
+            kill $TRAFFIC_PID || true
+            rm traffic_pid.txt
+          fi
 
       - name: Verify screenshots were created
         run: |
@@ -135,6 +145,14 @@ jobs:
 
       - name: Stop Docker services
         run: |
+          # Stop any remaining traffic generation
+          if [ -f traffic_pid.txt ]; then
+            TRAFFIC_PID=$(cat traffic_pid.txt)
+            echo "Stopping any remaining traffic generation (PID: $TRAFFIC_PID)"
+            kill $TRAFFIC_PID || true
+            rm traffic_pid.txt
+          fi
+          
           cd demo
           docker compose down
           docker compose logs --tail=50 || true
