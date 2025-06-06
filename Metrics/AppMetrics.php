@@ -23,17 +23,8 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private float $startedAt = 0;
 
-    private ?MetricInfoResolverInterface $metricInfoResolver = null;
-    private ?LabelResolver $labelResolver = null;
-
-    public function setMetricInfoResolver(MetricInfoResolverInterface $metricInfoResolver): void
+    public function __construct(private readonly LabelResolver $labelResolver, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null)
     {
-        $this->metricInfoResolver = $metricInfoResolver;
-    }
-
-    public function setLabelResolver(LabelResolver $labelResolver): void
-    {
-        $this->labelResolver = $labelResolver;
     }
 
     public function collectRequest(RequestEvent $event): void
