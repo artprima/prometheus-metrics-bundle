@@ -36,9 +36,8 @@ class AppMetricsTest extends TestCase
 
     public function testCollectRequest(): void
     {
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics($this->labelResolver);
         $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $evt = $this->createMock(RequestEvent::class);
@@ -56,9 +55,8 @@ class AppMetricsTest extends TestCase
 
     public function testCollectRequestOptionsMethod(): void
     {
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics($this->labelResolver);
         $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
         $evt = $this->createMock(RequestEvent::class);
@@ -92,9 +90,8 @@ class AppMetricsTest extends TestCase
      */
     public function testCollectResponse(int $code, string $metricsName): void
     {
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics($this->labelResolver);
         $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', $code);
@@ -116,9 +113,8 @@ class AppMetricsTest extends TestCase
     {
         self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
 
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics($this->labelResolver);
         $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setLabelResolver($this->labelResolver);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $reqEvt = $this->createMock(RequestEvent::class);
@@ -159,10 +155,8 @@ class AppMetricsTest extends TestCase
 
     public function testUseMetricInfoResolver(): void
     {
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics($this->labelResolver, new DummyMetricInfoResolver());
         $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setLabelResolver($this->labelResolver);
-        $metrics->setMetricInfoResolver(new DummyMetricInfoResolver());
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
         $reqEvt = $this->createMock(RequestEvent::class);
@@ -186,14 +180,13 @@ class AppMetricsTest extends TestCase
 
     public function testUseMetricInfoResolverWithLabels(): void
     {
-        $metrics = new AppMetrics();
-        $metrics->init($this->namespace, $this->collectionRegistry);
-        $metrics->setMetricInfoResolver(new DummyMetricInfoResolver());
         $labels = [
             new LabelConfig('color', LabelConfig::REQUEST_ATTRIBUTE, 'color'),
             new LabelConfig('client_name', LabelConfig::REQUEST_HEADER, 'X-Client-Name'),
         ];
-        $metrics->setLabelResolver(new LabelResolver($labels));
+
+        $metrics = new AppMetrics(new LabelResolver($labels), new DummyMetricInfoResolver());
+        $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
 

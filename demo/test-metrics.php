@@ -21,12 +21,11 @@ $storage = new InMemory();
 $registry = new CollectorRegistry($storage);
 $renderer = new Renderer($registry, 'symfony');
 
-// Initialize AppMetrics
-$appMetrics = new AppMetrics();
-$appMetrics->init('symfony', $registry);
-
 $labelResolver = new LabelResolver([]);
-$appMetrics->setLabelResolver($labelResolver);
+
+// Initialize AppMetrics
+$appMetrics = new AppMetrics($labelResolver);
+$appMetrics->init('symfony', $registry);
 
 echo "✅ Metrics system initialized\n";
 

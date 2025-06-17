@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Artprima\PrometheusMetricsBundle\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
+use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
@@ -29,7 +30,7 @@ class RendererTest extends TestCase
             ->willReturn([
                 new MetricFamilySamples(self::$samples),
             ]);
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics(new LabelResolver());
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->render();
@@ -45,7 +46,7 @@ class RendererTest extends TestCase
             ->willReturn([
                 new MetricFamilySamples(self::$samples),
             ]);
-        $metrics = new AppMetrics();
+        $metrics = new AppMetrics(new LabelResolver());
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->renderResponse();
