@@ -75,6 +75,29 @@ class AppMetricsTest extends TestCase
         );
     }
 
+    public function testCollectResponseOptionsMethod(): void
+    {
+        $metrics = new AppMetrics($this->labelResolver);
+        $metrics->init($this->namespace, $this->collectionRegistry);
+
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
+        $response = new Response('', 200);
+
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new TerminateEvent($kernel, $request, $response);
+        $metrics->collectResponse($evt);
+
+        $response = $this->renderer->renderResponse();
+        $responseContent = $response->getContent();
+
+        $expected = "# HELP php_info Information about the PHP environment.\n# TYPE php_info gauge\nphp_info{version=\"%s\"} 1";
+
+        self::assertEquals(
+            sprintf($expected, PHP_VERSION),
+            trim((string) $responseContent)
+        );
+    }
+
     public static function provideMetricsName(): array
     {
         return [
