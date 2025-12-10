@@ -20,7 +20,7 @@ class ClearMetricsCommandTest extends TestCase
 
         $command = new ClearMetricsCommand($adapter);
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $tester = new CommandTester($application->get('artprima:prometheus:metrics:clear'));
         $tester->execute([]);

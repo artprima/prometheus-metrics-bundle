@@ -135,7 +135,7 @@ Supported types are:
 ```yaml
 # expose /metrics/prometheus in your application
 app_metrics:
-    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml'
+    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.yaml'
 ```
 
 You can alternatively define your own path and rules:

@@ -62,7 +62,7 @@ class AppKernel extends Kernel
         return sys_get_temp_dir().'/'.$this->varDir.'/'.$this->testCase.'/logs';
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load($this->rootConfig);
     }

@@ -30,10 +30,13 @@
     "squizlabs/php_codesniffer": "^3.5"
   },
   "scripts": {
-     "php-cs-fixer": "php-cs-fixer --config=./.php-cs-fixer.dist.php",
      "php-cs-fixer-check": "php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --diff --allow-risky=yes --ansi --dry-run",
      "php-cs-fixer-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --diff --allow-risky=yes --ansi",
-     "phpcs-check": "phpcs"
+     "phpcs-check": [
+       "phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard",
+       "phpcs"
+     ],
+     "phpunit": "phpunit"
   },
   "suggest": {
     "ext-apcu": "Required if using APCu as prometheus metrics backend",

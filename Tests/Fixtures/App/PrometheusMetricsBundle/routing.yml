@@ -1,5 +1,5 @@
 app_metrics:
-    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml'
+    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.yaml'
 
 dummy_route:
     path: /dummy/test-action

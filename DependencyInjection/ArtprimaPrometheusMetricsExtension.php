@@ -12,7 +12,7 @@ use Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -56,8 +56,8 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $container->setParameter('prometheus_metrics_bundle.enable_default_promphp_metrics', !$config['disable_default_promphp_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_console_metrics', $config['enable_console_metrics']);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
 
         if (isset($config['labels'])) {
             $labelConfigServices = [];
