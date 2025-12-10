@@ -47,6 +47,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $response = $event->getResponse();
         $request = $event->getRequest();
 
+        if ('OPTIONS' === $request->getMethod()) {
+            return;
+        }
+
         $metricInfo = $this->resolveMetricInfo($request);
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
