@@ -36,6 +36,7 @@
 
     <service id="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" class="Artprima\PrometheusMetricsBundle\Metrics\AppMetrics" public="false" autowire="false" autoconfigure="false">
         <argument type="service" id="Artprima\PrometheusMetricsBundle\Metrics\LabelResolver" />
+        <argument>%prometheus_metrics_bundle.buckets%</argument>
         <tag name="prometheus_metrics_bundle.metrics_collector" />
         <tag name="prometheus_metrics_bundle.default_metrics" />
     </service>

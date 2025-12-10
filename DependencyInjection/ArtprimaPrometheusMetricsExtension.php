@@ -55,6 +55,7 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_default_promphp_metrics', !$config['disable_default_promphp_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_console_metrics', $config['enable_console_metrics']);
+        $container->setParameter('prometheus_metrics_bundle.buckets', $config['buckets']);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');

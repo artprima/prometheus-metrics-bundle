@@ -23,7 +23,10 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
 
     private float $startedAt = 0;
 
-    public function __construct(private readonly LabelResolver $labelResolver, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null)
+    /**
+     * @param array<float> $buckets
+     */
+    public function __construct(private readonly LabelResolver $labelResolver, private readonly array $buckets, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null)
     {
     }
 
@@ -147,7 +150,8 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            $this->getLabelNames()
+            $this->getLabelNames(),
+            $this->buckets,
         );
 
         $histogram->observe($duration, $this->getAllLabelValues());

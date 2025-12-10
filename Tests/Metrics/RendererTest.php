@@ -30,7 +30,7 @@ class RendererTest extends TestCase
             ->willReturn([
                 new MetricFamilySamples(self::$samples),
             ]);
-        $metrics = new AppMetrics(new LabelResolver());
+        $metrics = new AppMetrics(new LabelResolver(), [1]);
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->render();
@@ -46,7 +46,7 @@ class RendererTest extends TestCase
             ->willReturn([
                 new MetricFamilySamples(self::$samples),
             ]);
-        $metrics = new AppMetrics(new LabelResolver());
+        $metrics = new AppMetrics(new LabelResolver(), [1]);
         $metrics->init('test_ns', $collectionRegistry);
         $renderer = new Renderer($collectionRegistry);
         $response = $renderer->renderResponse();
