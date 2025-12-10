@@ -18,6 +18,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequestPre, priority: 1024 }
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelExceptionPre }
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 1024 }
             - { name: kernel.event_listener, event: kernel.terminate, priority: 1024 }
         calls:
