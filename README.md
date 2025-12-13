@@ -6,7 +6,7 @@
 | [![Coverage Status][Master coverage image]][Master coverage] |
 
 
-Symfony 5/6/7 Prometheus Metrics Bundle
+Symfony 5/6/7/8 Prometheus Metrics Bundle
 =========================================
 
 A Symfony bundle for the `promphp/prometheus_client_php`.
@@ -135,7 +135,7 @@ Supported types are:
 ```yaml
 # expose /metrics/prometheus in your application
 app_metrics:
-    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml'
+    resource: '@ArtprimaPrometheusMetricsBundle/Resources/config/routing.yaml'
 ```
 
 You can alternatively define your own path and rules:

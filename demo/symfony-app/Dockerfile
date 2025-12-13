@@ -18,14 +18,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy application files
-COPY . .
+COPY ./demo/symfony-app .
+COPY . /var
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction && \
     composer dump-autoload --optimize
 
 # Apache configuration
-COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+COPY ./demo/symfony-app/apache-config.conf /etc/apache2/sites-available/000-default.conf
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \

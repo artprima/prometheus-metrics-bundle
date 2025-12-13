@@ -5,4 +5,4 @@ controllers:
     type: attribute
 
 prometheus_bundle:
-    resource: "@ArtprimaPrometheusMetricsBundle/Resources/config/routing.xml"
+    resource: "@ArtprimaPrometheusMetricsBundle/Resources/config/routing.yaml"

@@ -1,0 +1,3 @@
+prometheus_bundle_prometheus:
+    controller: Artprima\PrometheusMetricsBundle\Controller\MetricsController::prometheus
+    path: /metrics/prometheus
