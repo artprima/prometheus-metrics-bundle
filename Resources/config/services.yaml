@@ -47,7 +47,7 @@ services:
         arguments:
             - '@prometheus_metrics_bundle.adapter'
         tags:
-            - { name: console.command, command: 'artprima:prometheus:metrics:clear', description: 'lear all collected metrics from storage' }
+            - { name: console.command, command: 'artprima:prometheus:metrics:clear', description: 'Clear all collected metrics from storage' }
 
     Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry:
         arguments:
