@@ -20,7 +20,13 @@ class ClearMetricsCommandTest extends TestCase
 
         $command = new ClearMetricsCommand($adapter);
         $application = new Application();
-        $application->add($command);
+
+        // Symfony 7.4+
+        if (method_exists($application, 'addCommand')) {
+            $application->addCommand($command);
+        } else {
+            $application->add($command);
+        }
 
         $tester = new CommandTester($application->get('artprima:prometheus:metrics:clear'));
         $tester->execute([]);

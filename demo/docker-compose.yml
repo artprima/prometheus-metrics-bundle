@@ -1,6 +1,8 @@
 services:
   symfony-app:
-    build: ./symfony-app
+    build:
+      context: ./..
+      dockerfile: ./demo/symfony-app/Dockerfile
     ports:
       - "8080:80"
     environment:

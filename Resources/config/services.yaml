@@ -1,0 +1,77 @@
+parameters:
+  prometheus_metrics_bundle.collector_registry.class: Prometheus\CollectorRegistry
+
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  prometheus_metrics_bundle.adapter:
+    class: Prometheus\Storage\Adapter
+    factory: [ '@Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry', 'create' ]
+
+  prometheus_metrics_bundle.collector_registry:
+    class: '%prometheus_metrics_bundle.collector_registry.class%'
+    arguments:
+      - '@prometheus_metrics_bundle.adapter'
+      - '%prometheus_metrics_bundle.enable_default_promphp_metrics%'
+
+  Artprima\PrometheusMetricsBundle\EventListener\MetricsCollectorListener:
+    arguments:
+      - '@Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry'
+    tags:
+      - { name: kernel.event_listener, event: kernel.request }
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequestPre, priority: 1024 }
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelExceptionPre }
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 1024 }
+      - { name: kernel.event_listener, event: kernel.terminate, priority: 1024 }
+    calls:
+      - setLogger: [ '@logger' ]
+
+  Artprima\PrometheusMetricsBundle\Metrics\Renderer:
+    arguments:
+      - '@prometheus_metrics_bundle.collector_registry'
+
+  Artprima\PrometheusMetricsBundle\Metrics\AppMetrics:
+    arguments:
+      - '@Artprima\PrometheusMetricsBundle\Metrics\LabelResolver'
+    tags:
+      - { name: prometheus_metrics_bundle.metrics_collector }
+      - { name: prometheus_metrics_bundle.default_metrics }
+
+  Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry:
+
+  Artprima\PrometheusMetricsBundle\Controller\MetricsController:
+    public: true
+    arguments:
+      - '@Artprima\PrometheusMetricsBundle\Metrics\Renderer'
+
+  Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand:
+    class: Artprima\PrometheusMetricsBundle\Command\ClearMetricsCommand
+    arguments:
+      - '@prometheus_metrics_bundle.adapter'
+    tags:
+      - { name: console.command, command: 'artprima:prometheus:metrics:clear', description: 'Clear all collected metrics from storage' }
+
+  Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry:
+    arguments:
+      - [ ]
+
+  Artprima\PrometheusMetricsBundle\StorageFactory\RedisFactory:
+    tags:
+      - { name: prometheus_metrics_bundle.adapter_factory }
+
+  Artprima\PrometheusMetricsBundle\StorageFactory\InMemoryFactory:
+    tags:
+      - { name: prometheus_metrics_bundle.adapter_factory }
+
+  Artprima\PrometheusMetricsBundle\StorageFactory\ApcFactory:
+    tags:
+      - { name: prometheus_metrics_bundle.adapter_factory }
+
+  Artprima\PrometheusMetricsBundle\StorageFactory\APCngFactory:
+    tags:
+      - { name: prometheus_metrics_bundle.adapter_factory }
+
+  Artprima\PrometheusMetricsBundle\Metrics\LabelResolver:
