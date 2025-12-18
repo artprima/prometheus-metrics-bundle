@@ -42,6 +42,10 @@ class FactoryRegistry
             unset($options['url'], $options['scheme']);
         }
 
+        if (isset($options['prefix']) && 1 !== preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:]*$/', (string) $options['prefix'])) {
+            throw new \InvalidArgumentException('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$');
+        }
+
         if (!($name = $options['type'] ?? false) || !isset($this->factories[$name])) {
             throw new \InvalidArgumentException('The scheme of the adapter is not defined. Could not find factory for "'.$name.'"');
         }

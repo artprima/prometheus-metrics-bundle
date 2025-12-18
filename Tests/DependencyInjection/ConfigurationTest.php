@@ -191,6 +191,52 @@ class ConfigurationTest extends TestCase
                     'labels' => [],
                 ],
             ],
+            [
+                'config with env var prefix',
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'prefix' => '%env(PROM_PREFIX)%',
+                    ],
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'prefix' => '%env(PROM_PREFIX)%',
+                    ],
+                    'type' => 'in_memory',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'labels' => [],
+                ],
+            ],
+            [
+                'config with prefix form param',
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'prefix' => '%app.my_value%',
+                    ],
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'storage' => [
+                        'type' => 'redis',
+                        'prefix' => '%app.my_value%',
+                    ],
+                    'type' => 'in_memory',
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'labels' => [],
+                ],
+            ],
         ];
     }
 
