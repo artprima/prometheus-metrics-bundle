@@ -6,6 +6,7 @@ namespace Tests\Artprima\PrometheusMetricsBundle\StorageFactory;
 
 use Artprima\PrometheusMetricsBundle\StorageFactory\FactoryRegistry;
 use Artprima\PrometheusMetricsBundle\StorageFactory\InMemoryFactory;
+use Artprima\PrometheusMetricsBundle\StorageFactory\RedisFactory;
 use PHPUnit\Framework\TestCase;
 use Prometheus\Storage\InMemory;
 use Tests\Artprima\PrometheusMetricsBundle\Fixtures\App\Storage\Dummy;
@@ -58,5 +59,38 @@ class FactoryRegistryTest extends TestCase
 
         $factory = new FactoryRegistry();
         $factory->create(['url' => 'http:///']);
+    }
+
+    public function testCreateWithInvalidPrefix(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$');
+
+        $factory = new FactoryRegistry([new RedisFactory()]);
+        $factory->create([
+            'type' => 'redis',
+            'prefix' => 'invalid-prefix!',
+        ]);
+    }
+
+    public function testCreateWithInvalidPrefixInDsn(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$');
+
+        $factory = new FactoryRegistry([new RedisFactory()]);
+        $factory->create([
+            'url' => 'redis://localhost?prefix=invalid-prefix!',
+        ]);
+    }
+
+    public function testCreateWithValidPrefix(): void
+    {
+        $factory = new FactoryRegistry([new InMemoryFactory()]);
+        $adapter = $factory->create([
+            'type' => 'in_memory',
+            'prefix' => 'valid_prefix:123',
+        ]);
+        self::assertInstanceOf(InMemory::class, $adapter);
     }
 }
