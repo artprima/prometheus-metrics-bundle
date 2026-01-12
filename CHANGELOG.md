@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+* 1.21.0 (2026-01-12)
+
+  * This release introduces official support for Symfony 8.0 (thanks to [@Venca](https://github.com/Venca))
+  * Add support for environment variables and parameters in prefix configuration ([#129](https://github.com/artprima/prometheus-metrics-bundle/pull/129)) (thanks to [@nefthy-jl](https://github.com/nefthy-jl))
+  * Migrate configuration from XML to YAML format ([#128](https://github.com/artprima/prometheus-metrics-bundle/pull/128)) (thanks to [@Venca](https://github.com/Venca))
+  * Ignore collect response for OPTIONS requests ([#123](https://github.com/artprima/prometheus-metrics-bundle/pull/123)) (thanks to [@Bartłomiej Ojrzeński](https://github.com/Bartłomiej Ojrzeński))
+  * Use constructor injection for AppMetrics ([#121](https://github.com/artprima/prometheus-metrics-bundle/pull/121)) (thanks to [@Michael Hirschler](https://github.com/Michael Hirschler))
+  * Move ext-apcu and ext-redis to require-dev ([#120](https://github.com/artprima/prometheus-metrics-bundle/pull/120)) (thanks to [@Michael Hirschler](https://github.com/Michael Hirschler))
+  * Increase priority of MetricsCollectorListener for kernel.terminate event ([#117](https://github.com/artprima/prometheus-metrics-bundle/pull/117))
+
 * 1.20.0 (2025-04-09)
 
   * This release introduces an official support for php 8.4 and Symfony 7.2 (thanks to [@mickverm](https://github.com/mickverm))
