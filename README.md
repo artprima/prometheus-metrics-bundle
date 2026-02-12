@@ -77,13 +77,13 @@ artprima_prometheus_metrics:
 
     # ignoring some routes in metrics
     ignored_routes: [some_route_name, another_route_name]
-    
+
     # Custom labels that can be added along the "action" label.
-    # You can set up for example: 
+    # You can set up for example:
     # http_2xx_responses_total{action="GET-app_dummy_homepage",color="red",client_name="mobile-app"}
     labels:
-        - name: "color" 
-          type: "request_attribute" 
+        - name: "color"
+          type: "request_attribute"
           value: "_color"   # Create a subscriber and set up the `_color` attribute in the request. See example below.
         - name: "client_name"
           type: "request_header" # Create a subscriber and set up the `X-Client-Name` header in the request. See example below.
@@ -93,10 +93,10 @@ artprima_prometheus_metrics:
     storage:
         # DSN of the storage. All parsed values will override explicitly set parameters. Ex: redis://127.0.0.1?timeout=0.1
         url: ~
-        
+
         # Known values: in_memory, apcu, apcng, redis
         type: in_memory
-        
+
         # Available parameters used by redis
         host: 127.0.0.1
         port: 6379
@@ -162,15 +162,15 @@ declare(strict_types=1);
 namespace App\Metrics;
 
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
-use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface;
 use Prometheus\CollectorRegistry;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * Class MyMetricsCollector.
  */
-class MyMetricsCollector implements RequestMetricsCollectorInterface, TerminateMetricsCollectorInterface
+class MyMetricsCollector implements RequestMetricsCollectorInterface, ResponseMetricsCollectorInterface
 {
     /**
      * @var string
@@ -234,8 +234,8 @@ class MyMetricsCollector implements RequestMetricsCollectorInterface, TerminateM
         $this->incRequestsTotal($requestMethod, $requestRoute);
     }
 
-    // called on the `kernel.terminate` event
-    public function collectResponse(TerminateEvent $event): void
+    // called on the `kernel.response` event
+    public function collectResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
@@ -261,9 +261,9 @@ By implementing one of the following interfaces you can collect the metrics on o
   - collect metrics on "kernel.exception" event with a priority of 1024.
 - `Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface`
   - collect metrics on "kernel.exception" event with (default priority).
-- `Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface`
-  - collect metrics on "kernel.terminate" event.
-  
+- `Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface`
+  - collect metrics on "kernel.response" event.
+
 The following collectors will only work if you define `enable_console_metrics: true` in the bundle configuration:
 
 - `Artprima\PrometheusMetricsBundle\Metrics\ConsoleCommandMetricsCollectorInterface`
@@ -289,7 +289,7 @@ If you don't use autoconfigure = true, then you will have to add this to your `s
 Custom Storage Adapter Factory
 ========================
 
-A storage adapter is an instance of `Prometheus\Storage\Adapter`. 
+A storage adapter is an instance of `Prometheus\Storage\Adapter`.
 To create your own storage adapter you should create a custom factory implementing `Artprima\PrometheusMetricsBundle\StorageFactory\StorageFactoryInterface`.
 
 ```php
@@ -335,10 +335,10 @@ For example, given the following configuration:
 artprima_prometheus_metrics:
     # ...
     labels:
-        - name: "color" 
-          type: "request_attribute" 
+        - name: "color"
+          type: "request_attribute"
           value: "_color"
-        
+
 ```
 
 And configuring your subscriber like this:
@@ -449,7 +449,7 @@ See how the dashboards look with real data:
 ### Symfony Application Overview Dashboard
 ![Symfony Application Overview](screenshots/symfony-app-overview-dashboard.png)
 
-### Symfony Application Monitoring Dashboard  
+### Symfony Application Monitoring Dashboard
 ![Symfony Application Monitoring](screenshots/symfony-app-monitoring-dashboard.png)
 
 For more details about the screenshots and dashboard features, see the [screenshots documentation](screenshots/README.md).

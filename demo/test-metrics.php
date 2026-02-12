@@ -12,6 +12,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 echo "🔍 Testing Prometheus Metrics Bundle\n";
 echo "=====================================\n\n";
@@ -61,12 +62,13 @@ foreach ($requestTypes as $i => $requestType) {
     );
 
     $response = new Symfony\Component\HttpFoundation\Response('', $requestType['status']);
-    $terminateEvent = new Symfony\Component\HttpKernel\Event\TerminateEvent(
+    $responseEvent = new Symfony\Component\HttpKernel\Event\ResponseEvent(
         new Symfony\Component\HttpKernel\HttpKernel(
             new Symfony\Component\EventDispatcher\EventDispatcher(),
             new Symfony\Component\HttpKernel\Controller\ControllerResolver()
         ),
         $request,
+        HttpKernelInterface::MAIN_REQUEST,
         $response
     );
 
@@ -74,7 +76,7 @@ foreach ($requestTypes as $i => $requestType) {
     $appMetrics->collectStart($requestEvent);
     usleep(rand(10000, 100000)); // Simulate request duration
     $appMetrics->collectRequest($requestEvent);
-    $appMetrics->collectResponse($terminateEvent);
+    $appMetrics->collectResponse($responseEvent);
 }
 
 echo "\n📈 Generated metrics output:\n";
