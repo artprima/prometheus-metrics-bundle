@@ -2,11 +2,12 @@
     "name": "symfony/demo-app",
     "type": "project",
     "require": {
-        "php": "^8.1",
-        "symfony/framework-bundle": "^6.4",
-        "symfony/runtime": "^6.4",
-        "symfony/yaml": "^6.4",
-        "symfony/routing": "^6.4",
+        "php": "^8.2",
+        "symfony/framework-bundle": "^8.0",
+        "symfony/runtime": "^8.0",
+        "symfony/yaml": "^8.0",
+        "symfony/routing": "^8.0",
+        "symfony/string": "^8.0",
         "artprima/prometheus-metrics-bundle": "*"
     },
     "config": {
