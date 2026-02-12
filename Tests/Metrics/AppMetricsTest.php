@@ -26,6 +26,8 @@ class AppMetricsTest extends TestCase
      */
     private $renderer;
 
+    private LabelResolver $labelResolver;
+
     public function setUp(): void
     {
         $this->namespace = 'dummy';
