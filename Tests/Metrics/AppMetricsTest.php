@@ -14,7 +14,7 @@ use Prometheus\Storage\InMemory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppMetricsTest extends TestCase
@@ -25,6 +25,8 @@ class AppMetricsTest extends TestCase
      * @var RendererTest
      */
     private $renderer;
+
+    private LabelResolver $labelResolver;
 
     public function setUp(): void
     {
@@ -84,7 +86,7 @@ class AppMetricsTest extends TestCase
         $response = new Response('', 200);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
         $metrics->collectResponse($evt);
 
         $response = $this->renderer->renderResponse();
@@ -119,7 +121,7 @@ class AppMetricsTest extends TestCase
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', $code);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
         $metrics->collectResponse($evt);
 
         $response = $this->renderer->renderResponse();
@@ -145,7 +147,7 @@ class AppMetricsTest extends TestCase
 
         $response = new Response('', 200);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
         $metrics->collectStart($reqEvt);
         $metrics->collectRequest($reqEvt);
@@ -187,7 +189,7 @@ class AppMetricsTest extends TestCase
 
         $response = new Response('', 200);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
         $metrics->collectStart($reqEvt);
         $metrics->collectRequest($reqEvt);
@@ -224,7 +226,7 @@ class AppMetricsTest extends TestCase
 
         $response = new Response('', 200);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
         $metrics->collectStart($reqEvt);
         $metrics->collectRequest($reqEvt);

@@ -7,7 +7,7 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 use Prometheus\Exception\MetricNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * Class AppMetrics is an implementation of basic metrics collector that is turned on by default.
@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
  * - responses (per method, route and response type)
  * - request duration histogram (per method and route)
  */
-class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsCollectorInterface, TerminateMetricsCollectorInterface
+class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsCollectorInterface, ResponseMetricsCollectorInterface
 {
     use MetricsCollectorInitTrait;
 
@@ -42,7 +42,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
         $this->incRequestsTotal($metricInfo);
     }
 
-    public function collectResponse(TerminateEvent $event): void
+    public function collectResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
         $request = $event->getRequest();

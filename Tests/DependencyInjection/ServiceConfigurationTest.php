@@ -11,22 +11,22 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ServiceConfigurationTest extends TestCase
 {
-    public function testMetricsCollectorListenerHasCorrectKernelTerminatePriority(): void
+    public function testMetricsCollectorListenerHasCorrectKernelResponsePriority(): void
     {
         $tags = $this->getMetricsCollectorListenerTags();
 
-        // Find the kernel.terminate tag
-        $kernelTerminateTag = null;
+        // Find the kernel.response tag
+        $kernelResponseTag = null;
         foreach ($tags['kernel.event_listener'] ?? [] as $tag) {
-            if (($tag['event'] ?? null) === 'kernel.terminate') {
-                $kernelTerminateTag = $tag;
+            if (($tag['event'] ?? null) === 'kernel.response') {
+                $kernelResponseTag = $tag;
                 break;
             }
         }
 
-        self::assertNotNull($kernelTerminateTag, 'kernel.terminate event listener tag should exist');
-        self::assertArrayHasKey('priority', $kernelTerminateTag, 'kernel.terminate event listener should have a priority');
-        self::assertEquals(1024, $kernelTerminateTag['priority'], 'kernel.terminate event listener should have priority 1024');
+        self::assertNotNull($kernelResponseTag, 'kernel.response event listener tag should exist');
+        self::assertArrayHasKey('priority', $kernelResponseTag, 'kernel.response event listener should have a priority');
+        self::assertEquals(1024, $kernelResponseTag['priority'], 'kernel.response event listener should have priority 1024');
     }
 
     public function testMetricsCollectorListenerEventPriorities(): void
@@ -36,7 +36,7 @@ class ServiceConfigurationTest extends TestCase
         $expectedEventPriorities = [
             ['event' => 'kernel.request', 'method' => 'onKernelRequestPre', 'priority' => 1024],
             ['event' => 'kernel.exception', 'method' => 'onKernelException', 'priority' => 1024],
-            ['event' => 'kernel.terminate', 'priority' => 1024],
+            ['event' => 'kernel.response', 'method' => 'onKernelResponse', 'priority' => 1024],
         ];
 
         foreach ($expectedEventPriorities as $expectedTag) {

@@ -12,7 +12,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\ExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
-use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class MetricsCollectorListenerTest extends TestCase
@@ -130,16 +130,16 @@ class MetricsCollectorListenerTest extends TestCase
         $listener->onKernelRequest($evt);
     }
 
-    public function testOnKernelTerminate(): void
+    public function testOnKernelResponse(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $kernel = $this->createMock(HttpKernelInterface::class);
         $response = new Response('', 500);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
-        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(ResponseMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->with($evt);
-        $collector2 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector2 = $this->createMock(ResponseMetricsCollectorInterface::class);
         $collector2->expects(self::once())->method('collectResponse')->with($evt);
 
         $registry = new MetricsCollectorRegistry();
@@ -147,17 +147,17 @@ class MetricsCollectorListenerTest extends TestCase
         $registry->registerMetricsCollector($collector2);
 
         $listener = new MetricsCollectorListener($registry);
-        $listener->onKernelTerminate($evt);
+        $listener->onKernelResponse($evt);
     }
 
-    public function testOnKernelTerminateExceptionHandlingWithLog(): void
+    public function testOnKernelResponseExceptionHandlingWithLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', 400);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
-        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(ResponseMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
@@ -166,28 +166,28 @@ class MetricsCollectorListenerTest extends TestCase
         $listener = new MetricsCollectorListener($registry);
         $logger = new BufferingLogger();
         $listener->setLogger($logger);
-        $listener->onKernelTerminate($evt);
+        $listener->onKernelResponse($evt);
         $logs = $logger->cleanLogs();
         self::assertCount(1, $logs);
         self::assertCount(3, $logs[0]);
         self::assertEquals('test exception', $logs[0][1]);
     }
 
-    public function testOnKernelTerminateExceptionHandlingWithoutLog(): void
+    public function testOnKernelResponseExceptionHandlingWithoutLog(): void
     {
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
         $response = new Response('', 400);
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $evt = new TerminateEvent($kernel, $request, $response);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
 
-        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector1 = $this->createMock(ResponseMetricsCollectorInterface::class);
         $collector1->expects(self::once())->method('collectResponse')->willThrowException(new \Exception('test exception'));
 
         $registry = new MetricsCollectorRegistry();
         $registry->registerMetricsCollector($collector1);
 
         $listener = new MetricsCollectorListener($registry);
-        $listener->onKernelTerminate($evt);
+        $listener->onKernelResponse($evt);
     }
 
     public function testOnKernelException(): void

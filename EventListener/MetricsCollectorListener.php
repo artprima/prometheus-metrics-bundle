@@ -13,7 +13,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
-use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * Class MetricsCollectorListener is an event listener that calls the registered metric handlers.
@@ -137,15 +137,19 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
     }
 
-    public function onKernelTerminate(TerminateEvent $event): void
+    public function onKernelResponse(ResponseEvent $event): void
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
         $requestRoute = $event->getRequest()->attributes->get('_route');
         if (in_array($requestRoute, $this->ignoredRoutes, true)) {
             return;
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
-            if (!self::isSupportedEvent($collector, 'collectResponse', TerminateMetricsCollectorInterface::class)) {
+            if (!self::isSupportedEvent($collector, 'collectResponse', ResponseMetricsCollectorInterface::class)) {
                 continue;
             }
 
