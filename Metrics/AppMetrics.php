@@ -31,7 +31,7 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     /**
      * @param array<float>|null $buckets
      */
-    public function __construct(private readonly LabelResolver $labelResolver, ?array $buckets = null, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null)
+    public function __construct(private readonly LabelResolver $labelResolver, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null, ?array $buckets = null)
     {
         $this->buckets = $buckets ?? Histogram::getDefaultBuckets();
     }

@@ -25,7 +25,7 @@ $renderer = new Renderer($registry, 'symfony');
 $labelResolver = new LabelResolver([]);
 
 // Initialize AppMetrics
-$appMetrics = new AppMetrics($labelResolver, Histogram::getDefaultBuckets());
+$appMetrics = new AppMetrics($labelResolver, null, Histogram::getDefaultBuckets());
 $appMetrics->init('symfony', $registry);
 
 echo "✅ Metrics system initialized\n";
