@@ -35,7 +35,8 @@ services:
 
   Artprima\PrometheusMetricsBundle\Metrics\AppMetrics:
     arguments:
-      - '@Artprima\PrometheusMetricsBundle\Metrics\LabelResolver'
+      $labelResolver: '@Artprima\PrometheusMetricsBundle\Metrics\LabelResolver'
+      $buckets: '%prometheus_metrics_bundle.buckets%'
     tags:
       - { name: prometheus_metrics_bundle.metrics_collector }
       - { name: prometheus_metrics_bundle.default_metrics }

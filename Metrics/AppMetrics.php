@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\Metrics;
 
 use Prometheus\Exception\MetricNotFoundException;
+use Prometheus\Histogram;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -22,9 +23,17 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     use MetricsCollectorInitTrait;
 
     private float $startedAt = 0;
+    /**
+     * @var array<float>
+     */
+    private readonly array $buckets;
 
-    public function __construct(private readonly LabelResolver $labelResolver, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null)
+    /**
+     * @param array<float>|null $buckets
+     */
+    public function __construct(private readonly LabelResolver $labelResolver, private readonly ?MetricInfoResolverInterface $metricInfoResolver = null, ?array $buckets = null)
     {
+        $this->buckets = $buckets ?? Histogram::getDefaultBuckets();
     }
 
     public function collectRequest(RequestEvent $event): void
@@ -147,7 +156,8 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
             $this->namespace,
             'request_durations_histogram_seconds',
             'request durations in seconds',
-            $this->getLabelNames()
+            $this->getLabelNames(),
+            $this->buckets
         );
 
         $histogram->observe($duration, $this->getAllLabelValues());

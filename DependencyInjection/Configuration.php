@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
+use Prometheus\Histogram;
 use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -153,6 +154,31 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                     ->defaultValue([])
+                ->end()
+                ->arrayNode('buckets')
+                    ->prototype('float')->end()
+                    ->defaultValue(Histogram::getDefaultBuckets())
+                    ->cannotBeEmpty()
+                    ->validate()
+                        ->ifTrue(static function (array $buckets): bool {
+                            $previousBucket = null;
+
+                            foreach ($buckets as $bucket) {
+                                if ($bucket < 0) {
+                                    return true;
+                                }
+
+                                if (null !== $previousBucket && $bucket <= $previousBucket) {
+                                    return true;
+                                }
+
+                                $previousBucket = $bucket;
+                            }
+
+                            return false;
+                        })
+                        ->thenInvalid('Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.')
+                    ->end()
                 ->end()
             ->end();
 

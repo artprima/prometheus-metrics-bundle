@@ -6,12 +6,16 @@ namespace Tests\Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Prometheus\Histogram;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigurationTest extends TestCase
 {
     public static function configDataProvider(): array
     {
+        $defaultBuckets = Histogram::getDefaultBuckets();
+        $customBuckets = [0.2, 0.6];
+
         return [
             [
                 'apcu',
@@ -28,6 +32,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -45,6 +50,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -56,6 +62,26 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'in_memory',
+                    'storage' => ['type' => 'in_memory'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'labels' => [],
+                    'buckets' => $defaultBuckets,
+                ],
+            ],
+            [
+                'in_memory with explicit buckets',
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'in_memory',
+                    'buckets' => $customBuckets,
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'in_memory',
+                    'buckets' => $customBuckets,
                     'storage' => ['type' => 'in_memory'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_metrics' => false,
@@ -98,6 +124,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -133,6 +160,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -154,6 +182,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -189,6 +218,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -212,6 +242,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -235,6 +266,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
         ];
@@ -253,6 +285,33 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
                 'Invalid configuration for path "artprima_prometheus_metrics.storage.prefix": Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$',
+            ],
+            [
+                'Duplicate buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [0.1, 0.1],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
+            ],
+            [
+                'Unsorted buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [0.5, 0.1],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
+            ],
+            [
+                'Negative buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [-0.1, 0.5],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
             ],
         ];
     }

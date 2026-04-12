@@ -32,7 +32,7 @@ class MetricInfoResolverCompilerPass implements CompilerPassInterface
         }
 
         foreach ($taggedServices as $id => $tags) {
-            $definition->addArgument(new Reference($id));
+            $definition->setArgument('$metricInfoResolver', new Reference($id));
         }
     }
 }

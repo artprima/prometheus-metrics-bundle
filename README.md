@@ -89,6 +89,10 @@ artprima_prometheus_metrics:
           type: "request_header" # Create a subscriber and set up the `X-Client-Name` header in the request. See example below.
           value: "X-Client-Name"
 
+    # Custom buckets for the request duration histogram.
+    # Buckets must be unique and strictly increasing. Omit this option to use the Prometheus client defaults.
+    buckets: [0.1, 0.3, 1.0, 3.0]
+
     # metrics backend
     storage:
         # DSN of the storage. All parsed values will override explicitly set parameters. Ex: redis://127.0.0.1?timeout=0.1

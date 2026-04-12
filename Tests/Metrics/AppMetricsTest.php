@@ -10,6 +10,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use PHPUnit\Framework\TestCase;
 use Prometheus\CollectorRegistry;
+use Prometheus\Histogram;
 use Prometheus\Storage\InMemory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ class AppMetricsTest extends TestCase
      * @var RendererTest
      */
     private $renderer;
+    private array $defaultBuckets;
 
     private LabelResolver $labelResolver;
 
@@ -33,12 +35,13 @@ class AppMetricsTest extends TestCase
         $this->namespace = 'dummy';
         $this->collectionRegistry = new CollectorRegistry(new InMemory());
         $this->renderer = new Renderer($this->collectionRegistry);
+        $this->defaultBuckets = Histogram::getDefaultBuckets();
         $this->labelResolver = new LabelResolver([]);
     }
 
     public function testCollectRequest(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, null, $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -57,7 +60,7 @@ class AppMetricsTest extends TestCase
 
     public function testCollectRequestOptionsMethod(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, null, $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
@@ -79,7 +82,7 @@ class AppMetricsTest extends TestCase
 
     public function testCollectResponseOptionsMethod(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, null, $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
@@ -115,7 +118,7 @@ class AppMetricsTest extends TestCase
      */
     public function testCollectResponse(int $code, string $metricsName): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, null, $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -137,8 +140,7 @@ class AppMetricsTest extends TestCase
     public function testSetRequestDuration(): void
     {
         self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
-
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, null, $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -178,9 +180,41 @@ class AppMetricsTest extends TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSetRequestDurationWithCustomBuckets(): void
+    {
+        self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
+        $customBuckets = [0.2, 0.6];
+        $metrics = new AppMetrics($this->labelResolver, null, $customBuckets);
+        $metrics->init($this->namespace, $this->collectionRegistry);
+
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $reqEvt = $this->createMock(RequestEvent::class);
+        $reqEvt->method('getRequest')->willReturn($request);
+
+        $response = new Response('', 200);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
+
+        $metrics->collectStart($reqEvt);
+        $metrics->collectRequest($reqEvt);
+        $metrics->collectResponse($evt);
+        $response = $this->renderer->renderResponse();
+        $content = $response->getContent();
+
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.2"} 0', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.6"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="+Inf"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="all"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="all"} 0.5', $content);
+        self::assertStringNotContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.005"}', $content);
+    }
+
     public function testUseMetricInfoResolver(): void
     {
-        $metrics = new AppMetrics($this->labelResolver, new DummyMetricInfoResolver());
+        $metrics = new AppMetrics($this->labelResolver, new DummyMetricInfoResolver(), $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
@@ -210,7 +244,7 @@ class AppMetricsTest extends TestCase
             new LabelConfig('client_name', LabelConfig::REQUEST_HEADER, 'X-Client-Name'),
         ];
 
-        $metrics = new AppMetrics(new LabelResolver($labels), new DummyMetricInfoResolver());
+        $metrics = new AppMetrics(new LabelResolver($labels), new DummyMetricInfoResolver(), $this->defaultBuckets);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
