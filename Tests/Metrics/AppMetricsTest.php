@@ -180,6 +180,38 @@ class AppMetricsTest extends TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSetRequestDurationWithCustomBuckets(): void
+    {
+        self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
+        $customBuckets = [0.2, 0.6];
+        $metrics = new AppMetrics($this->labelResolver, null, $customBuckets);
+        $metrics->init($this->namespace, $this->collectionRegistry);
+
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $reqEvt = $this->createMock(RequestEvent::class);
+        $reqEvt->method('getRequest')->willReturn($request);
+
+        $response = new Response('', 200);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
+
+        $metrics->collectStart($reqEvt);
+        $metrics->collectRequest($reqEvt);
+        $metrics->collectResponse($evt);
+        $response = $this->renderer->renderResponse();
+        $content = $response->getContent();
+
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.2"} 0', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.6"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="+Inf"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_count{action="all"} 1', $content);
+        self::assertStringContainsString('dummy_request_durations_histogram_seconds_sum{action="all"} 0.5', $content);
+        self::assertStringNotContainsString('dummy_request_durations_histogram_seconds_bucket{action="all",le="0.005"}', $content);
+    }
+
     public function testUseMetricInfoResolver(): void
     {
         $metrics = new AppMetrics($this->labelResolver, new DummyMetricInfoResolver(), $this->defaultBuckets);
