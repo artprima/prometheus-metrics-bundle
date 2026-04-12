@@ -14,6 +14,7 @@ class ConfigurationTest extends TestCase
     public static function configDataProvider(): array
     {
         $defaultBuckets = Histogram::getDefaultBuckets();
+        $customBuckets = [0.2, 0.6];
 
         return [
             [
@@ -68,6 +69,25 @@ class ConfigurationTest extends TestCase
                     'enable_console_metrics' => false,
                     'labels' => [],
                     'buckets' => $defaultBuckets,
+                ],
+            ],
+            [
+                'in_memory with explicit buckets',
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'in_memory',
+                    'buckets' => $customBuckets,
+                ],
+                [
+                    'namespace' => 'myapp',
+                    'type' => 'in_memory',
+                    'storage' => ['type' => 'in_memory'],
+                    'ignored_routes' => ['prometheus_bundle_prometheus'],
+                    'disable_default_metrics' => false,
+                    'disable_default_promphp_metrics' => false,
+                    'enable_console_metrics' => false,
+                    'labels' => [],
+                    'buckets' => $customBuckets,
                 ],
             ],
             [
