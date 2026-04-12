@@ -159,6 +159,26 @@ class Configuration implements ConfigurationInterface
                     ->prototype('float')->end()
                     ->defaultValue(Histogram::getDefaultBuckets())
                     ->cannotBeEmpty()
+                    ->validate()
+                        ->ifTrue(static function (array $buckets): bool {
+                            $previousBucket = null;
+
+                            foreach ($buckets as $bucket) {
+                                if ($bucket < 0) {
+                                    return true;
+                                }
+
+                                if (null !== $previousBucket && $bucket <= $previousBucket) {
+                                    return true;
+                                }
+
+                                $previousBucket = $bucket;
+                            }
+
+                            return false;
+                        })
+                        ->thenInvalid('Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.')
+                    ->end()
                 ->end()
             ->end();
 

@@ -81,13 +81,13 @@ class ConfigurationTest extends TestCase
                 [
                     'namespace' => 'myapp',
                     'type' => 'in_memory',
+                    'buckets' => $customBuckets,
                     'storage' => ['type' => 'in_memory'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_metrics' => false,
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
-                    'buckets' => $customBuckets,
                 ],
             ],
             [
@@ -285,6 +285,33 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
                 'Invalid configuration for path "artprima_prometheus_metrics.storage.prefix": Invalid prefix. Make sure it matches the following regex: ^[a-zA-Z_:][a-zA-Z0-9_:]*$',
+            ],
+            [
+                'Duplicate buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [0.1, 0.1],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
+            ],
+            [
+                'Unsorted buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [0.5, 0.1],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
+            ],
+            [
+                'Negative buckets',
+                [
+                    'type' => 'in_memory',
+                    'namespace' => 'myapp',
+                    'buckets' => [-0.1, 0.5],
+                ],
+                'Invalid configuration for path "artprima_prometheus_metrics.buckets": Buckets must be unique, sorted in strictly increasing order, and greater than or equal to 0.',
             ],
         ];
     }
