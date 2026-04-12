@@ -73,6 +73,8 @@ jobs:
       run: curl -sS https://get.symfony.com/cli/installer | bash
     - name: Install Symfony
       run: |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
         $HOME/.symfony5/bin/symfony new symfony --version="${{ matrix.symfony-require }}"
     - name: Configure Symfony to run integration tests
       run: |
