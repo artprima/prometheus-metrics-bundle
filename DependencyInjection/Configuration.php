@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Prometheus\Histogram;
-
 use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
