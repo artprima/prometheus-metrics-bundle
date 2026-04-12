@@ -11,6 +11,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\Renderer;
 use Prometheus\CollectorRegistry;
+use Prometheus\Histogram;
 use Prometheus\Storage\InMemory;
 
 echo "🔍 Testing Prometheus Metrics Bundle\n";
@@ -24,7 +25,7 @@ $renderer = new Renderer($registry, 'symfony');
 $labelResolver = new LabelResolver([]);
 
 // Initialize AppMetrics
-$appMetrics = new AppMetrics($labelResolver);
+$appMetrics = new AppMetrics($labelResolver, Histogram::getDefaultBuckets());
 $appMetrics->init('symfony', $registry);
 
 echo "✅ Metrics system initialized\n";

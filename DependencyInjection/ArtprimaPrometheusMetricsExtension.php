@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Compiler\ResolveAdapterDefinitionPass;
+use Artprima\PrometheusMetricsBundle\Metrics\AppMetrics;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelConfig;
 use Artprima\PrometheusMetricsBundle\Metrics\LabelResolver;
 use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorInterface;
@@ -55,9 +56,12 @@ class ArtprimaPrometheusMetricsExtension extends Extension
         $container->setParameter('prometheus_metrics_bundle.disable_default_metrics', $config['disable_default_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_default_promphp_metrics', !$config['disable_default_promphp_metrics']);
         $container->setParameter('prometheus_metrics_bundle.enable_console_metrics', $config['enable_console_metrics']);
+        $container->setParameter('prometheus_metrics_bundle.buckets', $config['buckets']);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
+        $container->getDefinition(AppMetrics::class)
+            ->setArgument(1, '%prometheus_metrics_bundle.buckets%');
 
         if (isset($config['labels'])) {
             $labelConfigServices = [];

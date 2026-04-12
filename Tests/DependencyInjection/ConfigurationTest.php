@@ -6,12 +6,15 @@ namespace Tests\Artprima\PrometheusMetricsBundle\DependencyInjection;
 
 use Artprima\PrometheusMetricsBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Prometheus\Histogram;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigurationTest extends TestCase
 {
     public static function configDataProvider(): array
     {
+        $defaultBuckets = Histogram::getDefaultBuckets();
+
         return [
             [
                 'apcu',
@@ -28,6 +31,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -45,6 +49,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -62,6 +67,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -98,6 +104,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -133,6 +140,7 @@ class ConfigurationTest extends TestCase
                     'storage' => ['type' => 'redis'],
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -154,6 +162,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -189,6 +198,7 @@ class ConfigurationTest extends TestCase
                     'ignored_routes' => ['prometheus_bundle_prometheus'],
                     'disable_default_promphp_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -212,6 +222,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
             [
@@ -235,6 +246,7 @@ class ConfigurationTest extends TestCase
                     'disable_default_promphp_metrics' => false,
                     'enable_console_metrics' => false,
                     'labels' => [],
+                    'buckets' => $defaultBuckets,
                 ],
             ],
         ];

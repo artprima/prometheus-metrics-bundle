@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppMetricsTest extends TestCase
 {
+    private const DEFAULT_BUCKETS = [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10];
     private $namespace;
     private $collectionRegistry;
     /**
@@ -38,7 +39,7 @@ class AppMetricsTest extends TestCase
 
     public function testCollectRequest(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -57,7 +58,7 @@ class AppMetricsTest extends TestCase
 
     public function testCollectRequestOptionsMethod(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
@@ -79,7 +80,7 @@ class AppMetricsTest extends TestCase
 
     public function testCollectResponseOptionsMethod(): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'OPTIONS']);
@@ -115,7 +116,7 @@ class AppMetricsTest extends TestCase
      */
     public function testCollectResponse(int $code, string $metricsName): void
     {
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -137,8 +138,7 @@ class AppMetricsTest extends TestCase
     public function testSetRequestDuration(): void
     {
         self::registerMicrotimeMock('Artprima\PrometheusMetricsBundle\Metrics');
-
-        $metrics = new AppMetrics($this->labelResolver);
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS);
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
@@ -180,7 +180,7 @@ class AppMetricsTest extends TestCase
 
     public function testUseMetricInfoResolver(): void
     {
-        $metrics = new AppMetrics($this->labelResolver, new DummyMetricInfoResolver());
+        $metrics = new AppMetrics($this->labelResolver, self::DEFAULT_BUCKETS, new DummyMetricInfoResolver());
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
@@ -210,7 +210,7 @@ class AppMetricsTest extends TestCase
             new LabelConfig('client_name', LabelConfig::REQUEST_HEADER, 'X-Client-Name'),
         ];
 
-        $metrics = new AppMetrics(new LabelResolver($labels), new DummyMetricInfoResolver());
+        $metrics = new AppMetrics(new LabelResolver($labels), self::DEFAULT_BUCKETS, new DummyMetricInfoResolver());
         $metrics->init($this->namespace, $this->collectionRegistry);
 
         $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET', 'REQUEST_URI' => 'https://example.com/test?query=1']);
