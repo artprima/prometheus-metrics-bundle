@@ -18,11 +18,11 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['8.1', '8.2', '8.3', '8.4']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+        php-version: ['8.2', '8.3', '8.4', '8.5']
+    name: PHP ${{ matrix.php-version }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         # pulls all commits (needed for lerna / semantic release to correctly version)
         fetch-depth: "0"
@@ -33,7 +33,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-versions }}
+        php-version: ${{ matrix.php-version }}
         extensions: mbstring, intl, redis, apcu
         ini-values: post_max_size=256M, apc.enabled=on, apc.enable_cli=on
         coverage: xdebug
@@ -42,12 +42,10 @@ jobs:
       id: composer-cache
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
     - name: Cache composer dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        # Use composer.json for key, if composer.lock is not committed.
-        # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
         restore-keys: ${{ runner.os }}-composer-
     - name: Install Composer dependencies
       run: |

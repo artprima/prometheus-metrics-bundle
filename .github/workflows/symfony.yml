@@ -16,46 +16,78 @@ jobs:
         - 6379:6379
         options: --entrypoint redis-server
     strategy:
+      fail-fast: false
       matrix:
-        operating-system: [ubuntu-latest]
-        symfony-versions: ['5.4', '6.4', '7.2']
-        php-versions: ['8.1', '8.2', '8.3', '8.4']
-        exclude:
+        include:
           - operating-system: ubuntu-latest
-            symfony-versions: '7.2'
-            php-versions: '8.1'
-    name: PHP ${{ matrix.php-versions }} / Symfony ${{ matrix.symfony-versions }} Test on ${{ matrix.operating-system }}
+            php-version: '8.2'
+            symfony-version: '5.4'
+            symfony-require: '5.4.*'
+            phpunit-bridge-version: '5.4.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.2'
+            symfony-version: '6.4'
+            symfony-require: '6.4.*'
+            phpunit-bridge-version: '6.4.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.5'
+            symfony-version: '6.4'
+            symfony-require: '6.4.*'
+            phpunit-bridge-version: '6.4.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.2'
+            symfony-version: '7.4'
+            symfony-require: '7.4.*'
+            phpunit-bridge-version: '7.4.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.5'
+            symfony-version: '7.4'
+            symfony-require: '7.4.*'
+            phpunit-bridge-version: '7.4.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.4'
+            symfony-version: '8.0'
+            symfony-require: '8.0.*'
+            phpunit-bridge-version: '8.0.*'
+          - operating-system: ubuntu-latest
+            php-version: '8.5'
+            symfony-version: '8.0'
+            symfony-require: '8.0.*'
+            phpunit-bridge-version: '8.0.*'
+    name: PHP ${{ matrix.php-version }} / Symfony ${{ matrix.symfony-version }} Test on ${{ matrix.operating-system }}
+    env:
+      SYMFONY_REQUIRE: ${{ matrix.symfony-require }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-versions }}
+        php-version: ${{ matrix.php-version }}
         extensions: mbstring, intl, redis
         ini-values: post_max_size=256M
         coverage: xdebug
         tools: php-cs-fixer, phpunit
-    - name: Download Symfony Binary
-      run:  wget https://get.symfony.com/cli/installer -O - | bash
+    - name: Download Symfony CLI
+      run: curl -sS https://get.symfony.com/cli/installer | bash
     - name: Install Symfony
       run: |
-        git config --global user.email "${{ github.actor }}"
-        git config --global user.name ""github-action-${{ github.actor }}@users.noreply.github.com""
-        /home/runner/.symfony5/bin/symfony new symfony --version=${{ matrix.symfony-versions }}
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        $HOME/.symfony5/bin/symfony new symfony --version="${{ matrix.symfony-require }}"
     - name: Configure Symfony to run integration tests
       run: |
         php .integration/patch.php
         cd symfony
-        cat composer.json
-        # Pin phpunit-bridge to 7.2.* to avoid test failures with 7.3+ versions
-        # TODO: upgrading to 7.3 breaks the tests and has to be fixed separately
-        composer require symfony/phpunit-bridge:7.2.* -n --no-progress
-        composer require symfony/browser-kit -n --no-progress
+        composer require symfony/phpunit-bridge:${{ matrix.phpunit-bridge-version }} -n --no-progress
+        if [ ! -f bin/phpunit ]; then
+          composer require --dev phpunit/phpunit:^11.5 -n --no-progress
+        fi
+        composer require symfony/browser-kit:${{ matrix.symfony-require }} -n --no-progress
         composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
         cp -rf ../.integration/symfony/* ./
-        composer upgrade -n --no-progress
+        composer update -n --no-progress
     - name: Run Integration tests
       run: |
         cd symfony

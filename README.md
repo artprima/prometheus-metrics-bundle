@@ -6,10 +6,24 @@
 | [![Coverage Status][Master coverage image]][Master coverage] |
 
 
-Symfony 5/6/7/8 Prometheus Metrics Bundle
+Symfony 5.4/6.4/7.4/8.x Prometheus Metrics Bundle
 =========================================
 
 A Symfony bundle for the `promphp/prometheus_client_php`.
+
+Supported Versions
+==================
+
+The bundle is currently maintained against these versions:
+
+- PHP: 8.2, 8.3, 8.4, 8.5
+- Symfony: 5.4, 6.4, 7.4, 8.x
+
+Compatibility policy:
+
+- Symfony 5.4 is kept for legacy/LTS compatibility.
+- Symfony 8.x requires PHP 8.4 or newer.
+- CI covers the supported boundaries instead of testing the full Cartesian product of every PHP/Symfony combination.
 
 Installation
 ============
