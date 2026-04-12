@@ -9,15 +9,15 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: PHP 8.1
+    name: PHP 8.2
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: "8.1"
+        php-version: "8.2"
         extensions: mbstring, intl
         ini-values: post_max_size=256M
         coverage: xdebug
@@ -26,12 +26,10 @@ jobs:
       id: composer-cache
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
     - name: Cache composer dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        # Use composer.json for key, if composer.lock is not committed.
-        # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
         restore-keys: ${{ runner.os }}-composer-
     - name: Install Composer dependencies
       run: |
