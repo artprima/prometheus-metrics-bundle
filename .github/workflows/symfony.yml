@@ -81,6 +81,9 @@ jobs:
         php .integration/patch.php
         cd symfony
         composer require symfony/phpunit-bridge:${{ matrix.phpunit-bridge-version }} -n --no-progress
+        if [ ! -f bin/phpunit ]; then
+          composer require --dev phpunit/phpunit:^11.5 -n --no-progress
+        fi
         composer require symfony/browser-kit:${{ matrix.symfony-require }} -n --no-progress
         composer require artprima/prometheus-metrics-bundle:* -n --no-progress --no-scripts
         cp -rf ../.integration/symfony/* ./
@@ -88,4 +91,4 @@ jobs:
     - name: Run Integration tests
       run: |
         cd symfony
-        vendor/bin/simple-phpunit
+        php bin/phpunit
