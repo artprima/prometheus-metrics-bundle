@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+* 1.22.0 (2026-05-20)
+
+  * Add support for configurable histogram buckets (supersedes [#122](https://github.com/artprima/prometheus-metrics-bundle/pull/122)) ([#136](https://github.com/artprima/prometheus-metrics-bundle/pull/136))
+  * Collect response metrics on `kernel.response` instead of `kernel.terminate` ([#131](https://github.com/artprima/prometheus-metrics-bundle/pull/131)) (thanks to [@Florian Dorn](https://github.com/Florian Dorn))
+  * Add back the `routing.xml` file ([#134](https://github.com/artprima/prometheus-metrics-bundle/pull/134)) (thanks to [@Sébastien Tanneux](https://github.com/Sébastien Tanneux))
+  * Update PHP and Symfony support matrix ([#137](https://github.com/artprima/prometheus-metrics-bundle/pull/137))
+
 * 1.21.0 (2026-01-12)
 
   * This release introduces official support for Symfony 8.0 (thanks to [@Venca](https://github.com/Venca))
