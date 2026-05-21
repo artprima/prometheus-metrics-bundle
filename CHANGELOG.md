@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* 1.22.1 (2026-05-21)
+
+  * Restore deprecated `TerminateMetricsCollectorInterface` to fix BC break introduced in 1.22.0 ([#131](https://github.com/artprima/prometheus-metrics-bundle/pull/131)) ([#140](https://github.com/artprima/prometheus-metrics-bundle/pull/140)). Implement `ResponseMetricsCollectorInterface` instead.
+
 * 1.22.0 (2026-05-20)
 
   * Add support for configurable histogram buckets (supersedes [#122](https://github.com/artprima/prometheus-metrics-bundle/pull/122)) ([#136](https://github.com/artprima/prometheus-metrics-bundle/pull/136))

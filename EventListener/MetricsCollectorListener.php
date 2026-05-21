@@ -14,6 +14,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterfa
 use Artprima\PrometheusMetricsBundle\Metrics\PreRequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -22,6 +23,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Class MetricsCollectorListener is an event listener that calls the registered metric handlers.
@@ -149,9 +151,51 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            // BC layer for deprecated TerminateMetricsCollectorInterface
+            // TerminateMetricsCollectorInterface::collectResponse() takes TerminateEvent, not ResponseEvent
+            if ($collector instanceof TerminateMetricsCollectorInterface && !($collector instanceof ResponseMetricsCollectorInterface)) {
+                continue;
+            }
             if (!self::isSupportedEvent($collector, 'collectResponse', ResponseMetricsCollectorInterface::class)) {
                 continue;
             }
+
+            try {
+                $collector->collectResponse($event);
+            } catch (\Exception $e) {
+                if ($this->logger) {
+                    $this->logger->error(
+                        $e->getMessage(),
+                        ['from' => 'response_collector', 'class' => $collector::class]
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * @deprecated will be removed once TerminateMetricsCollectorInterface is dropped
+     */
+    public function onKernelTerminate(TerminateEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $requestRoute = $event->getRequest()->attributes->get('_route');
+        if (in_array($requestRoute, $this->ignoredRoutes, true)) {
+            return;
+        }
+
+        foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
+            if (!$collector instanceof TerminateMetricsCollectorInterface) {
+                continue;
+            }
+
+            @trigger_error(sprintf(
+                '%s implements deprecated TerminateMetricsCollectorInterface. Implement ResponseMetricsCollectorInterface instead.',
+                $collector::class
+            ), \E_USER_DEPRECATED);
 
             try {
                 $collector->collectResponse($event);
