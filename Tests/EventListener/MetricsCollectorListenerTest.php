@@ -13,6 +13,7 @@ use Artprima\PrometheusMetricsBundle\Metrics\MetricsCollectorRegistry;
 use Artprima\PrometheusMetricsBundle\Metrics\PreExceptionMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\RequestMetricsCollectorInterface;
 use Artprima\PrometheusMetricsBundle\Metrics\ResponseMetricsCollectorInterface;
+use Artprima\PrometheusMetricsBundle\Metrics\TerminateMetricsCollectorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -26,6 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class MetricsCollectorListenerTest extends TestCase
@@ -230,6 +232,66 @@ class MetricsCollectorListenerTest extends TestCase
 
         $listener = new MetricsCollectorListener($registry);
         $listener->onKernelExceptionPre($evt);
+    }
+
+    public function testOnKernelTerminate(): void
+    {
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 200);
+        $evt = new TerminateEvent($kernel, $request, $response);
+
+        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector1->expects(self::once())->method('collectResponse')->with($evt);
+        $collector2 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector2->expects(self::once())->method('collectResponse')->with($evt);
+
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+        $registry->registerMetricsCollector($collector2);
+
+        $listener = new MetricsCollectorListener($registry);
+        @$listener->onKernelTerminate($evt);
+    }
+
+    public function testOnKernelTerminateIgnoredRoute(): void
+    {
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 200);
+        $evt = new TerminateEvent($kernel, $request, $response);
+
+        $collector1 = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $collector1->expects(self::never())->method('collectResponse');
+
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector1);
+
+        $listener = new MetricsCollectorListener($registry, ['test_route']);
+        @$listener->onKernelTerminate($evt);
+    }
+
+    public function testOnKernelResponseSkipsTerminateOnlyCollector(): void
+    {
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 200);
+        $evt = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
+
+        // A collector implementing only the deprecated interface must NOT be called in onKernelResponse
+        // because its collectResponse() expects a TerminateEvent, not a ResponseEvent.
+        $oldCollector = $this->createMock(TerminateMetricsCollectorInterface::class);
+        $oldCollector->expects(self::never())->method('collectResponse');
+
+        $newCollector = $this->createMock(ResponseMetricsCollectorInterface::class);
+        $newCollector->expects(self::once())->method('collectResponse')->with($evt);
+
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($oldCollector);
+        $registry->registerMetricsCollector($newCollector);
+
+        $listener = new MetricsCollectorListener($registry);
+        $listener->onKernelResponse($evt);
     }
 
     public function testOnConsoleCommand(): void
