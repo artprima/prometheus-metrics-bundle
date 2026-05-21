@@ -7,7 +7,7 @@ namespace Artprima\PrometheusMetricsBundle\Metrics;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
- * @deprecated Use ResponseMetricsCollectorInterface instead.
+ * @deprecated use ResponseMetricsCollectorInterface instead
  */
 interface TerminateMetricsCollectorInterface extends MetricsCollectorInterface
 {

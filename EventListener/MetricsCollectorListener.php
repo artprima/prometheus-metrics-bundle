@@ -174,7 +174,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
     }
 
     /**
-     * @deprecated Will be removed once TerminateMetricsCollectorInterface is dropped.
+     * @deprecated will be removed once TerminateMetricsCollectorInterface is dropped
      */
     public function onKernelTerminate(TerminateEvent $event): void
     {
@@ -188,7 +188,7 @@ class MetricsCollectorListener implements LoggerAwareInterface
         }
 
         foreach ($this->metricsCollectors->getMetricsCollectors() as $collector) {
-            if (!($collector instanceof TerminateMetricsCollectorInterface)) {
+            if (!$collector instanceof TerminateMetricsCollectorInterface) {
                 continue;
             }
 

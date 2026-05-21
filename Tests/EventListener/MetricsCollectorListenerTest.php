@@ -30,6 +30,17 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
+class LegacyTerminateCollectorStub implements TerminateMetricsCollectorInterface
+{
+    public function collectResponse(TerminateEvent $event): void
+    {
+    }
+
+    public function init(string $namespace, \Prometheus\CollectorRegistry $collectionRegistry): void
+    {
+    }
+}
+
 class MetricsCollectorListenerTest extends TestCase
 {
     public function testOnKernelRequest(): void
@@ -251,7 +262,27 @@ class MetricsCollectorListenerTest extends TestCase
         $registry->registerMetricsCollector($collector2);
 
         $listener = new MetricsCollectorListener($registry);
-        @$listener->onKernelTerminate($evt);
+        $listener->onKernelTerminate($evt);
+    }
+
+    public function testOnKernelTerminateTriggersDeprecation(): void
+    {
+        $request = new Request([], [], ['_route' => 'test_route'], [], [], ['REQUEST_METHOD' => 'GET']);
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $response = new Response('', 200);
+        $evt = new TerminateEvent($kernel, $request, $response);
+
+        $collector = new LegacyTerminateCollectorStub();
+
+        $registry = new MetricsCollectorRegistry();
+        $registry->registerMetricsCollector($collector);
+
+        $listener = new MetricsCollectorListener($registry);
+
+        $this->expectUserDeprecationMessage(
+            LegacyTerminateCollectorStub::class.' implements deprecated TerminateMetricsCollectorInterface. Implement ResponseMetricsCollectorInterface instead.'
+        );
+        $listener->onKernelTerminate($evt);
     }
 
     public function testOnKernelTerminateIgnoredRoute(): void
@@ -268,7 +299,7 @@ class MetricsCollectorListenerTest extends TestCase
         $registry->registerMetricsCollector($collector1);
 
         $listener = new MetricsCollectorListener($registry, ['test_route']);
-        @$listener->onKernelTerminate($evt);
+        $listener->onKernelTerminate($evt);
     }
 
     public function testOnKernelResponseSkipsTerminateOnlyCollector(): void
