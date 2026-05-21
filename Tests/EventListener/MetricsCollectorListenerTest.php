@@ -30,17 +30,6 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class LegacyTerminateCollectorStub implements TerminateMetricsCollectorInterface
-{
-    public function collectResponse(TerminateEvent $event): void
-    {
-    }
-
-    public function init(string $namespace, \Prometheus\CollectorRegistry $collectionRegistry): void
-    {
-    }
-}
-
 class MetricsCollectorListenerTest extends TestCase
 {
     public function testOnKernelRequest(): void
