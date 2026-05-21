@@ -39,13 +39,14 @@ class AppMetrics implements PreRequestMetricsCollectorInterface, RequestMetricsC
     public function collectRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        $metricInfo = $this->resolveMetricInfo($request);
         $requestMethod = $request->getMethod();
 
         // do not track "OPTIONS" requests
         if ('OPTIONS' === $requestMethod) {
             return;
         }
+
+        $metricInfo = $this->resolveMetricInfo($request);
 
         $this->setInstance($request->server->get('HOSTNAME') ?? 'dev');
         $this->incRequestsTotal($metricInfo);
