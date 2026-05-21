@@ -4,6 +4,7 @@ CHANGELOG
 * 1.22.1 (2026-05-21)
 
   * Restore deprecated `TerminateMetricsCollectorInterface` to fix BC break introduced in 1.22.0 ([#131](https://github.com/artprima/prometheus-metrics-bundle/pull/131)) ([#140](https://github.com/artprima/prometheus-metrics-bundle/pull/140)). Implement `ResponseMetricsCollectorInterface` instead.
+  * Early exit for `OPTIONS` requests to skip unnecessary metric resolution ([#141](https://github.com/artprima/prometheus-metrics-bundle/pull/141))
 
 * 1.22.0 (2026-05-20)
 
